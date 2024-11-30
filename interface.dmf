@@ -1,0 +1,100 @@
+macro "macro"
+	elem 
+		name = "CTRL+B"
+		command = "firebeams"
+	elem 
+		name = "CTRL+M"
+		command = "spawnmob"
+
+
+menu "menu"
+	elem 
+		name = "&File"
+		command = ""
+		saved-params = "is-checked"
+	elem 
+		name = "&Restore Earth"
+		command = "RestoreEarth"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
+		name = "Toggle Chat"
+		command = "Togglechat"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
+		name = "Change Character"
+		command = "ChangePlayer"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
+		name = "Change Skill"
+		command = "ChangeSkill"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
+		name = "Change View"
+		command = "changeview"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
+		name = "&Quit"
+		command = ".quit"
+		category = "&File"
+		saved-params = "is-checked"
+
+menu "menu1"
+
+
+window "default"
+	elem "default"
+		type = MAIN
+		pos = 291,0
+		size = 1280x720
+		anchor1 = -1,-1
+		anchor2 = -1,-1
+		background-color = #000000
+		is-default = true
+		saved-params = "pos;size;is-minimized;is-maximized"
+		title = "Dragon Brawl Online"
+		statusbar = false
+		can-minimize = false
+		macro = "macro"
+		menu = "menu"
+		outer-size = 1296x779
+		outer-pos = 291,0
+		inner-size = 1280x720
+		inner-pos = 8,51
+		screen-size = 1920x1032
+	elem "map1"
+		type = MAP
+		pos = 0,0
+		size = 1280x720
+		anchor1 = 0,0
+		anchor2 = 100,100
+		is-default = true
+		saved-params = ""
+		on-size = "map-resized"
+	elem "output1"
+		type = OUTPUT
+		pos = 1084,635
+		size = 196x68
+		anchor1 = 84,88
+		anchor2 = 100,97
+		font-family = "Calibri"
+		font-size = 10
+		text-color = #dddddd
+		background-color = #4d4d4d
+		is-default = true
+		saved-params = "max-lines"
+	elem "input1"
+		type = INPUT
+		pos = 1084,703
+		size = 196x17
+		anchor1 = 84,97
+		anchor2 = 100,100
+		text-color = #f8f8f8
+		background-color = #5f5f5f
+		saved-params = ""
+		command = "say"
+

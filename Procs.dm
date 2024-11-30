@@ -1,0 +1,157 @@
+atom
+	movable
+		var
+			force_move=0
+
+		Cross(atom/movable/crossing)
+			if(crossing.force_move)
+				return 1
+			. = crossing && crossing.on_cross(src, ..())
+
+		Crossed(atom/movable/crossing)
+			if(!crossing) return
+			crossing.on_crossed(src)
+
+		Uncross(atom/movable/uncrossing)
+			if(uncrossing.force_move)
+				return 1
+			. = uncrossing && uncrossing.on_uncross(src, ..())
+
+		Uncrossed(atom/movable/uncrossing)
+			if(!uncrossing) return
+			uncrossing.on_uncrossed(src)
+
+
+		proc
+
+			on_cross(atom/movable/crossed, supercall)
+				//set waitfor = 0
+				return supercall
+
+			on_crossed(atom/movable/crossed)
+				set waitfor = 0
+
+			on_uncross(atom/movable/uncrossed, supercall)
+				//set waitfor = 0
+				return supercall
+
+			on_uncrossed(atom/movable/uncrossed)
+				set waitfor = 0
+
+			on_enter(atom/entering, atom/old_loc, supercall)
+				//set waitfor = 0
+				return supercall
+
+			on_entered(atom/entered, atom/old_loc)
+				set waitfor = 0
+
+			on_exit(atom/exiting, atom/new_loc, supercall)
+				//set waitfor = 0
+				return supercall
+
+			on_exited(atom/exited, atom/new_loc)
+				set waitfor = 0
+
+
+mob/proc/Backstab(mob/M)
+	var/vector/attackvector=M.pixloc-src.pixloc
+	attackvector.Normalize()
+	var/vector/defendvector=Dir2Vector(M.dir)
+//	world<<"[defendvector.Dot(attackvector)] >= [attackvector.size * defendvector.size * cos(45)] result [defendvector.Dot(attackvector) >= attackvector.size * defendvector.size * cos(45)]"
+	if(defendvector.Dot(attackvector) >= attackvector.size * defendvector.size * cos(45))
+		return 1
+	return 0
+
+
+mob/proc/Face(mob/M)
+	var/vector/V=M.pixloc-src.pixloc
+	src.dir=Vector2Dir(V)
+	src.RotateMob(V,100)
+
+
+proc/Vector2Dir(vector/V)
+	var/a=round(vector2angle(V),45)
+	if(abs(a)>360)a=a%360
+	if(a<0)a+=360
+	switch(a)
+		if(0) return EAST
+		if(45) return NORTHEAST
+		if(90) return NORTH
+		if(135) return NORTHWEST
+		if(180) return WEST
+		if(135) return NORTHWEST
+		if(225) return SOUTHWEST
+		if(270) return SOUTH
+		if(315) return SOUTHEAST
+	return EAST
+
+
+
+
+
+
+
+proc/vector2angle(vector/v)
+	return -arctan(v)
+
+proc/Dir2Vector(dir)
+	switch(dir)
+		if(EAST)
+			return vector(1,0)
+		if(WEST)
+			return vector(-1,0)
+		if(NORTH)
+			return vector(0,1)
+		if(SOUTH)
+			return vector(0,-1)
+		if(NORTHEAST)
+			return vector(0.707,0.707)
+		if(NORTHWEST)
+			return vector(-0.707,0.707)
+		if(SOUTHEAST)
+			return vector(0.707,-0.707)
+		if(SOUTHWEST)
+			return vector(-0.707,-0.707)
+
+proc/Dir2Angle(dir)
+	switch(dir)
+		if(NORTH)return 90
+		if(SOUTH)return 270
+		if(EAST)return 0
+		if(NORTHEAST)return 45
+		if(SOUTHEAST)return 315
+		if(WEST)return 180
+		if(NORTHWEST)return 135
+		if(SOUTHWEST)return 225
+
+proc/angle2vector(angle,dist)
+	var/vx=round(cos(angle)*dist,1)
+	var/vy=round(sin(angle)*dist,1)
+	return vector(vx,vy)
+
+proc/calculate_bounce(vector/incident_vector, vector/normal_vector)
+	// Ensure the normal vector is normalized
+	normal_vector.Normalize()
+	 // Calculate the dot product
+	var/dot_product = incident_vector.Dot(normal_vector)
+
+	// Calculate the bounce vector
+
+	var/bounce_vector = incident_vector - (normal_vector * 2 * dot_product)
+	return bounce_vector
+
+
+proc/getnormal(atom/movable/mover,atom/obstacle)
+	var/pixloc/mtr = bound_pixloc(mover,NORTHEAST) - bound_pixloc(obstacle,SOUTHWEST)
+	var/pixloc/mbl = bound_pixloc(mover,SOUTHWEST) - bound_pixloc(obstacle,NORTHEAST)
+	var/vector/normal = vector(0,0)
+	if(abs(mtr.y)<=0) //collided on NORTH normal
+		normal.y = 1
+	else if(abs(mbl.y)<=1) //collided on SOUTH normal
+		normal.y = -1
+	if(abs(mtr.x)<=1) //collided on WEST normal
+		normal.x = -1
+	else if(abs(mbl.x)<=1) //collided on EAST normal
+		normal.x = 1
+	normal.Normalize()
+	return normal

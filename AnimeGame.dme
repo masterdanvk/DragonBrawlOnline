@@ -1,0 +1,80 @@
+// DM Environment file for AnimeGame.dme.
+// All manual changes should be made outside the BEGIN_ and END_ blocks.
+// New source code should be placed in .dm files: choose File/New --> Code File.
+
+// BEGIN_INTERNALS
+// END_INTERNALS
+
+// BEGIN_FILE_DIR
+#define FILE_DIR .
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/orc mage"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/orc mage/hand fx"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/orc mage/orc1"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/orc mage/orc2"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/orc warrior"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/orc warrior/orc1"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/orc warrior/orc2"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/birds"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/birds/bird1"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/birds/bird2"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/birds/bird3"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/birds/bird4"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/ducks"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/ducks/duck1"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/ducks/duck2"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/ducks/duck3"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/frogs"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/frogs/frog1"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/frogs/frog2"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/frogs/frog3"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/frogs/frog4"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Characters/small animals/frogs/frog5"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Mockups"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Props"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Props/Animated props"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Props/Animated props/Cabin"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Props/Static props"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Props/Static props/Cabin"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Props/Static props/sheet1-sprites"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Props/Static props/sheet2-sprites"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Props/Static props/sheet3-sprites"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Props/Static props/sheet4-sprites"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets/Beach"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets/Beach/standard - no thick foam - sprites"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets/Beach/standard - with thick foam - sprites"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets/Beach/transition tiles between coast platform and beach"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets/Platform - grass to water"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets/Platform - grass to water/platform - grass - coast - sprites"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets/Platform - grass to water/platform - grass2 - coast - sprites"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets/Platform - grass to water/platform -grass to water - sprites"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets/Platform - grass to water/platform -grass2 to water - sprites"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets/Platform - grass to water/water full tile - sprites"
+#define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets/Platform - grass to water/water to grass - river orientation - sprites"
+#define FILE_DIR "ter gui bar demo"
+#define FILE_DIR "tileset"
+#define FILE_DIR "Top-Down 32x32 RPG Asset Pack"
+// END_FILE_DIR
+
+// BEGIN_PREFERENCES
+#define DEBUG
+// END_PREFERENCES
+
+// BEGIN_INCLUDE
+#include "Base.dm"
+#include "Beams.dm"
+#include "FX.dm"
+#include "gui.dm"
+#include "kaio_lib_mapresize.dm"
+#include "Mapping.dm"
+#include "Procs.dm"
+#include "Skills.dm"
+#include "Turfs.dm"
+#include "interface.dmf"
+#include "map.dmm"
+#include "ter gui bar demo\UIbars.dm"
+// END_INCLUDE
+
