@@ -127,7 +127,8 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset)
 				m.TurnWithPivot(angle,K.bound_width/2,0)
 				K.transform=m
 	K.Explode()
-	for(var/mob/Hit in K?.hitmobs)
+	var/list/hits=K.hitmobs
+	for(var/mob/Hit in hits)
 		if(Hit.invulnerable || Hit==src||(Hit in hitlist))continue
 		Hit.CheckCanMove()
 		hitlist|=Hit
@@ -201,6 +202,8 @@ obj/Kiblast
 		layer=MOB_LAYER+1
 		bound_width=128
 		bound_height=128
+		bound_x=-64
+		bound_y=-64
 		density=1
 		spread=0
 		distance=500
@@ -209,6 +212,7 @@ obj/Kiblast
 		impact=0
 		rotate=0
 		pierce=0
+
 		passthroughobjs=1
 		push=1
 		Bump(atom/A)
@@ -220,7 +224,9 @@ obj/Kiblast
 			Explosion(/obj/FX/Explosion,bound_pixloc(src,0),0,1+src.charge*0.05,1+src.charge*0.05)
 			destroy_turfs(bound_pixloc(src,0),max(40,16*(1+0.5*src.charge)))
 			for(var/mob/M in bound_pixloc(src,0),max(40,16*(1+0.5*src.charge)))
-				src.hitmobs|=M
+				if(M!=src.owner)src.hitmobs|=M
+				world<<"M is [M] type [M.type]"
+				sleep(1)
 			..()
 	Destructodisc
 		icon='destructodisc.dmi'
@@ -343,6 +349,8 @@ Skill
 				S.transform=(new/matrix).Scale(0.5)
 				S.bound_width*=0.5
 				S.bound_height*=0.5
+				S.bound_x*=0.5
+				S.bound_y*=0.5
 				S.pixel_x=-64
 				S.pixel_y=-64
 				while(src.channel)
@@ -351,6 +359,8 @@ Skill
 					S.transform*=1.05
 					S.bound_width*=1.05
 					S.bound_height*=1.05
+					S.bound_x*=1.05
+					S.bound_y*=1.05
 					S.pixloc=S.pixloc+vector(0,2)
 
 	Kiblast
