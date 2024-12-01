@@ -97,7 +97,8 @@ var/alist/playerselection=new/alist(
 	Piccolo=/mob/piccolo,
 	Gohan=/mob/gohan,
 	Tien=/mob/tien,
-	Krillin=/mob/krillin)
+	Krillin=/mob/krillin,
+	Yamcha=/mob/yamcha)
 
 mob/verb/ChangePlayer()
 	src.Die()
@@ -140,9 +141,9 @@ client/proc/RingDisplay()
 		if(!mobselect[i])break
 		mobselect[i].displayvector=vector(0,-96)
 		mobselect[i].displayvector.Turn((i-1)*360/picknum)
-		var/xoffset=0+round(mobselect[i].displayvector.x,1)
-		if(xoffset>0)xoffset="+[xoffset*ovalness]"
-		else xoffset="-[abs(xoffset*ovalness)]"
+		var/xoffset=0+round(mobselect[i].displayvector.x*ovalness,1)
+		if(xoffset>0)xoffset="+[xoffset]"
+		else xoffset="-[abs(xoffset)]"
 		mobselect[i].screen_loc="CENTER:[xoffset],CENTER:+[round(96+mobselect[i].displayvector.y,1)]"
 		src.screen|=mobselect[i]
 
@@ -176,9 +177,9 @@ client/proc/Pick_Next()
 	for(var/i=1 to 5)
 		for(var/mob/M in src.mobselect)
 			M.displayvector.Turn((-360/picknum)/5)
-			var/xoffset=0+round(M.displayvector.x,1)
-			if(xoffset>0)xoffset="+[xoffset*ovalness]"
-			else xoffset="-[abs(xoffset*ovalness)]"
+			var/xoffset=0+round(M.displayvector.x*ovalness,1)
+			if(xoffset>0)xoffset="+[xoffset]"
+			else xoffset="-[abs(xoffset)]"
 			var/newscreenloc ="CENTER:[xoffset],CENTER:+[round(96+M.displayvector.y,1)]"
 			M.screen_loc=newscreenloc
 		sleep(1)
@@ -196,9 +197,9 @@ client/proc/Pick_Previous()
 	for(var/i=1 to 5)
 		for(var/mob/M in src.mobselect)
 			M.displayvector.Turn((360/picknum)/5)
-			var/xoffset=0+round(M.displayvector.x,1)
-			if(xoffset>0)xoffset="+[xoffset*ovalness]"
-			else xoffset="-[abs(xoffset*ovalness)]"
+			var/xoffset=0+round(M.displayvector.x*ovalness,1)
+			if(xoffset>0)xoffset="+[xoffset]"
+			else xoffset="-[abs(xoffset)]"
 			var/newscreenloc ="CENTER:[xoffset],CENTER:+[round(96+M.displayvector.y,1)]"
 			M.screen_loc=newscreenloc
 		sleep(1)
@@ -483,6 +484,19 @@ mob
 			src.Create_Aura("White")
 			src.skills=list(new/Skill/Destructodisc,new/Skill/Kamehameha)
 			src.equippedskill=src.skills[1]
+	yamcha
+		icon='yamcha.dmi'
+		bound_x=20
+		bound_y=2
+		bound_width=24
+		bound_height=38
+		pl=9000
+		special=/Beam/Kamehameha
+		New()
+			..()
+			src.Create_Aura("White")
+			src.skills=list(new/Skill/Spiritball,new/Skill/Wolffangfist)
+			src.equippedskill=src.skills[1]
 
 	var
 		maxhp=100
@@ -593,6 +607,11 @@ mob/proc
 		src.Clear_target()
 		src.density=0
 		animate(src,transform=M,time=10)
+		if(src.holdskill)
+			src.holdskill:loc=null
+			src.holdskill=null
+		src.client.keydown=new/alist()
+
 		sleep(20)
 		animate(src,alpha=0,time=30)
 		sleep(100)

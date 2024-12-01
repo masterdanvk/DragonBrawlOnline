@@ -95,6 +95,7 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset)
 	while(distremaining>0)
 
 		distremaining-=K.speed
+
 		if(K.push)
 			for(var/mob/M in K.hitmobs)
 				M.Move(M.pixloc+stepvector)
@@ -103,20 +104,65 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset)
 			if(K.hitmobs.len && !K.pierce)
 				distremaining=0
 				break
+
 		var/vector/offsetchg=vector(offsetleft)
 		if(offsetchg.size>3)offsetchg.size=3
 		offsetleft.size=offsetleft.size-offsetchg.size
+		if(K.homing)
+			var/mob/target
+			if(src.lastattacked&&src.lastattacked.z==src.z)target=src.lastattacked
+			else if(src.lastattackedby&&src.lastattackedby.z==src.z)target=src.lastattackedby
+			else
+				for(var/mob/M in bound_pixloc(K,80))
+					target=M
+
+			if(target)
+				var/curangle=vector2angle(stepvector)
+				var/vector/idealvector=target.pixloc-K.pixloc
+				var/idealangle=vector2angle(idealvector)
+				if(abs(curangle-idealangle)==180)
+					stepvector.Turn(180)
+				if(abs(curangle-idealangle)<=10)
+					var/vsize=stepvector.size
+					stepvector=idealvector
+					stepvector.size=vsize
+				else
+					var/anglediff=idealangle-curangle
+					if((anglediff>0 && anglediff<=180)||(anglediff<0 && anglediff<-180))
+						stepvector.Turn(-10)
+					else
+						stepvector.Turn(10)
+				m=new/matrix()
+				if(K.rotate)
+					m.TurnWithPivot(vector2angle(stepvector),K.bound_width/2,0)
+					K.transform=m
+
+
 
 		K.Move(K.pixloc+stepvector-offsetchg)
+		if(K.carryowner)
+			K.owner.Move(K.pixloc+stepvector-offsetchg)
 		for(var/mob/Hit in K?.hitmobs)
-			if(Hit.invulnerable || Hit==src||(Hit in hitlist))continue
+			if(Hit.invulnerable || Hit==src||(Hit in hitlist))
+				if(K.repeathit)
+					K.repeathit=0
+					var/hom=K.homing
+					K.homing=0
+					spawn(5)
+						K.repeathit=1
+						K.homing=hom
+						hitlist-=Hit
+						K.hitmobs-=Hit
+				continue
 			Hit.CheckCanMove()
 			hitlist|=Hit
 			Hit.icon_state=""
 			if(K.explode)
 				K.explode=0
 				K.Explode()
-			spawn()Hit.Damage(K.power*PLcompare(src,Hit),K.impact,0,src)
+			spawn()
+				Hit.Damage(K.power*PLcompare(src,Hit),K.impact,0,src)
+				world<<"Damage from [K] is [K.power*PLcompare(src,Hit)]"
 		sleep(world.tick_lag)
 		if(turnd)
 			stepvector.Turn(-correctpace)
@@ -196,6 +242,9 @@ obj/Kiblast
 		explode=0
 		charge=0
 		passthroughobjs=0
+		homing=0
+		repeathit=0
+		carryowner=0
 
 	Spiritbomb
 		icon='spiritbomb.dmi'
@@ -249,6 +298,41 @@ obj/Kiblast
 		Explode()
 			src.icon=null
 			..()
+	Spiritball
+		icon='spiritball.dmi'
+		layer=MOB_LAYER
+		bound_width=64
+		bound_height=42
+		bound_x=0
+		density=1
+		spread=0
+		distance=1000
+		speed=12
+		power=20
+		impact=0
+		pierce=1
+		homing=1
+		repeathit=1
+		Bump(atom/A)
+			if(istype(A,/obj)&&A:destructible)
+				A:Destroy_Landscape()
+			..()
+		Explode()
+			src.icon=null
+			Explosion(/obj/FX/Explosion,bound_pixloc(src,0),0,0.5,0.5)
+			..()
+	WFF
+		icon='wolffangfist.dmi'
+		alpha=150
+		layer=MOB_LAYER+1
+		bound_width=96
+		bound_height=64
+		distance=400
+		speed=12
+		power=40
+		carryowner=1
+		pierce=1
+
 	Basic
 		icon='kiblast.dmi'
 		bound_width=19
@@ -362,6 +446,34 @@ Skill
 					S.bound_x*=1.05
 					S.bound_y*=1.05
 					S.pixloc=S.pixloc+vector(0,2)
+	Spiritball
+		ctime=3
+		kicost=50
+		Use(mob/user,time)
+			user.icon_state="blast2"
+			src.channel=0
+			var/obj/Kiblast/Spiritbomb/S
+			if(!user.holdskill)S=new/obj/Kiblast/Spiritball
+			else
+				S=user.holdskill
+			user.Energy_Blast(time,S,vector(0,0))
+			sleep(5)
+			if(user.icon_state=="blast2")user.icon_state=""
+
+	Wolffangfist
+		ctime=3
+		kicost=40
+		Use(mob/user,time)
+			animate(user,icon_state="punch1",flags=ANIMATION_PARALLEL,time=2)
+			animate(user,icon_state="punch2",flags=ANIMATION_PARALLEL,delay=1,time=2)
+			animate(user,icon_state="punch1",flags=ANIMATION_PARALLEL,delay=2,time=3)
+			animate(user,icon_state="punch2",flags=ANIMATION_PARALLEL,delay=3,time=4)
+			animate(user,icon_state="punch1",flags=ANIMATION_PARALLEL,delay=4,time=5)
+			animate(user,icon_state="punch2",flags=ANIMATION_PARALLEL,delay=5,time=6)
+			user.Energy_Blast(time,new/obj/Kiblast/WFF)
+
+
+
 
 	Kiblast
 		kicost=5
