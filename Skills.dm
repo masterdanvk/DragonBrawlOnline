@@ -72,9 +72,11 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset)
 		return
 	stepvector.size=K.speed
 	var/angle=vector2angle(aimvector)
+	if(K.carryowner)
+		src.RotateMob(stepvector,100)
 	var/matrix/m=new/matrix()
 	if(K.rotate)
-		m.TurnWithPivot(angle,K.bound_width/2,0)
+		m.TurnWithPivot(angle,K.bound_width/2,0,K.axisflip)
 		K.transform=m
 	K.pixloc=bound_pixloc(src,0)+stepvector+offset
 	K.stepv=stepvector
@@ -134,7 +136,7 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset)
 						stepvector.Turn(10)
 				m=new/matrix()
 				if(K.rotate)
-					m.TurnWithPivot(vector2angle(stepvector),K.bound_width/2,0)
+					m.TurnWithPivot(vector2angle(stepvector),K.bound_width/2,0,K.axisflip)
 					K.transform=m
 
 
@@ -162,6 +164,9 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset)
 				K.Explode()
 			spawn()
 				Hit.Damage(K.power*PLcompare(src,Hit),K.impact,0,src)
+				Hit.icon_state="hurt1"
+				spawn(5)
+					if(Hit.icon_state=="hurt1")Hit.icon_state=""
 				world<<"Damage from [K] is [K.power*PLcompare(src,Hit)]"
 		sleep(world.tick_lag)
 		if(turnd)
@@ -170,7 +175,7 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset)
 			angle=vector2angle(stepvector)
 			m=new/matrix()
 			if(K.rotate)
-				m.TurnWithPivot(angle,K.bound_width/2,0)
+				m.TurnWithPivot(angle,K.bound_width/2,0,K.axisflip)
 				K.transform=m
 	K.Explode()
 	var/list/hits=K.hitmobs
@@ -178,7 +183,10 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset)
 		if(Hit.invulnerable || Hit==src||(Hit in hitlist))continue
 		Hit.CheckCanMove()
 		hitlist|=Hit
-		Hit.icon_state=""
+		Hit.icon_state="hurt1"
+		spawn(5)
+			if(Hit.icon_state=="hurt1")
+				Hit.icon_state=""
 		spawn()Hit.Damage(K.power*PLcompare(src,Hit),K.impact,0,src)
 	sleep(world.tick_lag)
 	if(K)K.loc=null
@@ -245,6 +253,7 @@ obj/Kiblast
 		homing=0
 		repeathit=0
 		carryowner=0
+		axisflip=0
 
 	Spiritbomb
 		icon='spiritbomb.dmi'
@@ -332,6 +341,22 @@ obj/Kiblast
 		power=40
 		carryowner=1
 		pierce=1
+		axisflip=1
+	Dragonfist
+		icon='dragonfist.dmi'
+		alpha=150
+		layer=MOB_LAYER+1
+		bound_width=283
+		bound_height=101
+		bound_x=50
+		//bound_y=65
+		pixel_z=-65
+		distance=500
+		speed=12
+		power=65
+		carryowner=1
+		pierce=1
+		axisflip=1
 
 	Basic
 		icon='kiblast.dmi'
@@ -472,6 +497,13 @@ Skill
 			animate(user,icon_state="punch2",flags=ANIMATION_PARALLEL,delay=5,time=6)
 			user.Energy_Blast(time,new/obj/Kiblast/WFF)
 
+
+	Dragonfist
+		ctime=3
+		kicost=80
+		Use(mob/user,time)
+			animate(user,icon_state="punch2",flags=ANIMATION_PARALLEL,time=2)
+			user.Energy_Blast(time,new/obj/Kiblast/Dragonfist,vector(0,-96))
 
 
 

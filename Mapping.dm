@@ -1,6 +1,52 @@
 obj
 	var
 		destructible=0
+	Rock
+		density=1
+		destructible=1
+		Destroy_Landscape()
+			if(destructible)
+				altered_objects|=src
+				Explosion(/obj/FX/Explosion,bound_pixloc(src,0))
+				src.density=0
+				animate(src,alpha=0,time=5)
+				spawn(5)
+					if(src.loc)src.old_loc=src.loc
+					src.loc=null
+					src.alpha=255
+					src.density=1
+		Rock1
+			icon='props2x2.dmi'
+			icon_state="rock"
+			bound_width=64
+			bound_height=64
+		Rock2
+			icon='props2x2.dmi'
+			icon_state="rock2"
+			bound_width=64
+			bound_height=64
+		Rock3
+			icon='props1x2.dmi'
+			icon_state="rock"
+			bound_width=32
+			bound_height=64
+		Rock4
+			icon='props1x2.dmi'
+			icon_state="rock2"
+			bound_width=32
+			bound_height=64
+		Rock5
+			icon='props1x2.dmi'
+			icon_state="rock3"
+			bound_width=32
+			bound_height=64
+		Rock6
+			icon='props1x2.dmi'
+			icon_state="rock4"
+			bound_width=32
+			bound_height=32
+			bound_y=32
+
 	Tree
 		icon='tree.dmi'
 		density=1

@@ -155,7 +155,7 @@ client/proc/SelectingInput(button)
 		src.Pick_Mob()
 
 client/proc/Pick_Mob()
-	if(!src.select)return
+	if(!src.select||src.busy)return
 	src.mob=src.select
 	src.mob.selecting=0
 	src.mob.loc=locate(rand(10,90),rand(10,90),1)
@@ -171,7 +171,9 @@ client/proc/Pick_Mob()
 
 client/var/busy=0
 client/proc/Pick_Next()
+
 	if(busy)return
+	src.select=null
 	busy=1
 	var/picknum=src.mobselect.len
 	for(var/i=1 to 5)
@@ -191,7 +193,9 @@ client/proc/Pick_Next()
 
 
 client/proc/Pick_Previous()
+
 	if(busy)return
+	src.select=null
 	busy=1
 	var/picknum=src.mobselect.len
 	for(var/i=1 to 5)
@@ -552,6 +556,111 @@ mob/verb/give_mobs_blocks()
 		if(!M.client)
 			M.autoblocks+=5
 
+
+turf_overlays
+	parent_type=/obj
+	New()
+		..()
+		spawn(-1)
+			var/turf/T=src.loc
+			T.overlays+=src.appearance
+			src.loc=null
+	flowers
+		icon='props1x1.dmi'
+		flower1
+			icon_state="flower1"
+		flower2
+			icon_state="flower2"
+		flower3
+			icon_state="flower3"
+		flower4
+			icon_state="flower4"
+		flower5
+			icon_state="flower5"
+		flower6
+			icon_state="flower6"
+		flower7
+			icon_state="flower7"
+		flower8
+			icon_state="flower8"
+		flower9
+			icon_state="flower9"
+		flower10
+			icon_state="flower10"
+		flower11
+			icon_state="flower11"
+		flower12
+			icon_state="flower12"
+	rocks
+		icon='props1x1.dmi'
+		rock1
+			icon_state="rock"
+		rock2
+			icon_state="rock2"
+		rock3
+			icon_state="rock3"
+		rock4
+			icon_state="rock4"
+		rock5
+			icon_state="rock5"
+		rock6
+			icon_state="rock6"
+		rock7
+			icon_state="rock7"
+	grass
+		icon='props1x1.dmi'
+		grass1
+			icon_state="grass1"
+		grass2
+			icon_state="grass2"
+		grass3
+			icon_state="grass3"
+		grass4
+			icon_state="grass4"
+		grass5
+			icon_state="grass5"
+		grass6
+			icon_state="grass6"
+		grass7
+			icon_state="grass7"
+		grass8
+			icon_state="grass8"
+	leaf
+		icon='props1x1.dmi'
+		leaf1
+			icon_state="leaf1"
+		leaf2
+			icon_state="leaf2"
+		leaf3
+			icon_state="leaf3"
+		leaf4
+			icon_state="leaf4"
+		leaf5
+			icon_state="leaf5"
+		leaf6
+			icon_state="leaf6"
+		leaf7
+			icon_state="leaf7"
+	shrub
+		icon='props1x1.dmi'
+		icon_state="shrub"
+	mushroom
+		icon='props1x1.dmi'
+		mushroom1
+			icon_state="mush1"
+		mushroom2
+			icon_state="mush2"
+		mushroom3
+			icon_state="mush3"
+	bramble
+		icon='props1x1.dmi'
+		bramble1
+			icon_state="bramble1"
+		bramble2
+			icon_state="bramble2"
+		bramble3
+			icon_state="bramble3"
+
 turf
 	icon='turf.dmi'
 	bouncy=2
@@ -610,7 +719,7 @@ mob/proc
 		if(src.holdskill)
 			src.holdskill:loc=null
 			src.holdskill=null
-		src.client.keydown=new/alist()
+		if(src.client)src.client.keydown=new/alist()
 
 		sleep(20)
 		animate(src,alpha=0,time=30)
