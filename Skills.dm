@@ -445,6 +445,11 @@ Skill
 		kicost=50
 		Use(mob/user,time)
 			user.FireBeam(time,500,new/Beam/Masenko)
+	Dondonpa
+		ctime=3
+		kicost=40
+		Use(mob/user,time)
+			user.FireBeam(time,500,new/Beam/Dondonpa)
 	Tribeam
 		ctime=3
 		kicost=60

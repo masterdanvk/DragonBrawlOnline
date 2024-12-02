@@ -235,6 +235,20 @@ matrix
 //M.TurnWithPivot(-R,src.bound_width/2,0)
 obj/var/Beam/BeamParent
 Beam
+	Dondonpa
+		power=30
+		New()
+			..()
+			src.base=new/obj/Beam/Dondonpa/Base
+			src.head=new/obj/Beam/Dondonpa/Head
+			src.beam=new/obj/Beam/Dondonpa/Beam
+			src.base.BeamParent=src
+			src.head.BeamParent=src
+			src.beam.BeamParent=src
+			parts=new/list
+			parts+=src.base
+			parts+=src.head
+			parts+=src.beam
 	Masenko
 		power=38
 		New()
@@ -441,7 +455,26 @@ obj/Beam
 			icon='beam.dmi'
 			bound_width=8
 			pixel_z=-16
+	Dondonpa
+		icon='dondonpa.dmi'
+		Base
+			icon_state="start"
+			layer=OBJ_LAYER+0.1
+			bound_width=64
+			pixel_z=-16
+		Head
+			icon_state="head"
+			layer=MOB_LAYER+0.2
+			bound_width=64
+			pixel_z=-16
+			density=1
+			head=1
 
+		Beam
+			icon_state="dondonpa"
+			icon='beam.dmi'
+			bound_width=8
+			pixel_z=-16
 	Kamehameha
 		icon='kamehameha.dmi'
 		Base

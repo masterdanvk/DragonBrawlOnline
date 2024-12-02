@@ -2,7 +2,7 @@
 /*
 MAP_PLANE_MASTERS: 
 MAP_ZOOM: 1.500
-LAST_COMPILE_TIME: 1733097272
+LAST_COMPILE_TIME: 1733105649
 PACKAGE_RSC_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\AnimeGame_rsc.zip
 DIR: ter gui bar demo tileset Lib 
 AUTO_FILE_DIR: ON
@@ -13,7 +13,7 @@ LAST_COMPILE_VERSION: 516.1647
 PACKAGE_DME_START: 
 PACKAGE_TYPE: 1
 PACKAGE_DME_INFO: 
-WINDOW: Base.dm;Procs.dm;FX.dm;Mapping.dm;Skills.dm;spiritbomb.dmi;Beams.dm;Turfs.dm;goku_ssj.dmi;goku.dmi;ter gui bar demo\test.dm;ter gui bar demo\UIbars.dm;ter gui bar demo\bartest.dmi;gui.dm;gui_ki.dmi;interface.dmf;gui_counter.dmi;gui_block.dmi
+WINDOW: Base.dm;Procs.dm;FX.dm;Mapping.dm;Skills.dm;spiritbomb.dmi;Beams.dm;Turfs.dm;goku_ssj.dmi;ter gui bar demo\test.dm;ter gui bar demo\UIbars.dm;ter gui bar demo\bartest.dmi;gui.dm;gui_ki.dmi;interface.dmf;gui_counter.dmi;gui_block.dmi;chaotzu.dmi;dondonpa.dmi;beam.dmi
 FILE: Base.dm
 MAP_INSTANCE_MODE: copy
 PACKAGE_DME_DEMO: 

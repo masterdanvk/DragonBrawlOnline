@@ -98,7 +98,8 @@ var/alist/playerselection=new/alist(
 	Gohan=/mob/gohan,
 	Tien=/mob/tien,
 	Krillin=/mob/krillin,
-	Yamcha=/mob/yamcha)
+	Yamcha=/mob/yamcha,
+	Chaiotzu=/mob/chaotzu)
 
 mob/verb/ChangePlayer()
 	src.Die()
@@ -341,6 +342,11 @@ mob/proc/Create_Aura(color)
 		if("Yellow")
 			O.alpha=50
 			col=rgb(225,210,30)
+		if("Lightgreen")
+			O.alpha=50
+			U.alpha=150
+			col=rgb(100,180,130)
+
 		if("Purple")
 			O.alpha=50
 			col=rgb(222,132,255)
@@ -500,6 +506,19 @@ mob
 			..()
 			src.Create_Aura("White")
 			src.skills=list(new/Skill/Spiritball,new/Skill/Wolffangfist)
+			src.equippedskill=src.skills[1]
+	chaotzu
+		icon='chaotzu.dmi'
+		bound_x=20
+		bound_y=10
+		bound_width=18
+		bound_height=20
+		pl=9000
+		special=/Beam/Dondonpa
+		New()
+			..()
+			src.Create_Aura("Lightgreen")
+			src.skills=list(new/Skill/Dondonpa,new/Skill/Spiritball)
 			src.equippedskill=src.skills[1]
 
 	var
