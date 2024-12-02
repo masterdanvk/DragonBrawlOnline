@@ -340,7 +340,7 @@ mob/proc/Create_Aura(color)
 			col=rgb(160,160,160)
 		if("Yellow")
 			O.alpha=50
-			col=rgb(255,240,40)
+			col=rgb(225,210,30)
 		if("Purple")
 			O.alpha=50
 			col=rgb(222,132,255)
@@ -412,7 +412,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("Blue")
-			src.skills=list(new/Skill/Galekgun)
+			src.skills=list(new/Skill/Galekgun,new/Skill/Bigbangattack)
 			src.equippedskill=src.skills[1]
 		Transform()
 			if(!form)
@@ -541,6 +541,7 @@ mob
 		blocks=21
 		maxblocks=21
 		hpregen=5
+		maxautoblocks=2
 
 	step_size = 8
 
@@ -1048,10 +1049,13 @@ client/proc/GamePad2Key(button, keydown)
 				src.keydownverb(b)
 			else if(src.keydown[b])
 				src.keyupverb(b)
-
+client/var/dashkey
+client/var/lasttapped[2]
 client/verb/keydownverb(button as text)
 	set instant=1
 	set hidden = 1
+
+
 	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
 		src.GamePad2Key(button,1)
 		return
@@ -1065,11 +1069,15 @@ client/verb/keydownverb(button as text)
 	if(src.keydown["D"]&&button=="S")
 		M.Transform()
 		return
+	var/tapbetween
+	if(src.lasttapped[1]==button)
+		tapbetween=world.time-src.lasttapped[2]
+
 	src.keydown[button]=world.time
 	var/starttime=world.time
 
-
-
+	src.lasttapped[1]=button
+	src.lasttapped[2]=world.time
 	if((src.keydown["F"]||(src.keydown["D"]&&src.keydown["North"]))&&world.time>M.chargecd) //charge
 		if(!M.charging&&!M.aiming)
 			if(M.block)
@@ -1138,6 +1146,12 @@ client/verb/keydownverb(button as text)
 		src.movekeydown=1
 		if(!M.charging)
 			src.UpdateMoveVector()
+		if(tapbetween&&tapbetween<=2&&M.counters>=1) //doubletap!
+			src.dashkey=button
+			M.counters--
+			M.Update_Counters()
+			spawn(world.tick_lag)M.Charge()
+
 
 	if(M)activemobs|=M
 
@@ -1149,7 +1163,9 @@ client/verb/keyupverb(button as text)
 		return
 
 	var/mob/M=src.mob
-
+	if(button==src.dashkey)
+		M.Chargestop()
+		src.dashkey=null
 	if(M.selecting)
 		return
 	if(button=="Escape")
@@ -1218,6 +1234,96 @@ client/verb/keyupverb(button as text)
 			src.movekeydown=0
 	if(length(src.keydown)==0 && (!M.movevector || M.movevector.size<=1)) activemobs-=M
 
+mob/var/tmp
+	obj/dash
+	obj/dash2
+	dashing=0
+
+mob/proc
+	Charge()
+		if(!src.dashing)
+			var/mob/target
+			var/X=0
+			var/Y=0
+			if(src.dir==NORTH||src.dir==NORTHEAST||src.dir==NORTHWEST)Y=0.5
+			else if(src.dir==SOUTH||src.dir==SOUTHEAST||src.dir==SOUTHWEST)Y=-0.5
+			if(src.dir==WEST||src.dir==NORTHWEST||src.dir==SOUTHWEST)X=-1
+			else if(src.dir==EAST||src.dir==NORTHEAST||src.dir==SOUTHEAST)X=1
+
+			var/list/mobs=new/list
+			for(var/turf/T in block(src.x-8+X*7,src.y-8+Y*7,src.z,src.x+8+X*7,src.y+Y*7+8))
+				for(var/mob/M in T)
+					if(M!=src)mobs+=M
+			if(src.lastattacked in mobs)
+				target=src.lastattacked
+			else if(src.lastattackedby in mobs)
+				target=src.lastattackedby
+			else if(mobs.len)
+				target=pick(mobs)
+
+			if(!target)return
+
+
+			var/obj/A
+			var/obj/B
+
+			if(src.dash)
+				A=src.dash
+			else
+				A=new/obj
+			if(src.dash2)
+				B=src.dash2
+			else
+				B=new/obj
+			A.layer=MOB_LAYER+0.1
+			A.density=0
+			A.icon=aura.icon
+			A.icon_state="dash"
+			A.alpha=100
+			A.bound_width=80
+			A.bound_height=106
+			A.pixel_y=-26
+			A.pixel_w=-16
+			A.bound_x=20
+			A.bound_y=5
+			B.layer=OBJ_LAYER
+			B.density=0
+			B.icon=aura.icon
+			B.icon_state="dash"
+			B.alpha=180
+			B.bound_width=80
+			B.bound_height=106
+			B.pixel_y=-26
+			B.pixel_w=-16
+			B.bound_x=20
+			B.bound_y=5
+			src.dash=A
+			src.dash2=B
+			src.dashing=1
+			src.vis_contents+=src.dash
+			src.vis_contents+=src.dash2
+			src.icon_state="dash2"
+			var/oldstep=src.step_size
+			var/i=0
+			while(src.dashing && src.ki>1)
+				i++
+				if(i>=5)
+					src.Take_Ki(1)
+					i=0
+				var/vector/stepvector=target.pixloc-src.pixloc
+				src.step_size=src.maxspeed
+				stepvector.size=src.step_size
+				Move(src.pixloc+stepvector)
+				sleep(world.tick_lag)
+			src.step_size=oldstep
+			if(src.icon_state=="dash2")src.icon_state=""
+
+
+
+	Chargestop()
+		src.vis_contents-=src.dash
+		src.vis_contents-=src.dash2
+		src.dashing=0
 
 
 client/proc/ShowAim()
@@ -1477,7 +1583,7 @@ mob/proc/sendflying(vector/V,distance,rate)
 	src.movevector=vector(0,0)
 	src.rotation=0
 	src.RotateMob(vector(S.x,0),100)
-	src.autoblocks=5
+	src.autoblocks=src.maxautoblocks
 	src.tossed=0
 	src.CheckCanMove()
 	src.icon_state=""

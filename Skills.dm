@@ -163,10 +163,13 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset)
 				K.explode=0
 				K.Explode()
 			spawn()
-				Hit.Damage(K.power*PLcompare(src,Hit),K.impact,0,src)
-				Hit.icon_state="hurt1"
-				spawn(5)
-					if(Hit.icon_state=="hurt1")Hit.icon_state=""
+				if(Hit.block)
+					Hit.Damage(K.power*PLcompare(src,Hit)*(1-K.blockreduce/100),K.impact,0,src)
+				else
+					Hit.Damage(K.power*PLcompare(src,Hit),K.impact,0,src)
+					Hit.icon_state="hurt1"
+					spawn(5)
+						if(Hit.icon_state=="hurt1")Hit.icon_state=""
 				world<<"Damage from [K] is [K.power*PLcompare(src,Hit)]"
 		sleep(world.tick_lag)
 		if(turnd)
@@ -254,6 +257,8 @@ obj/Kiblast
 		repeathit=0
 		carryowner=0
 		axisflip=0
+		blockreduce=50
+
 
 	Spiritbomb
 		icon='spiritbomb.dmi'
@@ -270,6 +275,7 @@ obj/Kiblast
 		impact=0
 		rotate=0
 		pierce=0
+		blockreduce=25
 
 		passthroughobjs=1
 		push=1
@@ -283,7 +289,6 @@ obj/Kiblast
 			destroy_turfs(bound_pixloc(src,0),max(40,16*(1+0.5*src.charge)))
 			for(var/mob/M in bound_pixloc(src,0),max(40,16*(1+0.5*src.charge)))
 				if(M!=src.owner)src.hitmobs|=M
-				world<<"M is [M] type [M.type]"
 				sleep(1)
 			..()
 	Destructodisc
@@ -300,6 +305,7 @@ obj/Kiblast
 		impact=0
 		rotate=0
 		pierce=1
+		blockreduce=0
 		Bump(atom/A)
 			if(istype(A,/obj)&&A:destructible)
 				A:Destroy_Landscape()
@@ -342,6 +348,8 @@ obj/Kiblast
 		carryowner=1
 		pierce=1
 		axisflip=1
+		blockreduce=65
+
 	Dragonfist
 		icon='dragonfist.dmi'
 		alpha=150
@@ -357,6 +365,37 @@ obj/Kiblast
 		carryowner=1
 		pierce=1
 		axisflip=1
+		blockreduce=35
+
+	Bigbangattack
+		icon='bigbangattack.dmi'
+		layer=MOB_LAYER+1
+		bound_width=105
+		bound_height=106
+		bound_x=-52
+		bound_y=-53
+		pixel_z=-53
+		density=1
+		spread=0
+		distance=500
+		speed=8
+		power=40
+		impact=60
+		explode=0
+
+		Bump(atom/A)
+			if(istype(A,/mob) && !A:invulnerable)
+				src.hitmobs|=A
+
+		Explode()
+			src.icon=null
+			Explosion(/obj/FX/Explosion,bound_pixloc(src,0))
+			destroy_turfs(bound_pixloc(src,0),100)
+			for(var/mob/M in bound_pixloc(src,0),100)
+				if(M!=src.owner)src.hitmobs|=M
+
+				sleep(1)
+			..()
 
 	Basic
 		icon='kiblast.dmi'
@@ -506,6 +545,16 @@ Skill
 			user.Energy_Blast(time,new/obj/Kiblast/Dragonfist,vector(0,-96))
 
 
+	Bigbangattack
+		ctime=10
+		kicost=60
+		Use(mob/user,time)
+			user.icon_state="blast2"
+			src.channel=0
+			var/obj/Kiblast/Bigbangattack/S=new/obj/Kiblast/Bigbangattack
+			user.Energy_Blast(time,S,vector(0,0))
+			sleep(5)
+			if(user.icon_state=="blast2")user.icon_state=""
 
 	Kiblast
 		kicost=5

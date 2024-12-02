@@ -144,7 +144,11 @@ mob/proc/FireBeam(charge,maxdistance,Beam/B)
 			explode=0
 			Explosion(/obj/FX/Explosion,bound_pixloc(Hit,0))
 			destroy_turfs(bound_pixloc(Hit,0),70)
-		spawn()Hit.Damage(B.power*PLcompare(src,Hit),10,0,src)
+		spawn()
+			if(Hit.block)
+				Hit.Damage(B.power*PLcompare(src,Hit)*(1-B.blockreduce/100),10,0,src)
+			else
+				Hit.Damage(B.power*PLcompare(src,Hit),10,0,src)
 	sleep(world.tick_lag)
 	if(B)
 		for(var/obj/O in B.parts)
@@ -292,6 +296,7 @@ Beam
 		statebased=1
 		pierce=1
 		power=80
+		blockreduce=0
 		New()
 			..()
 			src.base=new/obj/Beam/SBC/Base
@@ -329,6 +334,7 @@ Beam
 		clashwins
 		statebased=0
 		pierce=0
+		blockreduce=25
 
 
 
