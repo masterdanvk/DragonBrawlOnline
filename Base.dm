@@ -1,5 +1,6 @@
 /*
-
+- Charge bar is in middle of screen not on the mob
+- Dense objects are being left on the map - not sure what they are
 
  */
 world
@@ -27,6 +28,8 @@ world
 	view = "20x15"		// show up to 6 tiles outward from center (13x13 view)
 	movement_mode=PIXEL_MOVEMENT_MODE
 
+client/perspective=EDGE_PERSPECTIVE
+
 client/verb/changeview(var/i as text)
 	src.view=i
 client/verb/Togglechat()
@@ -38,6 +41,135 @@ client/verb/Togglechat()
 		chatactive=1
 		winset(src,"output1","is-visible=1")
 		winset(src,"input1","is-visible=1")
+
+client/verb/Tournament(var/s in list("Accurate","Equal","Easy","Medium","Hard"))
+
+	src.mob.loc=locate(16,8,2)
+	src.mob.loc.loc.Entered(src.mob)
+	sleep(100)
+
+	switch(src.mob.type)
+		if(/mob/goku) src.mob.Set_PL(380)
+		if(/mob/chaotzu) src.mob.Set_PL(140)
+		if(/mob/yamcha) src.mob.Set_PL(150)
+		if(/mob/krillin) src.mob.Set_PL(200)
+		if(/mob/tien) src.mob.Set_PL(240)
+		if(/mob/piccolo) src.mob.Set_PL(375)
+		if(/mob/gohan) src.mob.Set_PL(1307)
+		if(/mob/vegeta)src.mob.Set_PL(18000)
+	if(s=="Easy")src.mob.Set_PL(1000)
+	if(s=="Medium")src.mob.Set_PL(380)
+	if(s=="Hard")src.mob.Set_PL(150)
+	if(s=="Equal")src.mob.Set_PL(9000)
+
+	var/mob/user=src.mob
+	var/mob/m
+	user.maxhp*=2
+	user.hp*=2
+
+	user.unlocked=new/alist()
+	if(!istype(user,/mob/chaotzu))
+		m=new/mob/chaotzu (locate(24,8,2))
+		m.maxhp*=2
+		m.hp*=2
+		if(s=="Equal") m.Set_PL(9000)
+		else m.Set_PL(140) // chaotzu 140, Yamcha 150, Krillin 200, Tien 240, Piccolo 375
+		sleep(20)
+		Awaken(m,user)
+		while(user&&!user.dead && !m.dead && user.z==m.z)
+			sleep(10)
+		if(!user||user.dead||user.z!=2)
+			m?.loc=null
+			src.edge_limit=null
+			return
+		sleep(100)
+	if(!istype(user,/mob/yamcha))
+		m=new/mob/yamcha(locate(24,8,2))
+		m.maxhp*=2
+		m.hp*=2
+		if(s=="Equal") m.Set_PL(9000)
+		else m.Set_PL(150)
+		Awaken(m,user)
+		while(user&&!user.dead && !m.dead && user.z==m.z)
+			sleep(10)
+		if(!user||user.dead||user.z!=2)
+			m?.loc=null
+			src.edge_limit=null
+			return
+		sleep(100)
+	if(!istype(user,/mob/krillin))
+		m=new/mob/krillin(locate(24,8,2))
+		m.maxhp*=2
+		m.hp*=2
+		if(s=="Equal") m.Set_PL(9000)
+		else m.Set_PL(200)
+		Awaken(m,user)
+		while(user&&!user.dead && !m.dead && user.z==m.z)
+			sleep(10)
+		if(!user||user.dead||user.z!=2)
+			m?.loc=null
+			src.edge_limit=null
+			return
+		sleep(100)
+	if(!istype(user,/mob/tien))
+		m=new/mob/tien(locate(24,8,2))
+		m.maxhp*=2
+		m.hp*=2
+		if(s=="Equal") m.Set_PL(9000)
+		else m.Set_PL(240)
+		Awaken(m,user)
+		while(user&&!user.dead && !m.dead && user.z==m.z)
+			sleep(10)
+		if(!user||user.dead||user.z!=2)
+			m?.loc=null
+			src.edge_limit=null
+			return
+		sleep(100)
+	if(!istype(user,/mob/piccolo))
+		m=new/mob/piccolo(locate(24,8,2))
+		m.maxhp*=2
+		m.hp*=2
+		if(s=="Equal") m.Set_PL(9000)
+		else m.Set_PL(375)
+		Awaken(m,user)
+		while(user&&!user.dead && !m.dead && user.z==m.z)
+			sleep(10)
+		if(!user||user.dead||user.z!=2)
+			m?.loc=null
+			src.edge_limit=null
+			return
+	if(!istype(user,/mob/goku))
+		m=new/mob/goku(locate(24,8,2))
+		m.maxhp*=2
+		m.hp*=2
+		if(s=="Equal") m.Set_PL(9000)
+		else m.Set_PL(375)
+		Awaken(m,user)
+		while(user&&!user.dead && !m.dead && user.z==m.z)
+			sleep(10)
+		if(!user||user.dead||user.z!=2)
+			m?.loc=null
+			src.edge_limit=null
+			return
+	world<<"[user] [user.appearance] beat the 23rd Budokai Tenkaichi Tournament!"
+	sleep(100)
+	user.loc=null
+	user.Die()
+	src.edge_limit=null
+
+proc/Awaken(mob/m,mob/opponent)
+	m.targetmob=opponent
+	m.CheckCanMove()
+	AI_Active+=m
+	m.Move(0)
+	m.movevector=vector(0,0)
+	m.rotation=0
+	m.RotateMob(vector(0,0),100)
+	m.autoblocks=m.maxautoblocks
+	m.tossed=0
+	m.icon_state=""
+
+
 
 
 client
@@ -359,6 +491,7 @@ mob/proc/Create_Aura(color)
 
 
 mob/var/skills[]
+mob/var/alist/unlocked[]
 
 
 mob
@@ -382,26 +515,29 @@ mob
 		bound_height=38
 		pl=9001
 		special=/Beam/Kamehameha
+		unlocked=alist("ssj"=1)
+		behaviors=list(10,10,40,10,30) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		Transform()
-			if(!form)
-				src.icon_state="transform"
-				sleep(6)
-				src.icon='goku_ssj.dmi'
-				src.form="SSJ"
-				src.icon_state=""
-				src.Set_PL(round(src.pl*4.2,1))
-				src.Create_Aura("Yellow")
+			if(src.unlocked["ssj"])
+				if(!form)
+					src.icon_state="transform"
+					sleep(6)
+					src.icon='goku_ssj.dmi'
+					src.form="SSJ"
+					src.icon_state=""
+					src.Set_PL(round(src.pl*4.2,1))
+					src.Create_Aura("Yellow")
 
 
-			else
-				src.icon_state="transform"
-				sleep(5)
-				src.icon_state=""
-				src.Set_PL(round(src.pl/4.2,1))
-				src.icon='goku.dmi'
-				src.form=null
-				src.Create_Aura("White")
-			..()
+				else
+					src.icon_state="transform"
+					sleep(5)
+					src.icon_state=""
+					src.Set_PL(round(src.pl/4.2,1))
+					src.icon='goku.dmi'
+					src.form=null
+					src.Create_Aura("White")
+				..()
 
 
 		New()
@@ -419,30 +555,33 @@ mob
 		bound_height=38
 		pl=9000
 		special=/Beam/Galekgun
+		unlocked=alist("ssj"=1)
+		behaviors=list(5,5,25,40,25) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		New()
 			..()
 			src.Create_Aura("Blue")
 			src.skills=list(new/Skill/Galekgun,new/Skill/Bigbangattack)
 			src.equippedskill=src.skills[1]
 		Transform()
-			if(!form)
-				src.icon_state="transform"
-				sleep(6)
-				src.icon='vegeta_ssj.dmi'
-				src.form="SSJ"
-				src.icon_state=""
-				src.Set_PL(round(src.pl*4.2,1))
-				src.Create_Aura("Yellow")
+			if(src.unlocked["ssj"])
+				if(!form)
+					src.icon_state="transform"
+					sleep(6)
+					src.icon='vegeta_ssj.dmi'
+					src.form="SSJ"
+					src.icon_state=""
+					src.Set_PL(round(src.pl*4.2,1))
+					src.Create_Aura("Yellow")
 
 
-			else
-				src.icon_state="transform"
-				sleep(5)
-				src.icon_state=""
-				src.Set_PL(round(src.pl/4.2,1))
-				src.icon='vegeta.dmi'
-				src.form=null
-				src.Create_Aura("Blue")
+				else
+					src.icon_state="transform"
+					sleep(5)
+					src.icon_state=""
+					src.Set_PL(round(src.pl/4.2,1))
+					src.icon='vegeta.dmi'
+					src.form=null
+					src.Create_Aura("Blue")
 			..()
 	piccolo
 		icon='piccolo.dmi'
@@ -452,6 +591,7 @@ mob
 		bound_height=38
 		pl=9000
 		special=/Beam/Specialbeamcannon
+		behaviors=list(5,25,25,20,25) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		New()
 			..()
 			src.Create_Aura("Purple")
@@ -466,6 +606,7 @@ mob
 		bound_height=28
 		pl=9000
 		special=/Beam/Masenko
+		behaviors=list(25,25,10,10,30) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		New()
 			..()
 			src.Create_Aura("White")
@@ -479,6 +620,7 @@ mob
 		bound_height=38
 		pl=9000
 		special=/Beam/Tribeam
+		behaviors=list(15,5,30,10,45) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		New()
 			..()
 			src.Create_Aura("White")
@@ -493,6 +635,7 @@ mob
 		bound_height=28
 		pl=9000
 		special=/Beam/Kamehameha
+		behaviors=list(15,25,30,5,25) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		New()
 			..()
 			src.Create_Aura("White")
@@ -506,6 +649,7 @@ mob
 		bound_height=38
 		pl=9000
 		special=/Beam/Kamehameha
+		behaviors=list(15,5,50,10,25) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		New()
 			..()
 			src.Create_Aura("White")
@@ -519,6 +663,7 @@ mob
 		bound_height=20
 		pl=9000
 		special=/Beam/Dondonpa
+		behaviors=list(10,10,3,27,50) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		New()
 			..()
 			src.Create_Aura("Lightgreen")
@@ -696,6 +841,23 @@ turf
 		density=1
 		bouncy=10
 		icon_state="bump"
+	dense
+		density=1
+		indestructible=1
+
+	budokai
+		indestructible=1
+		icon='tournament.png'
+		density=0
+area/arena
+	var/x1,x2,y1,y2
+	New()
+		..()
+
+	Entered(mob/M)
+		if(ismob(M) && M.client)
+			M.client.edge_limit = "[x1],[y1] to [x2],[y2]"
+			world<<"M client.edge_limit changed to [M.client.edge_limit]"
 
 mob/proc/Damage(damage,impact,critchance,mob/damager)
 

@@ -203,6 +203,7 @@ turf
 		tile_joins = 0
 		autotile = null
 		autotile_type
+		indestructible=0
 
 	proc
 		JoinUpdate()
@@ -371,6 +372,7 @@ client/verb/RestoreEarth()
 
 proc/destroy_turfs(pixloc/P,radius)
 	for(var/turf/T in bounds(P,radius))
+		if(T.indestructible)continue
 		var/vector/v=T.pixloc-P
 		if(v.size<=radius)
 			for(var/obj/O in T)

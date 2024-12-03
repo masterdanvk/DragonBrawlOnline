@@ -4,7 +4,7 @@ var/list/AI_Active=new/list()
 mob/var/tmp
 	posture=0 //0 is open/unassigned, 1 is gap closing, 2 is defensive, 3 is melee attacking, 4 is ki blasting / poking, 5 is trying to charge and position to use a special attack
 	posturetime
-	list/behaviors=list(5,10,50,10,25)
+	list/behaviors=list(5,10,50,10,25) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 
 var/AItick=0
 proc/AI_Loop()
@@ -31,6 +31,13 @@ proc/AI_Loop()
 			M.Face(M.targetmob)
 			switch(M.posture)
 				if(1)
+					if((world.time-M.posturetime)>=100 &&M.posture==1)
+						M.posture=0
+						M.canmove=1
+						M.aiming=0
+						M.usingskill=0
+						M.bouncing=0
+						M.block=0
 					if(M.counters>=1&&M.ki>M.maxki/2)
 						M.counters--
 						M.Update_Counters()
@@ -89,8 +96,21 @@ proc/AI_Loop()
 								sleep(1)
 								AI_Active|=M
 								if(prob(20))M.posture=0
-					if((world.time-M.posturetime)>=200 &&M.posture==2) M.posture=0
+					if((world.time-M.posturetime)>=200 &&M.posture==2)
+						M.posture=0
+						M.canmove=1
+						M.aiming=0
+						M.usingskill=0
+						M.bouncing=0
+						M.block=0
 				if(3)
+					if((world.time-M.posturetime)>=200 &&M.posture==3)
+						M.posture=0
+						M.canmove=1
+						M.aiming=0
+						M.usingskill=0
+						M.bouncing=0
+						M.block=0
 					AI_Active-=M
 					spawn()
 						M.AIMove(M.targetmob.pixloc,50)
@@ -99,6 +119,13 @@ proc/AI_Loop()
 						if(prob(15))M.posture=0
 				if(4)
 					var/vector/dist=M.targetmob.pixloc-M.pixloc
+					if((world.time-M.posturetime)>=100 &&M.posture==4)
+						M.posture=0
+						M.canmove=1
+						M.aiming=0
+						M.usingskill=0
+						M.bouncing=0
+						M.block=0
 					if(dist.size<=64)
 						AI_Active-=M
 						spawn()
@@ -115,6 +142,13 @@ proc/AI_Loop()
 							M.posture=2
 				if(5)
 					var/vector/dist=M.targetmob.pixloc-M.pixloc
+					if((world.time-M.posturetime)>=100 &&M.posture==5)
+						M.posture=0
+						M.canmove=1
+						M.aiming=0
+						M.usingskill=0
+						M.bouncing=0
+						M.block=0
 					if(dist.size<=100)
 						AI_Active-=M
 						spawn()
@@ -155,6 +189,8 @@ mob/proc/AIBlock()
 	src.movevector=vector(0,0)
 	sleep(10)
 	src.icon_state=""
+mob/Click()
+	src.Check_Vars()
 
 mob/proc/AIMove(pixloc/P,iterations=20)
 	var/i=0
