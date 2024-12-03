@@ -102,7 +102,9 @@ var/alist/playerselection=new/alist(
 	Piccolo=/mob/piccolo,
 	Gohan=/mob/gohan,
 	Tien=/mob/tien,
-	Krillin=/mob/krillin)
+	Krillin=/mob/krillin,
+	Yamcha=/mob/yamcha,
+	Chaiotzu=/mob/chaotzu)
 
 mob/verb/ChangePlayer()
 	src.Die()
@@ -145,9 +147,9 @@ client/proc/RingDisplay()
 		if(!mobselect[i])break
 		mobselect[i].displayvector=vector(0,-96)
 		mobselect[i].displayvector.Turn((i-1)*360/picknum)
-		var/xoffset=0+round(mobselect[i].displayvector.x,1)
-		if(xoffset>0)xoffset="+[xoffset*ovalness]"
-		else xoffset="-[abs(xoffset*ovalness)]"
+		var/xoffset=0+round(mobselect[i].displayvector.x*ovalness,1)
+		if(xoffset>0)xoffset="+[xoffset]"
+		else xoffset="-[abs(xoffset)]"
 		mobselect[i].screen_loc="CENTER:[xoffset],CENTER:+[round(96+mobselect[i].displayvector.y,1)]"
 		src.screen|=mobselect[i]
 
@@ -159,7 +161,7 @@ client/proc/SelectingInput(button)
 		src.Pick_Mob()
 
 client/proc/Pick_Mob()
-	if(!src.select)return
+	if(!src.select||src.busy)return
 	src.mob=src.select
 	src.mob.selecting=0
 	src.mob.loc=locate(rand(10,90),rand(10,90),1)
@@ -175,15 +177,17 @@ client/proc/Pick_Mob()
 
 client/var/busy=0
 client/proc/Pick_Next()
+
 	if(busy)return
+	src.select=null
 	busy=1
 	var/picknum=src.mobselect.len
 	for(var/i=1 to 5)
 		for(var/mob/M in src.mobselect)
 			M.displayvector.Turn((-360/picknum)/5)
-			var/xoffset=0+round(M.displayvector.x,1)
-			if(xoffset>0)xoffset="+[xoffset*ovalness]"
-			else xoffset="-[abs(xoffset*ovalness)]"
+			var/xoffset=0+round(M.displayvector.x*ovalness,1)
+			if(xoffset>0)xoffset="+[xoffset]"
+			else xoffset="-[abs(xoffset)]"
 			var/newscreenloc ="CENTER:[xoffset],CENTER:+[round(96+M.displayvector.y,1)]"
 			M.screen_loc=newscreenloc
 		sleep(1)
@@ -195,15 +199,17 @@ client/proc/Pick_Next()
 
 
 client/proc/Pick_Previous()
+
 	if(busy)return
+	src.select=null
 	busy=1
 	var/picknum=src.mobselect.len
 	for(var/i=1 to 5)
 		for(var/mob/M in src.mobselect)
 			M.displayvector.Turn((360/picknum)/5)
-			var/xoffset=0+round(M.displayvector.x,1)
-			if(xoffset>0)xoffset="+[xoffset*ovalness]"
-			else xoffset="-[abs(xoffset*ovalness)]"
+			var/xoffset=0+round(M.displayvector.x*ovalness,1)
+			if(xoffset>0)xoffset="+[xoffset]"
+			else xoffset="-[abs(xoffset)]"
 			var/newscreenloc ="CENTER:[xoffset],CENTER:+[round(96+M.displayvector.y,1)]"
 			M.screen_loc=newscreenloc
 		sleep(1)
@@ -340,7 +346,12 @@ mob/proc/Create_Aura(color)
 			col=rgb(160,160,160)
 		if("Yellow")
 			O.alpha=50
-			col=rgb(255,240,40)
+			col=rgb(225,210,30)
+		if("Lightgreen")
+			O.alpha=50
+			U.alpha=150
+			col=rgb(100,180,130)
+
 		if("Purple")
 			O.alpha=50
 			col=rgb(222,132,255)
@@ -412,7 +423,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("Blue")
-			src.skills=list(new/Skill/Galekgun)
+			src.skills=list(new/Skill/Galekgun,new/Skill/Bigbangattack)
 			src.equippedskill=src.skills[1]
 		Transform()
 			if(!form)
@@ -488,6 +499,32 @@ mob
 			src.Create_Aura("White")
 			src.skills=list(new/Skill/Destructodisc,new/Skill/Kamehameha)
 			src.equippedskill=src.skills[1]
+	yamcha
+		icon='yamcha.dmi'
+		bound_x=20
+		bound_y=2
+		bound_width=24
+		bound_height=38
+		pl=9000
+		special=/Beam/Kamehameha
+		New()
+			..()
+			src.Create_Aura("White")
+			src.skills=list(new/Skill/Spiritball,new/Skill/Wolffangfist)
+			src.equippedskill=src.skills[1]
+	chaotzu
+		icon='chaotzu.dmi'
+		bound_x=25
+		bound_y=10
+		bound_width=18
+		bound_height=20
+		pl=9000
+		special=/Beam/Dondonpa
+		New()
+			..()
+			src.Create_Aura("Lightgreen")
+			src.skills=list(new/Skill/Dondonpa,new/Skill/Spiritball)
+			src.equippedskill=src.skills[1]
 
 	var
 		maxhp=100
@@ -528,6 +565,7 @@ mob
 		blocks=21
 		maxblocks=21
 		hpregen=5
+		maxautoblocks=2
 
 	step_size = 8
 
@@ -542,6 +580,111 @@ mob/verb/give_mobs_blocks()
 	for(var/mob/M in world)
 		if(!M.client)
 			M.autoblocks+=5
+
+
+turf_overlays
+	parent_type=/obj
+	New()
+		..()
+		spawn(-1)
+			var/turf/T=src.loc
+			T.overlays+=src.appearance
+			src.loc=null
+	flowers
+		icon='props1x1.dmi'
+		flower1
+			icon_state="flower1"
+		flower2
+			icon_state="flower2"
+		flower3
+			icon_state="flower3"
+		flower4
+			icon_state="flower4"
+		flower5
+			icon_state="flower5"
+		flower6
+			icon_state="flower6"
+		flower7
+			icon_state="flower7"
+		flower8
+			icon_state="flower8"
+		flower9
+			icon_state="flower9"
+		flower10
+			icon_state="flower10"
+		flower11
+			icon_state="flower11"
+		flower12
+			icon_state="flower12"
+	rocks
+		icon='props1x1.dmi'
+		rock1
+			icon_state="rock"
+		rock2
+			icon_state="rock2"
+		rock3
+			icon_state="rock3"
+		rock4
+			icon_state="rock4"
+		rock5
+			icon_state="rock5"
+		rock6
+			icon_state="rock6"
+		rock7
+			icon_state="rock7"
+	grass
+		icon='props1x1.dmi'
+		grass1
+			icon_state="grass1"
+		grass2
+			icon_state="grass2"
+		grass3
+			icon_state="grass3"
+		grass4
+			icon_state="grass4"
+		grass5
+			icon_state="grass5"
+		grass6
+			icon_state="grass6"
+		grass7
+			icon_state="grass7"
+		grass8
+			icon_state="grass8"
+	leaf
+		icon='props1x1.dmi'
+		leaf1
+			icon_state="leaf1"
+		leaf2
+			icon_state="leaf2"
+		leaf3
+			icon_state="leaf3"
+		leaf4
+			icon_state="leaf4"
+		leaf5
+			icon_state="leaf5"
+		leaf6
+			icon_state="leaf6"
+		leaf7
+			icon_state="leaf7"
+	shrub
+		icon='props1x1.dmi'
+		icon_state="shrub"
+	mushroom
+		icon='props1x1.dmi'
+		mushroom1
+			icon_state="mush1"
+		mushroom2
+			icon_state="mush2"
+		mushroom3
+			icon_state="mush3"
+	bramble
+		icon='props1x1.dmi'
+		bramble1
+			icon_state="bramble1"
+		bramble2
+			icon_state="bramble2"
+		bramble3
+			icon_state="bramble3"
 
 turf
 	icon='turf.dmi'
@@ -598,6 +741,11 @@ mob/proc
 		src.Clear_target()
 		src.density=0
 		animate(src,transform=M,time=10)
+		if(src.holdskill)
+			src.holdskill:loc=null
+			src.holdskill=null
+		if(src.client)src.client.keydown=new/alist()
+
 		sleep(20)
 		animate(src,alpha=0,time=30)
 		sleep(100)
@@ -610,9 +758,11 @@ mob/proc
 
 
 mob/var/tmp/obj/hitbox
-mob/proc/Punch()
+mob/proc/Punch(mob/hit)
 	set waitfor = 0
+	world<<"src [src] hit [hit]"
 	if(!src.attacking)
+
 		src.attacking=1
 		var/dist=999
 		var/vector/gap
@@ -625,13 +775,16 @@ mob/proc/Punch()
 		src.Move(src.pixloc+aim,src.dir)
 		sleep(1)
 		aim.size=30
-		for(var/mob/M in bounds(bound_pixloc(src,src.dir)+aim,30))
+		if(hit) t=hit
+		else
+			for(var/mob/M in bounds(bound_pixloc(src,src.dir)+aim,30))
 
-			if(M.invulnerable||M==src)continue
-			gap=M.pixloc-src.pixloc
-			if(gap.size<dist && gap.size<=src.bound_width+30)
-				dist=gap.size
-				t=M
+				if(M.invulnerable||M==src)continue
+				gap=M.pixloc-src.pixloc
+				if(gap.size<dist && gap.size<=src.bound_width+30)
+					dist=gap.size
+					t=M
+		world<<"Punch [hit] / [t] "
 		src.canmove=0
 		var/blocked=0
 		if(t)
@@ -684,8 +837,9 @@ mob/proc/Punch()
 		if(src.client?.movekeydown) src.icon_state="dash2"
 		else src.icon_state=""
 
-mob/proc/Kick()
+mob/proc/Kick(mob/hit)
 	set waitfor = 0
+	world<<"src [src] hit [hit]"
 	if(!src.attacking)
 		src.attacking=1
 		var/dist=999
@@ -695,18 +849,21 @@ mob/proc/Kick()
 		var/counter=0
 		var/vector/aim= Dir2Vector(src.dir)
 		aim.size=30
+
 		src.Move(src.pixloc+aim,src.dir)
 		sleep(1)
-
-		for(var/mob/M in bounds(bound_pixloc(src,src.dir)+aim,40))
-			if(M.invulnerable||M==src)continue
-			gap=M.pixloc-src.pixloc
-			if(gap.size<dist && gap.size<=src.bound_width+40)
-				dist=gap.size
-				t=M
+		if(hit) t=hit
+		else
+			for(var/mob/M in bounds(bound_pixloc(src,src.dir)+aim,40))
+				if(M.invulnerable||M==src)continue
+				gap=M.pixloc-src.pixloc
+				if(gap.size<dist && gap.size<=src.bound_width+40)
+					dist=gap.size
+					t=M
 
 		src.canmove=0
 		var/blocked=0
+
 		if(t)
 			src.Face(t)
 			var/duration
@@ -925,10 +1082,17 @@ client/proc/GamePad2Key(button, keydown)
 				src.keydownverb(b)
 			else if(src.keydown[b])
 				src.keyupverb(b)
-
+client/var/dashkey
+client/var/lasttapped[2]
 client/verb/keydownverb(button as text)
 	set instant=1
 	set hidden = 1
+
+
+	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
+		src.GamePad2Key(button,1)
+		return
+
 	#warn keyboard integration here!
 
 	//if the user has a focus target, call onKeyDown() on the focus target.
@@ -936,11 +1100,6 @@ client/verb/keydownverb(button as text)
 	//the focus target can return a true value with some or no keys to allow this input to propagate.
 
 	if(focus_target && !focus_target.onKeyDown(button))
-		world.log << button
-		return
-
-	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
-		src.GamePad2Key(button,1)
 		return
 
 	var/mob/M=src.mob
@@ -952,11 +1111,15 @@ client/verb/keydownverb(button as text)
 	if(src.keydown["D"]&&button=="S")
 		M.Transform()
 		return
+	var/tapbetween
+	if(src.lasttapped[1]==button)
+		tapbetween=world.time-src.lasttapped[2]
+
 	src.keydown[button]=world.time
 	var/starttime=world.time
 
-
-
+	src.lasttapped[1]=button
+	src.lasttapped[2]=world.time
 	if((src.keydown["F"]||(src.keydown["D"]&&src.keydown["North"]))&&world.time>M.chargecd) //charge
 		if(!M.charging&&!M.aiming)
 			if(M.block)
@@ -1025,12 +1188,22 @@ client/verb/keydownverb(button as text)
 		src.movekeydown=1
 		if(!M.charging)
 			src.UpdateMoveVector()
+		if(tapbetween&&tapbetween<=2&&M.counters>=1) //doubletap!
+			src.dashkey=button
+			M.counters--
+			M.Update_Counters()
+			spawn(world.tick_lag)M.Charge()
+
 
 	if(M)activemobs|=M
 
 client/verb/keyupverb(button as text)
 	set hidden = 1
 	set instant=1
+	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
+		src.GamePad2Key(button,0)
+		return
+
 	#warn keyboard integration here!
 	//if the user has a focus target, call onKeyUp() on the focus target.
 	//if the object returns null or 0 (or doesn't return anything), stop this input from propagating further.
@@ -1038,12 +1211,10 @@ client/verb/keyupverb(button as text)
 	if(focus_target && !focus_target.onKeyUp(button))
 		return
 
-	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
-		src.GamePad2Key(button,0)
-		return
-
 	var/mob/M=src.mob
-
+	if(button==src.dashkey)
+		M.Chargestop()
+		src.dashkey=null
 	if(M.selecting)
 		return
 	if(button=="Escape")
@@ -1110,8 +1281,103 @@ client/verb/keyupverb(button as text)
 		src.UpdateMoveVector()
 		if(!(src.keydown["North"]||src.keydown["South"]||src.keydown["East"]||src.keydown["West"]||src.keydown["Northeast"]||src.keydown["Southeast"]||src.keydown["Northwest"]||src.keydown["Southwest"]))
 			src.movekeydown=0
+			if(M.dashing)
+				M.Chargestop()
+				src.dashkey=null
 	if(length(src.keydown)==0 && (!M.movevector || M.movevector.size<=1)) activemobs-=M
 
+mob/var/tmp
+	obj/dash
+	obj/dash2
+	dashing=0
+
+mob/proc
+	Charge()
+		if(!src.dashing)
+			var/mob/target
+			var/X=0
+			var/Y=0
+			if(src.dir==NORTH||src.dir==NORTHEAST||src.dir==NORTHWEST)Y=0.5
+			else if(src.dir==SOUTH||src.dir==SOUTHEAST||src.dir==SOUTHWEST)Y=-0.5
+			if(src.dir==WEST||src.dir==NORTHWEST||src.dir==SOUTHWEST)X=-1
+			else if(src.dir==EAST||src.dir==NORTHEAST||src.dir==SOUTHEAST)X=1
+
+			var/list/mobs=new/list
+			for(var/turf/T in block(src.x-8+X*7,src.y-8+Y*7,src.z,src.x+8+X*7,src.y+Y*7+8))
+				for(var/mob/M in T)
+					if(M!=src)mobs+=M
+			if(src.targetmob in mobs)
+				target=src.targetmob
+			else if(src.lastattacked in mobs)
+				target=src.lastattacked
+			else if(src.lastattackedby in mobs)
+				target=src.lastattackedby
+			else if(mobs.len)
+				target=pick(mobs)
+
+			if(!target)return
+
+
+			var/obj/A
+			var/obj/B
+
+			if(src.dash)
+				A=src.dash
+			else
+				A=new/obj
+			if(src.dash2)
+				B=src.dash2
+			else
+				B=new/obj
+			A.layer=MOB_LAYER+0.1
+			A.density=0
+			A.icon=aura.icon
+			A.icon_state="dash"
+			A.alpha=100
+			A.bound_width=80
+			A.bound_height=106
+			A.pixel_y=-26
+			A.pixel_w=-16
+			A.bound_x=20
+			A.bound_y=5
+			B.layer=OBJ_LAYER
+			B.density=0
+			B.icon=aura.icon
+			B.icon_state="dash"
+			B.alpha=180
+			B.bound_width=80
+			B.bound_height=106
+			B.pixel_y=-26
+			B.pixel_w=-16
+			B.bound_x=20
+			B.bound_y=5
+			src.dash=A
+			src.dash2=B
+			src.dashing=1
+			src.vis_contents+=src.dash
+			src.vis_contents+=src.dash2
+			src.icon_state="dash2"
+			var/oldstep=src.step_size
+			var/i=0
+			while(src.dashing && src.ki>1)
+				i++
+				if(i>=5)
+					src.Take_Ki(1)
+					i=0
+				var/vector/stepvector=target.pixloc-src.pixloc
+				src.step_size=src.maxspeed
+				stepvector.size=src.step_size
+				Move(src.pixloc+stepvector)
+				sleep(world.tick_lag)
+			src.step_size=oldstep
+			if(src.icon_state=="dash2")src.icon_state=""
+
+
+
+	Chargestop()
+		src.vis_contents-=src.dash
+		src.vis_contents-=src.dash2
+		src.dashing=0
 
 
 client/proc/ShowAim()
@@ -1165,7 +1431,6 @@ client/proc/HideAim()
 
 
 client/proc/UpdateMoveVector()
-
 
 	if(!movekeydown && (!src.mob.movevector || !src.mob.movevector.size))return
 	if(src.mob.usingskill)return
@@ -1290,6 +1555,7 @@ world/Tick()
 				if(M.counters<M.maxcounters)
 					M.counters++
 					M.Update_Counters()
+	AI_Loop()
 
 
 
@@ -1302,18 +1568,26 @@ mob
 			var/mob/M=o
 			var/vector/kbvector=vector(src.movevector)
 			kbvector+=(M.pixloc-src.pixloc)
-			if(src.client?.keydown["A"])
-				spawn()
-					if(!src.attacking)
-						var/duration=world.time-src.client?.keydown["A"]
-						if(duration>5)src.Kick()
-						else src.Punch()
-						src.client?.keydown["A"]=world.time
+			if(src.client)
+				if(src.client.keydown["A"])
+					spawn()
+						if(!src.attacking)
+							var/duration=world.time-src.client?.keydown["A"]
+							if(duration>5)src.Kick()
+							else src.Punch()
+							src.client?.keydown["A"]=world.time
 
 
+				else
+					if(M.canmove&&!M.tossed)M.Move(M.pixloc+kbvector.size=4)
+				return
 			else
-				if(M.canmove&&!M.tossed)M.Move(M.pixloc+kbvector.size=4)
-			return
+				if(src.posture)
+					var/duration=world.time-src.posturetime
+					if(duration>5)src.Kick()
+					else src.Punch()
+					src.posturetime=world.time
+
 		if(src.bouncing && src.canmove)src.bouncing=0
 		if(src.bouncing)return
 		else
@@ -1371,7 +1645,7 @@ mob/proc/sendflying(vector/V,distance,rate)
 	src.movevector=vector(0,0)
 	src.rotation=0
 	src.RotateMob(vector(S.x,0),100)
-	src.autoblocks=5
+	src.autoblocks=src.maxautoblocks
 	src.tossed=0
 	src.CheckCanMove()
 	src.icon_state=""
