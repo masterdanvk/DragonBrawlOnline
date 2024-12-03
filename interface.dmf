@@ -10,10 +10,12 @@ macro "macro"
 		command = "spawnmob"
 	elem 
 		name = "GamepadUp"
-		command = "None"
+		map-to = "None"
 	elem 
 		name = "GamepadLeftAnalog"
-		command = "GamepadDir"
+		map-to = "GamepadDir"
+	elem 
+		name = "Gamepad2Up"
 
 
 menu "menu"

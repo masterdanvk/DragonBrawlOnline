@@ -1030,51 +1030,23 @@ client
 client/proc/GamePad2Key(button, keydown)
 	var/b
 	switch(button)
-		if("GamepadFace1")b="D"
-		if("GamepadFace2")b="A"
-		if("GamepadFace3")b="F"
-		if("GamepadFace4")b="S"
+		if("GamepadFace1","Gamepad2Face1")b="D"
+		if("GamepadFace2","Gamepad2Face2")b="A"
+		if("GamepadFace3","Gamepad2Face3")b="F"
+		if("GamepadFace4","Gamepad2Face4")b="S"
 
-		if("GamepadL1")b="Q"
-		if("GamepadR1")b="W"
-		if("GamepadLeft")b="West"
-		if("GamepadRight")b="East"
-		if("GamepadUp")b="North"
-		if("GamepadDown")b="South"
-		if("GamepadSelect")b="Escape"
-		if("GamepadUpLeft")
-			if(keydown)
-				spawn()src.keydownverb("North")
-				spawn()src.keydownverb("West")
-			else
-				spawn()src.keyupverb("North")
-				spawn()src.keyupverb("West")
-			return
-		if("GamepadDownLeft")
-			if(keydown)
-				spawn()src.keydownverb("South")
-				spawn()src.keydownverb("West")
-			else
-				spawn()src.keyupverb("South")
-				spawn()src.keyupverb("West")
-			return
+		if("GamepadL1","Gamepad2L1")b="Q"
+		if("GamepadR1","Gamepad2R1")b="W"
+		if("GamepadLeft","Gamepad2Left")b="West"
+		if("GamepadRight","Gamepad2Right")b="East"
+		if("GamepadUp","Gamepad2Up")b="North"
+		if("GamepadDown","Gamepad2Down")b="South"
+		if("GamepadSelect","Gamepad2Select")b="Escape"
+		if("GamepadUpLeft","Gamepad2UpLeft")b="Northwest"
+		if("GamepadDownLeft","Gamepad2DownLeft")b="Southwest"
+		if("GamepadUpRight","Gamepad2UpRight")b="Northeast"
+		if("GamepadDownRight","Gamepad2DownRight")b="Southeast"
 
-		if("GamepadUpRight")
-			if(keydown)
-				spawn()src.keydownverb("North")
-				spawn()src.keydownverb("East")
-			else
-				spawn()src.keyupverb("North")
-				spawn()src.keyupverb("East")
-			return
-		if("GamepadDownRight")
-			if(keydown)
-				spawn()src.keydownverb("South")
-				spawn()src.keydownverb("East")
-			else
-				spawn()src.keyupverb("South")
-				spawn()src.keyupverb("East")
-			return
 	if(b)
 		spawn()
 			if(keydown)//&&!src.keydown[b])
@@ -1093,11 +1065,11 @@ client/verb/keydownverb(button as text)
 	//the focus target can return a true value with some or no keys to allow this input to propagate.
 
 	if(focus_target && !focus_target.onKeyDown(button))
-		world.log<<button
+	//	world.log<<button
 		return
-	world.log<<button
-	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
-
+//	world.log<<button
+	if(button=="GamepadSelect"||button=="Gamepad2Select"||button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadL2"||button=="GamepadR2"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight"||button=="Gamepad2Face1"||button=="Gamepad2Face2"||button=="Gamepad2Face3"||button=="Gamepad2Face4"||button=="Gamepad2L1"||button=="Gamepad2R1"||button=="Gamepad2L2"||button=="Gamepad2R2"||button=="Gamepad2Left"||button=="Gamepad2Right"||button=="Gamepad2Up"||button=="Gamepad2Down"||button=="Gamepad2UpLeft"||button=="Gamepad2DownLeft"||button=="Gamepad2UpRight"||button=="Gamepad2DownRight")
+	//	world<<"[button] passed to GamePad2Key"
 		src.GamePad2Key(button,1)
 		return
 	var/mob/M=src.mob
@@ -1106,6 +1078,8 @@ client/verb/keydownverb(button as text)
 		return
 	if(M.dead||M.icon_state=="transform")return
 	if(!src.keydown)src.keydown=new/alist()
+	if(src.keydown["P"])
+		src.SpawnAI()
 	if(src.keydown["D"]&&button=="S")
 		M.Transform()
 		return
@@ -1204,7 +1178,7 @@ client/verb/keyupverb(button as text)
 	//the focus target can return a true value with some or no keys to allow this input to propagate.
 	if(focus_target && !focus_target.onKeyUp(button))
 		return
-	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
+	if(button=="GamepadSelect"||button=="Gamepad2Select"||button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight"||button=="Gamepad2Face1"||button=="Gamepad2Face2"||button=="Gamepad2Face3"||button=="Gamepad2Face4"||button=="Gamepad2L1"||button=="Gamepad2R1"||button=="Gamepad2Left"||button=="Gamepad2Right"||button=="Gamepad2Up"||button=="Gamepad2Down"||button=="Gamepad2UpLeft"||button=="Gamepad2DownLeft"||button=="Gamepad2UpRight"||button=="Gamepad2DownRight")
 		src.GamePad2Key(button,0)
 		return
 	var/mob/M=src.mob
