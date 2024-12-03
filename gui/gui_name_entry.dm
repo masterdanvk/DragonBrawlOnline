@@ -123,10 +123,10 @@ obj/gui/name_entry
 				var/obj/gui/menu/name_entry/menu = vis_locs[1]
 
 				switch(button)
-					if("Back","Shift")
+					if("Back","Shift","GamepadFace2","GamepadR1")
 						menu.onKeyDown(button)
 
-					if("Return","Escape")
+					if("Return","Escape","GamepadStart","GamepadSelect","GamepadUp","GamepadDown","GamepadLeft","GamepadRight","GamepadUpLeft","GamepadUpRight","GamepadDownLeft","GamepadDownRight")
 						usr.client.GUIFocus(menu)
 						menu.onKeyDown(button)
 
@@ -140,7 +140,7 @@ obj/gui/name_entry
 				var/obj/gui/menu/name_entry/menu = vis_locs[1]
 
 				switch(button)
-					if("Back","Shift")
+					if("Back","Shift","GamepadFace2","GamepadR1")
 						menu.onKeyUp(button)
 
 		onFocus()
@@ -613,9 +613,10 @@ obj/gui/menu/name_entry
 					. |= WEST
 
 			if(.)
-				var/id = CursorButtonId()
-				if(id)
-					onButtonHover(id)
+				if(col >= panel.cols + 1)
+					cursor.row = row
+					cursor.col = col
+					onButtonHover(CursorButtonId())
 				else
 					onKeyHover(col,row)
 
@@ -662,6 +663,7 @@ obj/gui/menu/name_entry
 			if(usr.client.focus_target == vis_registry["input_bar"])
 				usr.client.GUIFocus(src)
 
+	//take focus from the input bar when clicking on the background
 	MouseDown()
 		RestoreFocus()
 
@@ -669,39 +671,42 @@ obj/gui/menu/name_entry
 	onKeyDown(button,lag=key_press_lag)
 		switch(button)
 			//non-repeating keys
-			if("Shift")
+			if("Shift","GamepadR1")
 				vis_registry["content_panel"]:setPage("upper")
 				vis_registry["shift_button"]:Hold()
 				lag = 1#INF
-			if("Escape")
+			if("Escape","GamepadSelect")
 				onButtonHover("clear_button")
 				lag = 1#INF
-			if("Return")
-				onButtonHover("done_button")
+			if("Return","GamepadStart")
+				if(CursorButtonId()=="done_button")
+					onButtonPress("done_button")
+				else
+					onButtonHover("done_button")
 				lag = 1#INF
-			if("Space")
+			if("Space","GamepadFace1")
 				onCursorPress()
 				lag = 1#INF
 
 			//repeating keys
-			if("Back")
+			if("Back","GamepadFace2")
 				onButtonPress("back_button")
 				vis_registry["back_button"]:Hold()
-			if("North")
+			if("North","GamepadUp")
 				MoveCursor(NORTH)
-			if("South")
+			if("South","GamepadDown")
 				MoveCursor(SOUTH)
-			if("East")
+			if("East","GamepadRight")
 				MoveCursor(EAST)
-			if("West")
+			if("West","GamepadLeft")
 				MoveCursor(WEST)
-			if("Northeast")
+			if("Northeast","GamepadUpRight")
 				MoveCursor(NORTHEAST)
-			if("Northwest")
+			if("Northwest","GamepadUpLeft")
 				MoveCursor(NORTHWEST)
-			if("Southeast")
+			if("Southeast","GamepadDownRight")
 				MoveCursor(SOUTHEAST)
-			if("Southwest")
+			if("Southwest","GamepadDownLeft")
 				MoveCursor(SOUTHWEST)
 
 			//unhandled keys
@@ -720,15 +725,16 @@ obj/gui/menu/name_entry
 	//called by the client when this input is focused and they release a key.
 	onKeyUp(button)
 		switch(button)
-			if("Shift")
+			if("Shift","GamepadR1")
 				vis_registry["content_panel"]:setPage("lower")
 				vis_registry["shift_button"]:Release()
 
-			if("Back")
+			if("Back","GamepadFace2")
 				vis_registry["back_button"]:Release()
 
 		repeating_keys -= button
 
+	//hide the cursor and stop repeating keys when losing focus
 	onBlur()
 		repeating_keys.len = 0
 		vis_registry["cursor"]:vis_flags |= VIS_HIDE

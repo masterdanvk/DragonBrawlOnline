@@ -1,16 +1,30 @@
 macro "macro"
 	elem 
+		name = "CTRL+A"
+		command = "SpawnAI"
+	elem 
 		name = "CTRL+B"
 		command = "firebeams"
 	elem 
 		name = "CTRL+M"
 		command = "spawnmob"
+	elem 
+		name = "GamepadUp"
+		command = "None"
+	elem 
+		name = "GamepadLeftAnalog"
+		command = "GamepadDir"
 
 
 menu "menu"
 	elem 
 		name = "&File"
 		command = ""
+		saved-params = "is-checked"
+	elem 
+		name = "SpawnAI"
+		command = "SpawnAI"
+		category = "&File"
 		saved-params = "is-checked"
 	elem 
 		name = "&Restore Earth"
@@ -61,11 +75,6 @@ window "default"
 		can-minimize = false
 		macro = "macro"
 		menu = "menu"
-		outer-size = 1296x779
-		outer-pos = 291,0
-		inner-size = 1280x720
-		inner-pos = 8,51
-		screen-size = 1920x1032
 	elem "map1"
 		type = MAP
 		pos = 0,0
