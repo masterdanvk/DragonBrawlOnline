@@ -1087,18 +1087,19 @@ client/verb/keydownverb(button as text)
 	set instant=1
 	set hidden = 1
 
+
 	//if the user has a focus target, call onKeyDown() on the focus target.
 	//if the object returns null or 0 (or doesn't return anything), stop this input from propagating further.
 	//the focus target can return a true value with some or no keys to allow this input to propagate.
 
 	if(focus_target && !focus_target.onKeyDown(button))
-		world.log << button
+		world.log<<button
 		return
-
+	world.log<<button
 	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
+
 		src.GamePad2Key(button,1)
 		return
-
 	var/mob/M=src.mob
 	if(M.selecting)
 		src.SelectingInput(button)
@@ -1198,7 +1199,6 @@ client/verb/keyupverb(button as text)
 	set hidden = 1
 	set instant=1
 
-
 	//if the user has a focus target, call onKeyUp() on the focus target.
 	//if the object returns null or 0 (or doesn't return anything), stop this input from propagating further.
 	//the focus target can return a true value with some or no keys to allow this input to propagate.
@@ -1207,7 +1207,6 @@ client/verb/keyupverb(button as text)
 	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
 		src.GamePad2Key(button,0)
 		return
-
 	var/mob/M=src.mob
 	if(button==src.dashkey)
 		M.Chargestop()

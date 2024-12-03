@@ -2,7 +2,7 @@
 /*
 MAP_PLANE_MASTERS: 
 MAP_ZOOM: 1.500
-LAST_COMPILE_TIME: 1733211000
+LAST_COMPILE_TIME: 1733211245
 DIR: gui tileset Lib 
 PACKAGE_RSC_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\AnimeGame_rsc.zip
 AUTO_FILE_DIR: ON
@@ -14,7 +14,7 @@ PACKAGE_TYPE: 1
 PACKAGE_DME_START: 
 WINDOW: Base.dm;gui\gui_name_entry.dm;gui\gui_menu.dm;AnimeGame.dme;AI.dm
 PACKAGE_DME_INFO: 
-FILE: AI.dm
+FILE: Base.dm
 MAP_INSTANCE_MODE: copy
 PACKAGE_DMB_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\AnimeGame.zip
 PACKAGE_DME_DEMO: 
