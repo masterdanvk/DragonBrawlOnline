@@ -1080,7 +1080,7 @@ client/var/lasttapped[2]
 client/verb/keydownverb(button as text)
 	set instant=1
 	set hidden = 1
-	#warn keyboard integration here!
+
 
 	//if the user has a focus target, call onKeyDown() on the focus target.
 	//if the object returns null or 0 (or doesn't return anything), stop this input from propagating further.
@@ -1192,7 +1192,7 @@ client/verb/keydownverb(button as text)
 client/verb/keyupverb(button as text)
 	set hidden = 1
 	set instant=1
-	#warn keyboard integration here!
+
 	//if the user has a focus target, call onKeyUp() on the focus target.
 	//if the object returns null or 0 (or doesn't return anything), stop this input from propagating further.
 	//the focus target can return a true value with some or no keys to allow this input to propagate.
