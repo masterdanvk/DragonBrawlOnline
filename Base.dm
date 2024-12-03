@@ -759,7 +759,6 @@ mob/proc
 mob/var/tmp/obj/hitbox
 mob/proc/Punch(mob/hit)
 	set waitfor = 0
-	world<<"src [src] hit [hit]"
 	if(!src.attacking)
 
 		src.attacking=1
@@ -783,7 +782,6 @@ mob/proc/Punch(mob/hit)
 				if(gap.size<dist && gap.size<=src.bound_width+30)
 					dist=gap.size
 					t=M
-		world<<"Punch [hit] / [t] "
 		src.canmove=0
 		var/blocked=0
 		if(t)
@@ -838,7 +836,6 @@ mob/proc/Punch(mob/hit)
 
 mob/proc/Kick(mob/hit)
 	set waitfor = 0
-	world<<"src [src] hit [hit]"
 	if(!src.attacking)
 		src.attacking=1
 		var/dist=999

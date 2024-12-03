@@ -12,7 +12,6 @@ proc/AI_Loop()
 	if(AItick>=5)
 		AItick=0
 		for(var/mob/M in AI_Active)
-			world<<"M [M] in AI_Active"
 			if(M.dead)
 				AI_Active-=M
 				continue
@@ -30,7 +29,6 @@ proc/AI_Loop()
 					prob(M.behaviors[5]);5)
 				M.posturetime=world.time
 			M.Face(M.targetmob)
-			world<<"[M] posture [M.posture]"
 			switch(M.posture)
 				if(1)
 					if(M.counters>=1&&M.ki>M.maxki/2)
@@ -127,7 +125,6 @@ proc/AI_Loop()
 					else
 
 						if(!M.equippedskill)M.equippedskill=M.skills[1]
-						world<<"M.equippedskill = [M.equippedskill]"
 						if(M.ki>(M.equippedskill.kicost))
 							AI_Active-=M
 							spawn()

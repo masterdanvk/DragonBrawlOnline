@@ -170,7 +170,7 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset)
 					Hit.icon_state="hurt1"
 					spawn(5)
 						if(Hit.icon_state=="hurt1")Hit.icon_state=""
-				world<<"Damage from [K] is [K.power*PLcompare(src,Hit)]"
+			//	world<<"Damage from [K] is [K.power*PLcompare(src,Hit)]"
 		sleep(world.tick_lag)
 		if(turnd)
 			stepvector.Turn(-correctpace)
