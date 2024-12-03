@@ -176,6 +176,7 @@ client/proc/Pick_Mob()
 
 client/var/busy=0
 client/proc/Pick_Next()
+
 	if(busy)return
 	src.select=null
 	busy=1
@@ -197,6 +198,7 @@ client/proc/Pick_Next()
 
 
 client/proc/Pick_Previous()
+
 	if(busy)return
 	src.select=null
 	busy=1
@@ -757,7 +759,9 @@ mob/proc
 mob/var/tmp/obj/hitbox
 mob/proc/Punch(mob/hit)
 	set waitfor = 0
+	world<<"src [src] hit [hit]"
 	if(!src.attacking)
+
 		src.attacking=1
 		var/dist=999
 		var/vector/gap
@@ -834,6 +838,7 @@ mob/proc/Punch(mob/hit)
 
 mob/proc/Kick(mob/hit)
 	set waitfor = 0
+	world<<"src [src] hit [hit]"
 	if(!src.attacking)
 		src.attacking=1
 		var/dist=999
@@ -843,6 +848,7 @@ mob/proc/Kick(mob/hit)
 		var/counter=0
 		var/vector/aim= Dir2Vector(src.dir)
 		aim.size=30
+
 		src.Move(src.pixloc+aim,src.dir)
 		sleep(1)
 		if(hit) t=hit
@@ -1081,7 +1087,6 @@ client/verb/keydownverb(button as text)
 	set instant=1
 	set hidden = 1
 
-
 	//if the user has a focus target, call onKeyDown() on the focus target.
 	//if the object returns null or 0 (or doesn't return anything), stop this input from propagating further.
 	//the focus target can return a true value with some or no keys to allow this input to propagate.
@@ -1193,12 +1198,12 @@ client/verb/keyupverb(button as text)
 	set hidden = 1
 	set instant=1
 
+
 	//if the user has a focus target, call onKeyUp() on the focus target.
 	//if the object returns null or 0 (or doesn't return anything), stop this input from propagating further.
 	//the focus target can return a true value with some or no keys to allow this input to propagate.
 	if(focus_target && !focus_target.onKeyUp(button))
 		return
-
 	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
 		src.GamePad2Key(button,0)
 		return
@@ -1423,7 +1428,6 @@ client/proc/HideAim()
 
 
 client/proc/UpdateMoveVector()
-
 
 	if(!movekeydown && (!src.mob.movevector || !src.mob.movevector.size))return
 	if(src.mob.usingskill)return
