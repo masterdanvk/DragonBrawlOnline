@@ -929,10 +929,6 @@ client/proc/GamePad2Key(button, keydown)
 client/verb/keydownverb(button as text)
 	set instant=1
 	set hidden = 1
-	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
-		src.GamePad2Key(button,1)
-		return
-
 	#warn keyboard integration here!
 
 	//if the user has a focus target, call onKeyDown() on the focus target.
@@ -940,6 +936,11 @@ client/verb/keydownverb(button as text)
 	//the focus target can return a true value with some or no keys to allow this input to propagate.
 
 	if(focus_target && !focus_target.onKeyDown(button))
+		world.log << button
+		return
+
+	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
+		src.GamePad2Key(button,1)
 		return
 
 	var/mob/M=src.mob
@@ -1030,15 +1031,15 @@ client/verb/keydownverb(button as text)
 client/verb/keyupverb(button as text)
 	set hidden = 1
 	set instant=1
-	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
-		src.GamePad2Key(button,0)
-		return
-
 	#warn keyboard integration here!
 	//if the user has a focus target, call onKeyUp() on the focus target.
 	//if the object returns null or 0 (or doesn't return anything), stop this input from propagating further.
 	//the focus target can return a true value with some or no keys to allow this input to propagate.
 	if(focus_target && !focus_target.onKeyUp(button))
+		return
+
+	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
+		src.GamePad2Key(button,0)
 		return
 
 	var/mob/M=src.mob
