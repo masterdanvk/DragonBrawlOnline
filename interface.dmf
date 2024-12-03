@@ -14,12 +14,6 @@ macro "macro"
 	elem 
 		name = "GamepadLeftAnalog"
 		command = "GamepadDir"
-	elem 
-		name = "Gamepad2Up"
-		command = "None"
-	elem 
-		name = "Gamepad2LeftAnalog"
-		command = "GamepadDir"
 
 
 menu "menu"
