@@ -514,7 +514,7 @@ mob
 			src.equippedskill=src.skills[1]
 	chaotzu
 		icon='chaotzu.dmi'
-		bound_x=20
+		bound_x=25
 		bound_y=10
 		bound_width=18
 		bound_height=20
@@ -758,9 +758,11 @@ mob/proc
 
 
 mob/var/tmp/obj/hitbox
-mob/proc/Punch()
+mob/proc/Punch(mob/hit)
 	set waitfor = 0
+	world<<"src [src] hit [hit]"
 	if(!src.attacking)
+
 		src.attacking=1
 		var/dist=999
 		var/vector/gap
@@ -773,13 +775,16 @@ mob/proc/Punch()
 		src.Move(src.pixloc+aim,src.dir)
 		sleep(1)
 		aim.size=30
-		for(var/mob/M in bounds(bound_pixloc(src,src.dir)+aim,30))
+		if(hit) t=hit
+		else
+			for(var/mob/M in bounds(bound_pixloc(src,src.dir)+aim,30))
 
-			if(M.invulnerable||M==src)continue
-			gap=M.pixloc-src.pixloc
-			if(gap.size<dist && gap.size<=src.bound_width+30)
-				dist=gap.size
-				t=M
+				if(M.invulnerable||M==src)continue
+				gap=M.pixloc-src.pixloc
+				if(gap.size<dist && gap.size<=src.bound_width+30)
+					dist=gap.size
+					t=M
+		world<<"Punch [hit] / [t] "
 		src.canmove=0
 		var/blocked=0
 		if(t)
@@ -832,8 +837,9 @@ mob/proc/Punch()
 		if(src.client?.movekeydown) src.icon_state="dash2"
 		else src.icon_state=""
 
-mob/proc/Kick()
+mob/proc/Kick(mob/hit)
 	set waitfor = 0
+	world<<"src [src] hit [hit]"
 	if(!src.attacking)
 		src.attacking=1
 		var/dist=999
@@ -843,18 +849,21 @@ mob/proc/Kick()
 		var/counter=0
 		var/vector/aim= Dir2Vector(src.dir)
 		aim.size=30
+
 		src.Move(src.pixloc+aim,src.dir)
 		sleep(1)
-
-		for(var/mob/M in bounds(bound_pixloc(src,src.dir)+aim,40))
-			if(M.invulnerable||M==src)continue
-			gap=M.pixloc-src.pixloc
-			if(gap.size<dist && gap.size<=src.bound_width+40)
-				dist=gap.size
-				t=M
+		if(hit) t=hit
+		else
+			for(var/mob/M in bounds(bound_pixloc(src,src.dir)+aim,40))
+				if(M.invulnerable||M==src)continue
+				gap=M.pixloc-src.pixloc
+				if(gap.size<dist && gap.size<=src.bound_width+40)
+					dist=gap.size
+					t=M
 
 		src.canmove=0
 		var/blocked=0
+
 		if(t)
 			src.Face(t)
 			var/duration
@@ -1272,6 +1281,9 @@ client/verb/keyupverb(button as text)
 		src.UpdateMoveVector()
 		if(!(src.keydown["North"]||src.keydown["South"]||src.keydown["East"]||src.keydown["West"]||src.keydown["Northeast"]||src.keydown["Southeast"]||src.keydown["Northwest"]||src.keydown["Southwest"]))
 			src.movekeydown=0
+			if(M.dashing)
+				M.Chargestop()
+				src.dashkey=null
 	if(length(src.keydown)==0 && (!M.movevector || M.movevector.size<=1)) activemobs-=M
 
 mob/var/tmp
@@ -1294,7 +1306,9 @@ mob/proc
 			for(var/turf/T in block(src.x-8+X*7,src.y-8+Y*7,src.z,src.x+8+X*7,src.y+Y*7+8))
 				for(var/mob/M in T)
 					if(M!=src)mobs+=M
-			if(src.lastattacked in mobs)
+			if(src.targetmob in mobs)
+				target=src.targetmob
+			else if(src.lastattacked in mobs)
 				target=src.lastattacked
 			else if(src.lastattackedby in mobs)
 				target=src.lastattackedby
@@ -1417,7 +1431,6 @@ client/proc/HideAim()
 
 
 client/proc/UpdateMoveVector()
-
 
 	if(!movekeydown && (!src.mob.movevector || !src.mob.movevector.size))return
 	if(src.mob.usingskill)return
@@ -1542,6 +1555,7 @@ world/Tick()
 				if(M.counters<M.maxcounters)
 					M.counters++
 					M.Update_Counters()
+	AI_Loop()
 
 
 
@@ -1554,18 +1568,26 @@ mob
 			var/mob/M=o
 			var/vector/kbvector=vector(src.movevector)
 			kbvector+=(M.pixloc-src.pixloc)
-			if(src.client?.keydown["A"])
-				spawn()
-					if(!src.attacking)
-						var/duration=world.time-src.client?.keydown["A"]
-						if(duration>5)src.Kick()
-						else src.Punch()
-						src.client?.keydown["A"]=world.time
+			if(src.client)
+				if(src.client.keydown["A"])
+					spawn()
+						if(!src.attacking)
+							var/duration=world.time-src.client?.keydown["A"]
+							if(duration>5)src.Kick()
+							else src.Punch()
+							src.client?.keydown["A"]=world.time
 
 
+				else
+					if(M.canmove&&!M.tossed)M.Move(M.pixloc+kbvector.size=4)
+				return
 			else
-				if(M.canmove&&!M.tossed)M.Move(M.pixloc+kbvector.size=4)
-			return
+				if(src.posture)
+					var/duration=world.time-src.posturetime
+					if(duration>5)src.Kick()
+					else src.Punch()
+					src.posturetime=world.time
+
 		if(src.bouncing && src.canmove)src.bouncing=0
 		if(src.bouncing)return
 		else

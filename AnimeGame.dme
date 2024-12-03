@@ -65,6 +65,7 @@
 // END_PREFERENCES
 
 // BEGIN_INCLUDE
+#include "AI.dm"
 #include "Base.dm"
 #include "Beams.dm"
 #include "FX.dm"
