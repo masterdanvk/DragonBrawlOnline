@@ -613,9 +613,10 @@ obj/gui/menu/name_entry
 					. |= WEST
 
 			if(.)
-				var/id = CursorButtonId()
-				if(id)
-					onButtonHover(id)
+				if(col >= panel.cols + 1)
+					cursor.row = row
+					cursor.col = col
+					onButtonHover(CursorButtonId())
 				else
 					onKeyHover(col,row)
 
@@ -662,6 +663,7 @@ obj/gui/menu/name_entry
 			if(usr.client.focus_target == vis_registry["input_bar"])
 				usr.client.GUIFocus(src)
 
+	//take focus from the input bar when clicking on the background
 	MouseDown()
 		RestoreFocus()
 
@@ -677,7 +679,10 @@ obj/gui/menu/name_entry
 				onButtonHover("clear_button")
 				lag = 1#INF
 			if("Return")
-				onButtonHover("done_button")
+				if(CursorButtonId()=="done_button")
+					onButtonPress("done_button")
+				else
+					onButtonHover("done_button")
 				lag = 1#INF
 			if("Space")
 				onCursorPress()
@@ -729,6 +734,7 @@ obj/gui/menu/name_entry
 
 		repeating_keys -= button
 
+	//hide the cursor and stop repeating keys when losing focus
 	onBlur()
 		repeating_keys.len = 0
 		vis_registry["cursor"]:vis_flags |= VIS_HIDE
