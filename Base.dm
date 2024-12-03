@@ -80,13 +80,18 @@ mob
 mob/picking
 	icon=null
 	selecting=1
+
 	Login()
 		..()
 		src.loc=null
 		if(!src.client.name)
-			var/n=input(src.client,"What is your name?","Name") as text
-			//if(!n)n=src.client.key
-			src.client.name=n
+			#warn integration here!
+			//create a new name entry menu, and call Input()
+			//Input() will wait until the client finishes picking a name.
+			var/obj/gui/menu/name_entry/picker = new()
+			var/n = picker.Input(src.client,"What is your name?")
+			if(!n) n = src.client.key
+			src.client.name = n
 
 		src.client.Character_Select()
 
@@ -928,6 +933,15 @@ client/verb/keydownverb(button as text)
 		src.GamePad2Key(button,1)
 		return
 
+	#warn keyboard integration here!
+
+	//if the user has a focus target, call onKeyDown() on the focus target.
+	//if the object returns null or 0 (or doesn't return anything), stop this input from propagating further.
+	//the focus target can return a true value with some or no keys to allow this input to propagate.
+
+	if(focus_target && !focus_target.onKeyDown(button))
+		return
+
 	var/mob/M=src.mob
 	if(M.selecting)
 		src.SelectingInput(button)
@@ -1018,6 +1032,13 @@ client/verb/keyupverb(button as text)
 	set instant=1
 	if(button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight")
 		src.GamePad2Key(button,0)
+		return
+
+	#warn keyboard integration here!
+	//if the user has a focus target, call onKeyUp() on the focus target.
+	//if the object returns null or 0 (or doesn't return anything), stop this input from propagating further.
+	//the focus target can return a true value with some or no keys to allow this input to propagate.
+	if(focus_target && !focus_target.onKeyUp(button))
 		return
 
 	var/mob/M=src.mob
