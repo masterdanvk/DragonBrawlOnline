@@ -42,6 +42,66 @@ client/verb/Togglechat()
 		winset(src,"output1","is-visible=1")
 		winset(src,"input1","is-visible=1")
 
+client/verb/SaibamenSeeding(var/n as num)
+	for(var/i=1 to n)
+		var/mob/M=new/mob/saibamen/NPC(locate(rand(10,90),rand(10,90),1))
+		RefreshChunks|=M
+
+
+
+
+client/verb/SaibamenInvasion(var/n as num)
+	var/pace=input(src,"How many do you want to be out at at time?","Wave size",8) as num
+	pace=min(n,pace)
+	var/saibasleft=n
+	var/list/saibamen=new/list()
+	var/list/humans=new/list()
+	var/s=n
+
+
+	for(var/i=1 to min(n,pace))
+		var/mob/saib=new/mob/saibamen(locate(rand(10,90),rand(10,90),1))
+		saibasleft--
+		saib.team="Saibamen"
+		saibamen+=saib
+	for(var/mob/H in world)
+		if(H.z==1 && H.client)humans+=H
+	while(s)
+		s=0
+		for(var/mob/M in saibamen)
+			if(M.dead || !M.loc)continue
+			if(!M.targetmob || !M.targetmob.client|| (!(M in AI_Active)&&!M.activeai))
+				var/mindist=9999
+				for(var/mob/H in humans)
+					if(H.dead)continue
+					if(abs(H.pixloc-M.pixloc)<mindist)
+						mindist=abs(H.pixloc-M.pixloc)
+						M.targetmob=H
+				if(!M.targetmob)
+					for(var/mob/H in world)
+						if(H.dead||!H.client)continue
+						if(abs(H.pixloc-M.pixloc)<mindist)
+							mindist=abs(H.pixloc-M.pixloc)
+							M.targetmob=H
+				if(M.targetmob)
+					Awaken(M,M.targetmob)
+				else
+					M.loc=null
+			s++
+		if(!s && saibasleft)
+			var/c=saibasleft
+			for(var/i=1 to min(c,pace))
+				var/mob/saib=new/mob/saibamen(locate(rand(10,90),rand(10,90),1))
+				saibasleft--
+				saib.team="Saibamen"
+				saibamen+=saib
+				s++
+		sleep(50)
+
+	world<<"The Saibamen invasion is over!!"
+
+
+
 client/verb/Tournament(var/s in list("Accurate","Equal","Easy","Medium","Hard"))
 
 	src.mob.loc=locate(16,8,2)
@@ -82,6 +142,7 @@ client/verb/Tournament(var/s in list("Accurate","Equal","Easy","Medium","Hard"))
 			m?.loc=null
 			src.edge_limit=null
 			return
+		user.Heal(200)
 		sleep(100)
 	if(!istype(user,/mob/yamcha))
 		m=new/mob/yamcha(locate(24,8,2))
@@ -96,6 +157,7 @@ client/verb/Tournament(var/s in list("Accurate","Equal","Easy","Medium","Hard"))
 			m?.loc=null
 			src.edge_limit=null
 			return
+		user.Heal(200)
 		sleep(100)
 	if(!istype(user,/mob/krillin))
 		m=new/mob/krillin(locate(24,8,2))
@@ -110,6 +172,7 @@ client/verb/Tournament(var/s in list("Accurate","Equal","Easy","Medium","Hard"))
 			m?.loc=null
 			src.edge_limit=null
 			return
+		user.Heal(200)
 		sleep(100)
 	if(!istype(user,/mob/tien))
 		m=new/mob/tien(locate(24,8,2))
@@ -124,6 +187,7 @@ client/verb/Tournament(var/s in list("Accurate","Equal","Easy","Medium","Hard"))
 			m?.loc=null
 			src.edge_limit=null
 			return
+		user.Heal(200)
 		sleep(100)
 	if(!istype(user,/mob/piccolo))
 		m=new/mob/piccolo(locate(24,8,2))
@@ -138,6 +202,8 @@ client/verb/Tournament(var/s in list("Accurate","Equal","Easy","Medium","Hard"))
 			m?.loc=null
 			src.edge_limit=null
 			return
+		user.Heal(200)
+		sleep(100)
 	if(!istype(user,/mob/goku))
 		m=new/mob/goku(locate(24,8,2))
 		m.maxhp*=2
@@ -151,6 +217,7 @@ client/verb/Tournament(var/s in list("Accurate","Equal","Easy","Medium","Hard"))
 			m?.loc=null
 			src.edge_limit=null
 			return
+		user.Heal(200)
 	world<<"[user] [user.appearance] beat the 23rd Budokai Tenkaichi Tournament!"
 	sleep(100)
 	user.loc=null
@@ -160,7 +227,7 @@ client/verb/Tournament(var/s in list("Accurate","Equal","Easy","Medium","Hard"))
 proc/Awaken(mob/m,mob/opponent)
 	m.targetmob=opponent
 	m.CheckCanMove()
-	AI_Active+=m
+	AI_Active|=m
 	m.Move(0)
 	m.movevector=vector(0,0)
 	m.rotation=0
@@ -235,7 +302,8 @@ var/alist/playerselection=new/alist(
 	Tien=/mob/tien,
 	Krillin=/mob/krillin,
 	Yamcha=/mob/yamcha,
-	Chaiotzu=/mob/chaotzu)
+	Chaiotzu=/mob/chaotzu,
+	Saibamen=/mob/saibamen)
 
 mob/verb/ChangePlayer()
 	src.Die()
@@ -354,7 +422,9 @@ client/proc/Pick_Previous()
 
 mob/verb/say(i as text)
 	world<<"[usr.client.name]: [i]"
+
 client/New()
+	clients+=src
 	src.mob=new/mob/picking
 	winset(src,"output1","is-visible=0")
 	winset(src,"input1","is-visible=0")
@@ -362,6 +432,7 @@ client/New()
 
 
 client/Del()
+	clients-=src
 	var/mob/M=src.mob
 	M.loc=null
 	M.client=null
@@ -425,7 +496,7 @@ mob/proc/Refresh_Scouter()
 
 atom/movable
 	var/tmp
-		vector/movevector
+		vector/movevector=vector(0,0)
 		usingskill=0
 		canmove=1
 		bouncing=0
@@ -553,6 +624,7 @@ mob
 		bound_y=2
 		bound_width=24
 		bound_height=38
+
 		pl=9000
 		special=/Beam/Galekgun
 		unlocked=alist("ssj"=1)
@@ -669,11 +741,35 @@ mob
 			src.Create_Aura("Lightgreen")
 			src.skills=list(new/Skill/Dondonpa,new/Skill/Spiritball)
 			src.equippedskill=src.skills[1]
+	saibamen
+		name="Saibamen"
+		NPC
+			team="Enemy"
+			wanderrange=3
+			aggrorange=1
+
+
+		icon='saibamen.dmi'
+		bound_x=25
+		bound_y=10
+		bound_width=18
+		bound_height=20
+		maxhp=50
+		hp=50
+		pl=1100
+		special=/Beam/Masenko
+		behaviors=list(5,40,30,10,15) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		New()
+			..()
+			src.Create_Aura("Lightgreen")
+			src.skills=list(new/Skill/Masenko)
+			src.equippedskill=src.skills[1]
 
 	var
 		maxhp=100
 		maxki=100
 		ki=100
+		team
 	var/tmp
 		mob/lastattacked
 		mob/lastattackedby
@@ -714,6 +810,78 @@ mob
 	step_size = 8
 
 	icon='goku.dmi'
+obj
+	Detector2
+		bound_width=896
+		bound_height=896
+		layer=TURF_LAYER+0.1
+		alpha=60
+		density=0
+	//	icon='detection2.dmi'
+		Cross(atom/A)
+
+			if(istype(A,/mob)&&src.owner!=A)
+				src.owner?.Wander(A)
+			if(!src.owner || src.owner.dead)
+				src.loc=null
+				src.owner=null
+			return 1
+
+		on_cross(atom/A)
+			if(istype(A,/mob)&&src.owner!=A)
+				src.owner?.Wander(A)
+			if(!src.owner || src.owner.dead)
+				src.loc=null
+				src.owner=null
+			return 1
+
+	Detector
+		bound_width=448
+		bound_height=448
+		layer=TURF_LAYER+0.1
+		alpha=100
+		density=0
+	//	icon='detection.dmi'
+		Cross(atom/A)
+			if(src.owner)
+				if(!(src.owner in AI_Active)&&!src.owner.activeai)src.owner.targetmob=null
+
+			if(istype(A,/mob)&&src.owner!=A)
+				src.owner?.Detect(A)
+			if(!src.owner || src.owner.dead)
+				src.loc=null
+				src.owner=null
+			return 1
+
+		on_cross(atom/A)
+			if(src.owner)
+				if(!(src.owner in AI_Active)&&!src.owner.activeai)src.owner.targetmob=null
+			if(istype(A,/mob)&&src.owner!=A)
+				src.owner?.Detect(A)
+			if(!src.owner || src.owner.dead)
+				src.loc=null
+				src.owner=null
+			return 1
+
+
+
+
+
+
+mob
+	on_crossed(atom/A)
+
+turf
+//	Entered(mob/A)
+	//	if(!A.client && A.detector && !A.targetmob)
+	//		A.detector.Move((bound_pixloc(A,0)+vector(-224,-224)))
+	//		if(A.detector2)A.detector2.Move((bound_pixloc(A,0)+vector(-448,-448)))
+	//	..()
+
+	//Move()
+	//	..()
+	//	if(!src.client && src.detector)
+	//		Move(src.detector,(bound_pixloc(src,0)+vector(-224,-224)))
 
 client
 	var
@@ -857,10 +1025,16 @@ area/arena
 	Entered(mob/M)
 		if(ismob(M) && M.client)
 			M.client.edge_limit = "[x1],[y1] to [x2],[y2]"
-			world<<"M client.edge_limit changed to [M.client.edge_limit]"
+
+mob/proc/Heal(heal)
+	src.hp+=heal
+	if(src.hp>src.maxhp)src.hp=src.maxhp
+	gui_hpbar.setValue(src.hp/src.maxhp,10)
 
 mob/proc/Damage(damage,impact,critchance,mob/damager)
-
+	if(src.team && src.team==damager.team)return 0
+	if(!src.client && src.canaggro && !src.targetmob)
+		src.Detect(damager)
 	var/vector/v=src.pixloc-damager.pixloc
 	var/crit=prob(critchance)
 	damager.lastattacked=src
@@ -888,17 +1062,31 @@ mob/proc/Damage(damage,impact,critchance,mob/damager)
 		src.Die(damager)
 mob/proc
 	Die(mob/damager)
+
+		if(src.detector)
+			src.detector.loc=null
+			src.detector.owner=null
+			src.detector=null
+		if(src.detector2)
+			src.detector2.loc=null
+			src.detector2.owner=null
+			src.detector2=null
 		src.invulnerable=1
+		src.vis_contents=null
 		src.dead=1
-		src.icon_state="hurt1"
+		if("dead" in icon_states(src.icon)) src.icon_state="dead"
+		else
+			src.icon_state="hurt1"
 		src.canmove=0
-		var/matrix/M=src.transform
-		M.Turn(-60)
+
 		if(damager)
 			world<<"[src] has been killed by [damager]"
 		else
 			world<<"[src] has died!"
+
 		if(damager)damager.Clear_target()
+		var/matrix/M=src.transform
+		M.Turn(-60)
 		src.Clear_target()
 		src.density=0
 		animate(src,transform=M,time=10)
@@ -980,15 +1168,16 @@ mob/proc/Punch(mob/hit)
 		animate(src,icon_state="punch1",time=2,flags=ANIMATION_PARALLEL)
 		animate(src,icon_state="punch2",time=2,delay=2,flags=ANIMATION_PARALLEL)
 		sleep(2)
-		spawn()
-			if(!blocked&&!counter)
-				var/vector/mid=bound_pixloc(src,0)-bound_pixloc(t,0)
-				mid.size=mid.size/2
-				Explosion(/obj/FX/Smack,bound_pixloc(t,0)+mid,vector2angle(mid))
-			else if(blocked)
-				var/vector/mid=bound_pixloc(src,0)-bound_pixloc(t,0)
-				mid.size=mid.size/2
-				Explosion(/obj/FX/Smack,bound_pixloc(t,0)+mid,vector2angle(mid),0.5,0.5)
+		if(t)
+			spawn()
+				if(!blocked&&!counter)
+					var/vector/mid=bound_pixloc(src,0)-bound_pixloc(t,0)
+					mid.size=mid.size/2
+					Explosion(/obj/FX/Smack,bound_pixloc(t,0)+mid,vector2angle(mid))
+				else if(blocked)
+					var/vector/mid=bound_pixloc(src,0)-bound_pixloc(t,0)
+					mid.size=mid.size/2
+					Explosion(/obj/FX/Smack,bound_pixloc(t,0)+mid,vector2angle(mid),0.5,0.5)
 		if(t&&!counter)spawn()t.Damage(3*PLcompare(src,t)/(1+blocked),6/(1+blocked*2),PLcompare(src,t)*20*(1- blocked+backstab),src)
 		sleep(2)
 		src.attacking=0
@@ -1055,15 +1244,16 @@ mob/proc/Kick(mob/hit)
 		animate(src,icon_state="kick1",time=2,flags=ANIMATION_PARALLEL)
 		animate(src,icon_state="kick2",time=2,delay=2,flags=ANIMATION_PARALLEL)
 		sleep(2)
-		spawn()
-			if(!blocked&&!counter)
-				var/vector/mid=bound_pixloc(src,0)-bound_pixloc(t,0)
-				mid.size=mid.size/2
-				Explosion(/obj/FX/Smack,bound_pixloc(t,0)+mid,vector2angle(mid))
-			else if(blocked)
-				var/vector/mid=bound_pixloc(src,0)-bound_pixloc(t,0)
-				mid.size=mid.size/2
-				Explosion(/obj/FX/Smack,bound_pixloc(t,0)+mid,vector2angle(mid),0.5,0.5)
+		if(t)
+			spawn()
+				if(!blocked&&!counter)
+					var/vector/mid=bound_pixloc(src,0)-bound_pixloc(t,0)
+					mid.size=mid.size/2
+					Explosion(/obj/FX/Smack,bound_pixloc(t,0)+mid,vector2angle(mid))
+				else if(blocked)
+					var/vector/mid=bound_pixloc(src,0)-bound_pixloc(t,0)
+					mid.size=mid.size/2
+					Explosion(/obj/FX/Smack,bound_pixloc(t,0)+mid,vector2angle(mid),0.5,0.5)
 		if(t&&!counter)spawn()t.Damage(9*PLcompare(src,t)/(1+blocked),6/(1+blocked*2),PLcompare(src,t)*50*(1- blocked+backstab),src)
 		sleep(2)
 		src.attacking=0
@@ -1302,6 +1492,20 @@ client/verb/keydownverb(button as text)
 		else
 			M.aim=vector(0,0)
 		M.gui_charge.setValue(0)
+		var/atom/Veye=src.virtual_eye
+		var/mob/Eye=src.eye
+		if(Eye!=Veye)
+			var/offx=(Eye.x-Veye.x)*32+round(Eye.step_x,1)+16
+			var/offy=(Eye.y-Veye.y)*32+round(Eye.step_y,1)-16
+			if(offx>0)offx="+[offx]"
+			else offx="[offx]"
+			if(offy>0)offy="+[offy]"
+			else offy="[offy]"
+			M.gui_charge.screen_loc="CENTER:[offx] ,CENTER:[offy]"
+
+		else
+			M.gui_charge.screen_loc="CENTER ,CENTER:-16"
+
 		if(M.equippedskill)
 			src.screen|=M.gui_charge
 			M.gui_charge.setValue(1,M.equippedskill.ctime)
@@ -1319,7 +1523,7 @@ client/verb/keydownverb(button as text)
 		src.movekeydown=1
 		if(!M.charging)
 			src.UpdateMoveVector()
-		if(tapbetween&&tapbetween<=2&&M.counters>=1) //doubletap!
+		if(tapbetween&&tapbetween<=2&&M.counters>=1&&!M.aiming) //doubletap!
 			src.dashkey=button
 			M.counters--
 			M.Update_Counters()
@@ -1403,7 +1607,7 @@ client/verb/keyupverb(button as text)
 		M.canmove=1
 		M.icon_state=""
 
-	src.keydown.Remove(button)
+	src.keydown?.Remove(button)
 
 
 	if(button=="North"||button=="South"||button=="East"||button=="West"||button=="Northeast"||button=="Southeast"||button=="Northwest"||button=="Southwest")
@@ -1663,28 +1867,37 @@ world/Tick()
 	if(regentick==50)
 		regen=1
 		regentick=0
-	for(var/mob/M in world)
-		if(M.canmove && !M.tossed)
-			M.client?.UpdateMoveVector()
-			try
-				if(!(M.Move(M.pixloc+M.movevector)))
-					M.movevector=vector(0,0)
+	for(var/C in clients)
+		var/title="([world.cpu]%)"
+		winset(C, "mainwindow", "title=[title]")
+		var/mob/M = C:mob
+		if(M)
+			if(M.canmove && !M.tossed)
+				M.client?.UpdateMoveVector()
+				try
+					if(!(M.Move(M.pixloc+M.movevector)))
+						M.movevector=vector(0,0)
 
-			catch
-			if(regen && (world.time-M.lasthostile)>60)
-				if(M.hp<M.maxhp)
-					M.hp=min(M.maxhp,M.hp+M.hpregen)
-					M.gui_hpbar.setValue(M.hp/M.maxhp,10)
+				catch
+				if(regen && (world.time-M.lasthostile)>60)
+					if(M.hp<M.maxhp)
+						M.hp=min(M.maxhp,M.hp+M.hpregen)
+						M.gui_hpbar.setValue(M.hp/M.maxhp,10)
 
-			if(regen && (world.time-M.lasthostile)>20)
-				if(M.blocks<M.maxblocks)
-					M.blocks=min(M.blocks+2,M.maxblocks)
+				if(regen && (world.time-M.lasthostile)>20)
+					if(M.blocks<M.maxblocks)
+						M.blocks=min(M.blocks+2,M.maxblocks)
 
-					M.Update_Blocks()
-				if(M.counters<M.maxcounters)
-					M.counters++
-					M.Update_Counters()
+						M.Update_Blocks()
+					if(M.counters<M.maxcounters)
+						M.counters++
+						M.Update_Counters()
 	AI_Loop()
+	for(var/mob/M in RefreshChunks)
+		RefreshChunks-=M
+		spawn()M.Chunkupdate()
+
+var/clients[0]
 
 
 
@@ -1693,9 +1906,13 @@ world/Tick()
 mob
 	Bump(atom/o)
 		..()
+	//	if(src.client)src.client<<"Bump [o]"
 		if(istype(o,/mob))
 			var/mob/M=o
-			var/vector/kbvector=vector(src.movevector)
+
+			var/vector/kbvector
+			if(src.movevector)kbvector=vector(src.movevector)
+			else kbvector=vector(0,0)
 			kbvector+=(M.pixloc-src.pixloc)
 			if(src.client)
 				if(src.client.keydown["A"])
@@ -1708,7 +1925,10 @@ mob
 
 
 				else
-					if(M.canmove&&!M.tossed)M.Move(M.pixloc+kbvector.size=4)
+
+					if(M.canmove&&!M.tossed)
+						kbvector.size=4
+						M.Move(M.pixloc+kbvector)
 				return
 			else
 				if(src.posture)
@@ -1785,10 +2005,11 @@ atom/movable/proc/bounce(atom/T)
 
 	var/vector/normal=getnormal(src,T)
 	if(normal.size==0)
-		world<<"normal [normal], [src.pixloc] / [T.pixloc]"
 		return
 
-	var/vector/incident=vector(src.movevector)
+	var/vector/incident
+	if(src.movevector)incident=vector(src.movevector)
+	else incident=vector(0,0)
 	if(incident.size==0)return
 	var/vector/result=calculate_bounce(incident,normal)
 	src.canmove=0

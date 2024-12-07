@@ -290,6 +290,7 @@ obj/Kiblast
 			for(var/mob/M in bound_pixloc(src,0),max(40,16*(1+0.5*src.charge)))
 				if(M!=src.owner)src.hitmobs|=M
 				sleep(1)
+			src.loc=null
 			..()
 	Destructodisc
 		icon='destructodisc.dmi'
@@ -312,6 +313,7 @@ obj/Kiblast
 			..()
 		Explode()
 			src.icon=null
+			src.loc=null
 			..()
 	Spiritball
 		icon='spiritball.dmi'
@@ -335,6 +337,7 @@ obj/Kiblast
 		Explode()
 			src.icon=null
 			Explosion(/obj/FX/Explosion,bound_pixloc(src,0),0,0.5,0.5)
+			src.loc=null
 			..()
 	WFF
 		icon='wolffangfist.dmi'
@@ -389,12 +392,14 @@ obj/Kiblast
 
 		Explode()
 			src.icon=null
-			Explosion(/obj/FX/Explosion,bound_pixloc(src,0))
-			destroy_turfs(bound_pixloc(src,0),100)
-			for(var/mob/M in bound_pixloc(src,0),100)
-				if(M!=src.owner)src.hitmobs|=M
+			spawn()
+				Explosion(/obj/FX/Explosion,bound_pixloc(src,0))
+				destroy_turfs(bound_pixloc(src,0),100)
+				for(var/mob/M in bound_pixloc(src,0),100)
+					if(M!=src.owner)src.hitmobs|=M
 
-				sleep(1)
+					sleep(1)
+			src.loc=null
 			..()
 
 	Basic
@@ -419,6 +424,7 @@ obj/Kiblast
 		Explode()
 			src.icon=null
 			Explosion(/obj/FX/Explosion,bound_pixloc(src,0),0,0.5,0.5)
+			src.loc=null
 			..()
 
 mob/var/tmp/holdskill

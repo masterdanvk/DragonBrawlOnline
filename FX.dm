@@ -14,7 +14,7 @@ obj
 			duration=3
 		New()
 			..()
-
+			if(!FX["[src.type]"])FX["[src.type]"]=new/list()
 			FX["[src.type]"]|=src
 		Del()
 			FX["[src.type]"]-=src
@@ -53,7 +53,7 @@ mob/proc/Flash(t=1.5,intensity)
 	animate(src, color = null, time = 1)
 proc/Explosion(P,pixloc/L,rotation,scalex,scaley)
 	set waitfor = 0
-	if(!FX)FX=new/alist
+
 	if(!ispath(P))
 		world<<"P isnt a path"
 		return

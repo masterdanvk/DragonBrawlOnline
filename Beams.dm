@@ -501,7 +501,7 @@ obj/Beam
 		if(istype(A,/mob) && !A:invulnerable &&!src.BeamParent.clash)
 			if(src.BeamParent && src.BeamParent!=A)src.BeamParent.hitmobs|=A
 			A:canmove=0
-		if(istype(A,/obj/Beam))
+		if(istype(A,/obj/Beam)&&abs(A:BeamParent.angle-src.BeamParent.angle)>140&&abs(A:BeamParent.angle-src.BeamParent.angle)<220)
 			if(src.BeamParent && A:BeamParent && src.BeamParent!=A:BeamParent && A:head && !A:BeamParent.clash && !src.BeamParent.clash)
 				src.BeamParent.clash=A:BeamParent
 				A:BeamParent.clash=src.BeamParent

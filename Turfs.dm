@@ -42,6 +42,8 @@
 
 world/New()
 	..()
+	FX=new/alist
+	InitiateChunks()
 	spawn(-1)
 		autotile_block()
 

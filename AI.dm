@@ -5,8 +5,15 @@ mob/var/tmp
 	posture=0 //0 is open/unassigned, 1 is gap closing, 2 is defensive, 3 is melee attacking, 4 is ki blasting / poking, 5 is trying to charge and position to use a special attack
 	posturetime
 	list/behaviors=list(5,10,50,10,25) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
-
+	activeai=0
+	moving=0
+	obj/detector
+	obj/detector2
+	wanderlist[0]
+	wander=0
+	canaggro=1
 var/AItick=0
+mob/var/skillcooldown
 proc/AI_Loop()
 	AItick++
 	if(AItick>=5)
@@ -15,11 +22,16 @@ proc/AI_Loop()
 			if(M.dead)
 				AI_Active-=M
 				continue
+			if(M.targetmob&&M.targetmob.dead)
+				M.targetmob=null
+
 			if(!M.targetmob)
-				if(M.lastattackedby)M.targetmob=M.lastattackedby //if there is another player who did damage but theres no target, they are the new target
+				if(M.lastattackedby && M.lastattackedby.z==M.z)M.targetmob=M.lastattackedby //if there is another player who did damage but theres no target, they are the new target
 			if(!M.targetmob)
 				AI_Active-=M //if nobody has attacked this mob and they have no target, remove from active list
+				RefreshChunks|=M
 				continue
+			M.activeai=1
 			if(!M.posture)
 				M.posture=pick(
 					prob(M.behaviors[1]);1,
@@ -46,7 +58,8 @@ proc/AI_Loop()
 							spawn(30)
 								AI_Active|=M
 								spawn()M.Chargestop()
-								var/vector/dist=M.targetmob-M.pixloc
+								var/vector/dist
+								if(M.targetmob)dist=M.targetmob.pixloc-M.pixloc
 								if(dist.size<=32)
 									M.posture=3
 								else
@@ -55,6 +68,7 @@ proc/AI_Loop()
 										prob(M.behaviors[5]);5)
 
 							M.Charge()
+							M.activeai=0
 					else
 						AI_Active-=M
 						spawn()
@@ -62,6 +76,7 @@ proc/AI_Loop()
 							sleep(pick(10,15,20))
 							M.posture=0
 							AI_Active|=M
+							M.activeai=0
 				if(2)
 					var/vector/dist=M.targetmob.pixloc-M.pixloc
 					if(dist.size<=64)
@@ -70,6 +85,7 @@ proc/AI_Loop()
 							spawn()
 								M.AIBlock()
 								AI_Active|=M
+								M.activeai=0
 						else if(prob(30))
 							dist.size=200
 							dist.Turn(pick(-90,90,-60,60,-30,30))
@@ -78,14 +94,17 @@ proc/AI_Loop()
 								M.AIMove(M.targetmob.pixloc+dist)
 								sleep(pick(10,20,30,25,15))
 								AI_Active|=M
+								M.activeai=0
 						else
 							M.posture=3
+							M.activeai=0
 					else
 						if(M.ki<M.maxki&&prob(30))
 							AI_Active-=M
 							spawn()
 								M.AICharge()
 								AI_Active|=M
+								M.activeai=0
 
 						else
 							dist.size=300
@@ -95,6 +114,7 @@ proc/AI_Loop()
 								M.AIMove(M.targetmob.pixloc+dist)
 								sleep(1)
 								AI_Active|=M
+								M.activeai=0
 								if(prob(20))M.posture=0
 					if((world.time-M.posturetime)>=200 &&M.posture==2)
 						M.posture=0
@@ -116,6 +136,7 @@ proc/AI_Loop()
 						M.AIMove(M.targetmob.pixloc,50)
 						sleep(3)
 						AI_Active|=M
+						M.activeai=0
 						if(prob(15))M.posture=0
 				if(4)
 					var/vector/dist=M.targetmob.pixloc-M.pixloc
@@ -133,13 +154,17 @@ proc/AI_Loop()
 							dist.Turn(pick(-90,90,-60,60,-30,30))
 							M.AIMove(M.targetmob.pixloc-dist)
 							AI_Active|=M
+							M.activeai=0
+
 					else
 						if(M.ki>=5)
 							M.aim=dist
 							M.UseKiBlast()
 							if(prob(30))M.posture=0
+
 						else
 							M.posture=2
+						M.activeai=0
 				if(5)
 					var/vector/dist=M.targetmob.pixloc-M.pixloc
 					if((world.time-M.posturetime)>=100 &&M.posture==5)
@@ -156,29 +181,67 @@ proc/AI_Loop()
 							dist.Turn(pick(-90,90,-60,60,-30,30))
 							M.AIMove(M.targetmob.pixloc-dist)
 							AI_Active|=M
+							M.activeai=0
 					else
 
 						if(!M.equippedskill)M.equippedskill=M.skills[1]
-						if(M.ki>(M.equippedskill.kicost))
+						if(M.ki>(M.equippedskill.kicost)&&M.activeai!=2)
+							M.activeai=2
+							M.Take_Ki(M.equippedskill.kicost)
 							AI_Active-=M
 							spawn()
-								if(M.canmove)
+								if(M.canmove&& world.time>(M.skillcooldown))
 									M.icon_state="blast1"
 									sleep(M.equippedskill.ctime)
 									M.aim=dist
 
-
+									M.skillcooldown=world.time+20
 									M.equippedskill.Use(M,M.equippedskill.ctime)
-									M.Take_Ki(M.equippedskill.kicost)
+
+
 									M.equippedskill=pick(M.skills)
 									M.posture=0
 									M.icon_state=""
 									M.usingskill=0
 								AI_Active|=M
+								M.activeai=0
 						else
 							M.posture=2
+							M.activeai=0
 
 
+
+
+mob/proc/Detect(mob/A)
+	set waitfor = 0
+
+	if((!A.team||A.team!=src.team) && (!src.targetmob || src.targetmob.z!=A.z|| src.targetmob.dead) && !src.dead && !A.dead)
+		walk(src,0)
+		src.targetmob=A
+		Awaken(src,src.targetmob)
+
+mob/proc/Wander(mob/A)
+	set waitfor = 0
+	set background = 1
+	if(A==src)return
+	src.wanderlist|=A
+	if(src.wander)return
+	src.wander=1
+	while(src.wanderlist.len&&!src.dead)
+		var/i=10
+		while(i>0&&!(src in AI_Active)&&!src.dead)
+			src.AIMove(src.pixloc+vector(pick(24,32,48,64,-24,-32,-48,-64,0),pick(24,32,48,64,-24,-32,-48,-64,0)),5)
+
+			sleep(10)
+			if(src.chunk!=src.loc?:chunk)RefreshChunks|=src
+			i--
+		if(src in AI_Active || src.dead)
+			return
+		var/detrange=src.wanderrange*chunksize*32*1.41
+		for(var/mob/M in src.wanderlist)
+			var/vector/V=M.pixloc-src.pixloc
+			if(V.size>=detrange)
+				src.wanderlist-=M
 
 
 
@@ -193,6 +256,8 @@ mob/Click()
 	src.Check_Vars()
 
 mob/proc/AIMove(pixloc/P,iterations=20)
+	if(src.moving)return
+	src.moving=1
 	var/i=0
 	if(src.tossed && src.icon_state!="hurt2")src.tossed=0
 	src.CheckCanMove()
@@ -206,9 +271,11 @@ mob/proc/AIMove(pixloc/P,iterations=20)
 		stepv.size=src.step_size
 		src.RotateMob(stepv,5)
 		src.Move(stepv)
+		src.movevector=stepv
 		sleep(world.tick_lag)
 		i++
 	if(src.icon_state=="dash1"||src.icon_state=="dash2")src.icon_state=""
+	src.moving=0
 
 
 mob/proc/AICharge()
@@ -253,7 +320,7 @@ client/verb/SpawnAI()
 	m.targetmob=src.mob
 	m.CheckCanMove()
 	sleep(20)
-	AI_Active+=m
+	AI_Active|=m
 
 	m.Move(0)
 	m.movevector=vector(0,0)

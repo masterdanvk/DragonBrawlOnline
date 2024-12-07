@@ -68,6 +68,7 @@
 #include "AI.dm"
 #include "Base.dm"
 #include "Beams.dm"
+#include "chunks.dm"
 #include "FX.dm"
 #include "gui.dm"
 #include "kaio_lib_mapresize.dm"
