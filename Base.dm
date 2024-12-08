@@ -303,7 +303,8 @@ var/alist/playerselection=new/alist(
 	Krillin=/mob/krillin,
 	Yamcha=/mob/yamcha,
 	Chaiotzu=/mob/chaotzu,
-	Saibamen=/mob/saibamen)
+	Saibamen=/mob/saibamen,
+	CellJr = /mob/celljr)
 
 mob/verb/ChangePlayer()
 	src.Die()
@@ -741,15 +742,85 @@ mob
 			src.Create_Aura("Lightgreen")
 			src.skills=list(new/Skill/Dondonpa,new/Skill/Spiritball)
 			src.equippedskill=src.skills[1]
+	celljr
+		icon='celljr.dmi'
+		bound_x=20
+		bound_y=2
+		portrait_offset=10
+		bound_width=24
+		bound_height=28
+		pl=9000
+		special=/Beam/Kamehameha
+		behaviors=list(5,25,30,20,20) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		New()
+			..()
+			src.Create_Aura("Yellow")
+			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon)
+			src.equippedskill=src.skills[1]
+
 	saibamen
 		name="Saibamen"
+		portrait_offset=10
 		NPC
 			team="Enemy"
 			wanderrange=3
 			aggrorange=1
 
 
+		Cyan
+			name="Saibamen (Cyan)"
+			team="Enemy"
+			wanderrange=3
+			aggrorange=1
+			hue=90
+			pl=4000
+		Blue
+			name="Saibamen (Blue)"
+			team="Enemy"
+			wanderrange=3
+			aggrorange=1
+			hue=120
+			pl=7000
+		DarkBlue
+			name="Saibamen (Dark Blue)"
+			team="Enemy"
+			wanderrange=3
+			aggrorange=1
+			hue=150
+			pl=10000
+
+		Purple
+			name="Saibamen (Purple)"
+			team="Enemy"
+			wanderrange=3
+			aggrorange=1
+			hue=210
+			pl=20000
+
+		Magenta
+			name="Saibamen (Magenta)"
+			team="Enemy"
+			wanderrange=3
+			aggrorange=1
+			hue=255
+			pl=35000
+		Red
+			name="Saibamen (Red)"
+			team="Enemy"
+			wanderrange=3
+			aggrorange=1
+			hue=300
+			pl=50000
+		Orange
+			name="Saibamen (Orange)"
+			team="Enemy"
+			wanderrange=3
+			aggrorange=1
+			hue=330
+			pl=300
+
 		icon='saibamen.dmi'
+
 		bound_x=25
 		bound_y=10
 		bound_width=18
@@ -810,58 +881,7 @@ mob
 	step_size = 8
 
 	icon='goku.dmi'
-obj
-	Detector2
-		bound_width=896
-		bound_height=896
-		layer=TURF_LAYER+0.1
-		alpha=60
-		density=0
-	//	icon='detection2.dmi'
-		Cross(atom/A)
 
-			if(istype(A,/mob)&&src.owner!=A)
-				src.owner?.Wander(A)
-			if(!src.owner || src.owner.dead)
-				src.loc=null
-				src.owner=null
-			return 1
-
-		on_cross(atom/A)
-			if(istype(A,/mob)&&src.owner!=A)
-				src.owner?.Wander(A)
-			if(!src.owner || src.owner.dead)
-				src.loc=null
-				src.owner=null
-			return 1
-
-	Detector
-		bound_width=448
-		bound_height=448
-		layer=TURF_LAYER+0.1
-		alpha=100
-		density=0
-	//	icon='detection.dmi'
-		Cross(atom/A)
-			if(src.owner)
-				if(!(src.owner in AI_Active)&&!src.owner.activeai)src.owner.targetmob=null
-
-			if(istype(A,/mob)&&src.owner!=A)
-				src.owner?.Detect(A)
-			if(!src.owner || src.owner.dead)
-				src.loc=null
-				src.owner=null
-			return 1
-
-		on_cross(atom/A)
-			if(src.owner)
-				if(!(src.owner in AI_Active)&&!src.owner.activeai)src.owner.targetmob=null
-			if(istype(A,/mob)&&src.owner!=A)
-				src.owner?.Detect(A)
-			if(!src.owner || src.owner.dead)
-				src.loc=null
-				src.owner=null
-			return 1
 
 
 
@@ -1074,10 +1094,13 @@ mob/proc
 		src.invulnerable=1
 		src.vis_contents=null
 		src.dead=1
+		src.density=0
+		src.canmove=0
+		src.Clear_target()
+		sleep(10)
 		if("dead" in icon_states(src.icon)) src.icon_state="dead"
 		else
 			src.icon_state="hurt1"
-		src.canmove=0
 
 		if(damager)
 			world<<"[src] has been killed by [damager]"
@@ -1087,8 +1110,8 @@ mob/proc
 		if(damager)damager.Clear_target()
 		var/matrix/M=src.transform
 		M.Turn(-60)
-		src.Clear_target()
-		src.density=0
+
+
 		animate(src,transform=M,time=10)
 		if(src.holdskill)
 			src.holdskill:loc=null
@@ -1484,7 +1507,10 @@ client/verb/keydownverb(button as text)
 			M.blocktime=world.time
 
 	if(button=="S"&&M.canmove&&!M.block&&!M.usingskill&&!M.charging)
-		M.icon_state="blast1"
+		var/chargestate=M.equippedskill?.state1
+		if((chargestate in icon_states(M.icon)))
+			M.icon_state=chargestate
+		else M.icon_state="blast1"
 		M.canmove=0
 		M.movevector=vector(0,0)
 		M.aiming=1

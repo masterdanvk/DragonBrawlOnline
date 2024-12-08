@@ -88,13 +88,13 @@ mob/proc/Chunkupdate()
 
 	if(src.client) //players triggering detection
 		for(var/mob/aggros in c.mobaggroing)
-			world.log<<"[aggros] aggrod [src] t=[aggros.targetmob]"
+			//world.log<<"[aggros] aggrod [src] t=[aggros.targetmob]"
 			if(aggros.targetmob||aggros.dead) continue
 
 			aggros.Detect(src)
 
 		for(var/mob/aggros in c.mobdetecting)
-			world.log<<"[aggros] wander [src] t=[aggros.targetmob]"
+			//world.log<<"[aggros] wander [src] t=[aggros.targetmob]"
 			if(src in aggros.wanderlist) continue
 			aggros.Wander(src)
 

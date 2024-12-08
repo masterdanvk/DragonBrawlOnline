@@ -60,7 +60,7 @@ proc/AI_Loop()
 								spawn()M.Chargestop()
 								var/vector/dist
 								if(M.targetmob)dist=M.targetmob.pixloc-M.pixloc
-								if(dist.size<=32)
+								if(dist&&dist.size<=32)
 									M.posture=3
 								else
 									M.posture=pick(
@@ -252,8 +252,50 @@ mob/proc/AIBlock()
 	src.movevector=vector(0,0)
 	sleep(10)
 	src.icon_state=""
+
+mob/var/tmp/hue=0
+mob/var/tmp/shiny=0
+mob/proc/shiny()
+	if(shiny)return
+	shiny=1
+	while(src&&shiny)
+		sleep(1)
+		src.hue+=10
+		if(src.hue>360)src.hue-=360
+		src.filters += filter(
+			type = "color",
+			space = FILTER_COLOR_HSV,
+		 	color = list(1,0,0, 0,1,0, 0,0,1, src.hue/360,0,0)
+		 	)
+
+mob/New()
+	..()
+	if(src.hue)
+		src.filters += filter(
+			type = "color",
+			space = FILTER_COLOR_HSV,
+		 	color = list(1,0,0, 0,1,0, 0,0,1, src.hue/360,0,0)
+		 	)
 mob/Click()
 	src.Check_Vars()
+
+
+mob/verb/MakeShiny(mob/M in view(10))
+	if(M.shiny)
+		M.shiny=0
+		M.color=null
+	else M.shiny()
+
+mob/verb/ChangeHue(mob/M in view(10))
+	var/hueshift=input(usr,"Set a hue shift from 0 to 360","Hue") as num
+	src.hue=hueshift
+	src.filters=null
+	src.filters += filter(
+		type = "color",
+		space = FILTER_COLOR_HSV,
+	 	color = list(1,0,0, 0,1,0, 0,0,1, src.hue/360,0,0)
+	 	)
+
 
 mob/proc/AIMove(pixloc/P,iterations=20)
 	if(src.moving)return

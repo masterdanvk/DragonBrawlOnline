@@ -385,7 +385,7 @@ obj/Kiblast
 		power=40
 		impact=60
 		explode=0
-
+		push=1
 		Bump(atom/A)
 			if(istype(A,/mob) && !A:invulnerable)
 				src.hitmobs|=A
@@ -399,7 +399,7 @@ obj/Kiblast
 					if(M!=src.owner)src.hitmobs|=M
 
 					sleep(1)
-			src.loc=null
+			spawn(5)src.loc=null
 			..()
 
 	Basic
@@ -433,6 +433,8 @@ Skill
 	var/kicost=0
 	var/channel=0
 	var/ctime=0
+	var/state1="blast1"
+	var/state2="blast2"
 	proc/Use()
 	proc/Charge()
 
@@ -440,38 +442,67 @@ Skill
 		ctime=4
 		kicost=60
 		Use(mob/user,time)
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
 			user.FireBeam(time,500,new/Beam/Kamehameha)
 	Galekgun
 		ctime=4
 		kicost=60
 		Use(mob/user,time)
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
 			user.FireBeam(time,500,new/Beam/Galekgun)
 	Masenko
 		ctime=4
 		kicost=50
 		Use(mob/user,time)
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
 			user.FireBeam(time,500,new/Beam/Masenko)
 	Dondonpa
 		ctime=3
 		kicost=40
 		Use(mob/user,time)
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
 			user.FireBeam(time,500,new/Beam/Dondonpa)
 	Tribeam
 		ctime=3
 		kicost=60
 		Use(mob/user,time)
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
 			user.FireBeam(time,500,new/Beam/Tribeam)
 	Specialbeamcannon
 		ctime=10
 		kicost=60
+		state1="sbc1"
+		state2="sbc2"
 		Use(mob/user,time)
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
 			user.FireBeam(time,275,new/Beam/Specialbeamcannon)
 
 	Destructodisc
 		ctime=5
 		kicost=40
 		Use(mob/user,time)
-			user.icon_state="blast2"
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
 			var/obj/Kiblast/Destructodisc/D
 			if(!user.holdskill)D=new/obj/Kiblast/Destructodisc
 			else
@@ -487,8 +518,12 @@ Skill
 	Spiritbomb
 		ctime=15
 		kicost=40
+		state1="spiritbomb"
 		Use(mob/user,time)
-			user.icon_state="blast2"
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
 			src.channel=0
 			var/obj/Kiblast/Spiritbomb/S
 			if(!user.holdskill)S=new/obj/Kiblast/Spiritbomb
@@ -525,7 +560,10 @@ Skill
 		ctime=3
 		kicost=50
 		Use(mob/user,time)
-			user.icon_state="blast2"
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
 			src.channel=0
 			var/obj/Kiblast/Spiritbomb/S
 			if(!user.holdskill)S=new/obj/Kiblast/Spiritball
@@ -560,7 +598,10 @@ Skill
 		ctime=10
 		kicost=60
 		Use(mob/user,time)
-			user.icon_state="blast2"
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
 			src.channel=0
 			var/obj/Kiblast/Bigbangattack/S=new/obj/Kiblast/Bigbangattack
 			user.Energy_Blast(time,S,vector(0,0))

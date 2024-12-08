@@ -141,6 +141,7 @@ proc/calculate_bounce(vector/incident_vector, vector/normal_vector)
 	return bounce_vector
 
 
+
 proc/getnormal(atom/movable/mover,atom/obstacle)
 	var/pixloc/mtr = bound_pixloc(mover,NORTHEAST) - bound_pixloc(obstacle,SOUTHWEST)
 	var/pixloc/mbl = bound_pixloc(mover,SOUTHWEST) - bound_pixloc(obstacle,NORTHEAST)
@@ -155,3 +156,46 @@ proc/getnormal(atom/movable/mover,atom/obstacle)
 		normal.x = 1
 	normal.Normalize()
 	return normal
+
+//from Crazah
+proc
+	color2matrix(var/color)
+		var/list/rgb = rgb2num(color)
+		if(!length(rgb)) return null
+
+		var/r = rgb[1] / 255
+		var/g = rgb[2] / 255
+		var/b = rgb[3] / 255
+
+		// Return the full 20-element RGBA matrix
+		// Format: [rr,rg,rb,ra, gr,gg,gb,ga, br,bg,bb,ba, ar,ag,ab,aa, cr,cg,cb,ca]
+		return list(
+			r,   0,   0,   0,  // Red row
+			0,   g,   0,   0,  // Green row
+			0,   0,   b,   0,  // Blue row
+			0,   0,   0,   1,  // Alpha row (identity)
+			0,   0,   0,   0   // Color offset row (no offset)
+			)
+	matrix2rgb(list/matrix)
+		if(!islist(matrix) || length(matrix) != 20)
+			throw EXCEPTION("Invalid matrix passed to matrix2rgb()")
+		var/r = round(matrix[1] * 255)
+		var/g = round(matrix[6] * 255)
+		var/b = round(matrix[11] * 255)
+		return rgb(r, g, b)
+
+proc/color_matrix_rotate_hue(angle)
+	var/sin = sin(angle)
+	var/cos = cos(angle)
+	var/cos_inv_third = 0.333*(1-cos)
+	var/sqrt3_sin = sqrt(3)*sin
+	return list(
+		round(cos+cos_inv_third, 0.001), round(cos_inv_third+sqrt3_sin, 0.001), round(cos_inv_third-sqrt3_sin, 0.001), 0,
+		round(cos_inv_third-sqrt3_sin, 0.001), round(cos+cos_inv_third, 0.001), round(cos_inv_third+sqrt3_sin, 0.001), 0,
+		round(cos_inv_third+sqrt3_sin, 0.001), round(cos_inv_third-sqrt3_sin, 0.001), round(cos+cos_inv_third, 0.001), 0,
+		0,0,0,1,
+		0,0,0,0)
+
+
+
+

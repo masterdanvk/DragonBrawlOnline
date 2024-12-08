@@ -46,7 +46,6 @@ mob/proc/Target()
 mob/proc/FireBeam(charge,maxdistance,Beam/B)
 	src.mybeam=B
 	B.owner=src
-	src.icon_state="blast2"
 	src.usingskill=1
 	var/shortestdist=999
 
@@ -66,7 +65,9 @@ mob/proc/FireBeam(charge,maxdistance,Beam/B)
 			src.rotation=0
 		src.usingskill=0
 		src.CheckCanMove()
+
 	var/vector/aimvector=src.aim
+
 	var/vector/stepvector=vector(aimvector)
 	if(!aimvector||!aimvector.size||!stepvector)
 		src.usingskill=0
