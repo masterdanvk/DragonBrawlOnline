@@ -278,6 +278,20 @@ Beam
 			parts+=src.base
 			parts+=src.head
 			parts+=src.beam
+	Doublesunday
+		power=50
+		New()
+			..()
+			src.base=new/obj/Beam/Doublesunday/Base
+			src.head=new/obj/Beam/Doublesunday/Head
+			src.beam=new/obj/Beam/Doublesunday/Beam
+			src.base.BeamParent=src
+			src.head.BeamParent=src
+			src.beam.BeamParent=src
+			parts=new/list
+			parts+=src.base
+			parts+=src.head
+			parts+=src.beam
 	Tribeam
 		power=50
 
@@ -434,6 +448,25 @@ obj/Beam
 			head=1
 		Beam
 			icon_state="yellow"
+			icon='beam.dmi'
+			bound_width=8
+			pixel_z=-16
+	Doublesunday
+		icon='doublesunday.dmi'
+		Base
+			icon_state="start"
+			layer=OBJ_LAYER+0.1
+			bound_width=64
+			pixel_z=-16
+		Head
+			icon_state="head"
+			layer=MOB_LAYER+0.2
+			bound_width=64
+			pixel_z=-16
+			density=1
+			head=1
+		Beam
+			icon_state="doublesunday"
 			icon='beam.dmi'
 			bound_width=8
 			pixel_z=-16

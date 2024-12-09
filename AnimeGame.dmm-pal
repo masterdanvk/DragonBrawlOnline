@@ -1,1 +1,4 @@
 [Palette]
+/mob/celljr{aggrorange=1}
+/mob/yamcha{team="Zfighter"}
+/area/arena{name="raditz arena"; x1=48; y1=1; x2=92; y2=27}

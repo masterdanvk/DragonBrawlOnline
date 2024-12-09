@@ -100,6 +100,88 @@ client/verb/SaibamenInvasion(var/n as num)
 
 	world<<"The Saibamen invasion is over!!"
 
+client/verb/RaditzFight()
+	var/hero=input(usr,"Which character do you want to be?","Character Select") in list("Goku","Piccolo","Cancel")
+	if(hero=="Cancel")return
+	var/prompt
+	var/p1type
+	var/p2type
+	if(hero=="Goku")
+		p1type=/mob/goku/raditzfight
+		p2type=/mob/piccolo/raditzfight
+		prompt="Who do you want to play as Piccolo?"
+	else
+		p1type=/mob/piccolo/raditzfight
+		p2type=/mob/goku/raditzfight
+		prompt="Who do you want to play as Goku?"
+	var/list/choices=new/list
+	for(var/mob/M in world)
+		if(M!=src.mob && M.client)
+			choices+=M
+	choices+="Computer"
+	choices+="Cancel"
+	var/p=input(usr,"[prompt]","Ally Select") in choices
+	var/mob/friend
+	if(p=="Cancel")return
+
+	//72,19 raditz
+	//68,14 goku
+	//76,14 piccolo
+	if(p!="Computer")friend=p
+
+	var/mob/old=src.mob
+	src.screen=null
+	src.mob=new p1type(locate(68,14,2))
+	del(old)
+	var/mob/O=new/mob/raditz(locate(72,19,2))
+
+	O.pl=1500
+	O.hp=400
+	O.maxhp=400
+	O.aggrotag=1
+	O.aggrorange=2
+	O.wanderrange=4
+
+
+
+	if(p!="Computer")
+		var/client/F=friend.client
+		var/mob/friendold=friend
+		F.screen=null
+		F.mob=new p2type(locate(76,14,2))
+		friendold.loc=null
+		del(friendold)
+		friend=F.mob
+	else
+		friend=new p2type(locate(76,14,2))
+		spawn(30)Awaken(friend,O)
+	src.mob.hp=300
+	src.mob.maxhp=300
+	friend.hp=300
+	friend.maxhp=300
+	friend.team="Good"
+	src.mob.team="Good"
+	O.team="Evil"
+	src.mob.loc.loc.Entered(src.mob)
+	friend.loc.loc.Entered(friend)
+	RefreshChunks|=O
+	RefreshChunks|=friend
+	RefreshChunks|=src.mob
+	while(!O.dead&&(!src.mob.dead||!friend.dead))
+		if(p=="Computer")
+			friend.Heal(20)
+		sleep(50)
+	src.edge_limit=null
+	friend.client?.edge_limit=null
+	if(!O||O.dead)
+		world<<"[src.mob] and [friend] defeated Raditz!"
+		if(src.mob)spawn()src.mob.Die()
+		if(friend)spawn()friend.Die()
+	else
+		world<<"Raditz defeated [src.mob] and [friend]."
+		O.loc=null
+		O.targetmob=null
+
 
 
 client/verb/Tournament(var/s in list("Accurate","Equal","Easy","Medium","Hard"))
@@ -276,6 +358,7 @@ mob
 	Login()
 		..()
 		src.name=src.client.name
+		src.team=src.ckey
 mob/picking
 	icon=null
 	selecting=1
@@ -288,6 +371,7 @@ mob/picking
 			//Input() will wait until the client finishes picking a name.
 			var/obj/gui/menu/name_entry/picker = new()
 			var/n = picker.Input(src.client,"What is your name?")
+			if(!src.client)return
 			if(!n) n = src.client.key
 			src.client.name = n
 
@@ -303,7 +387,9 @@ var/alist/playerselection=new/alist(
 	Krillin=/mob/krillin,
 	Yamcha=/mob/yamcha,
 	Chaiotzu=/mob/chaotzu,
+	Raditz=/mob/raditz,
 	Saibamen=/mob/saibamen,
+	Cell = /mob/cell,
 	CellJr = /mob/celljr)
 
 mob/verb/ChangePlayer()
@@ -313,6 +399,7 @@ mob/verb/ChangePlayer()
 var/list/unusedmobs[0]
 mob/var/tmp/selecting=0
 mob/var/tmp/vector/displayvector
+mob/var/tmp/spawncount=0
 client/var/tmp/mob/select
 client/var/tmp/mobselect[]
 client/proc/Character_Select()
@@ -564,6 +651,7 @@ mob/proc/Create_Aura(color)
 
 mob/var/skills[]
 mob/var/alist/unlocked[]
+mob/var/spawnings[0]
 
 
 mob
@@ -589,6 +677,14 @@ mob
 		special=/Beam/Kamehameha
 		unlocked=alist("ssj"=1)
 		behaviors=list(10,10,40,10,30) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		raditzfight
+			pl=416
+			unlocked=null
+			New()
+				..()
+				spawn(1)
+					for(var/Skill/Spiritbomb/S in src.skills)
+						del(S)
 		Transform()
 			if(src.unlocked["ssj"])
 				if(!form)
@@ -610,6 +706,7 @@ mob
 					src.form=null
 					src.Create_Aura("White")
 				..()
+
 
 
 		New()
@@ -665,6 +762,9 @@ mob
 		pl=9000
 		special=/Beam/Specialbeamcannon
 		behaviors=list(5,25,25,20,25) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		raditzfight
+			pl=408
+			unlocked=null
 		New()
 			..()
 			src.Create_Aura("Purple")
@@ -742,6 +842,45 @@ mob
 			src.Create_Aura("Lightgreen")
 			src.skills=list(new/Skill/Dondonpa,new/Skill/Spiritball)
 			src.equippedskill=src.skills[1]
+	cell
+		icon='cell.dmi'
+		bound_x=20
+		bound_y=2
+		bound_width=24
+		bound_height=38
+		pl=40000
+		special=/Beam/Kamehameha
+		unlocked=alist("celljr"=1)
+		kiblast=/obj/Kiblast/Fingerlaser
+		behaviors=list(5,35,25,10,25) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		New()
+			..()
+			src.Create_Aura("Yellow")
+
+			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon)
+			src.equippedskill=src.skills[1]
+		Transform()
+			if(src.unlocked["celljr"])
+				if(src.spawncount<6)
+					src.spawncount++
+					var/spl=round(src.pl/5,1)
+					src.Set_PL(round(src.pl*4/5,1))
+					src.icon_state="transform"
+					src.canmove=0
+					sleep(8)
+					src.canmove=1
+					var/mob/cjr=new/mob/celljr(bound_pixloc(src,0))
+					cjr.team=src.team
+					cjr.wanderrange=4
+					cjr.aggrorange=1
+					cjr.Set_PL(spl)
+					src.spawnings+=cjr
+					sleep(3)
+					RefreshChunks|=cjr
+					src.icon_state=""
+
+
+
 	celljr
 		icon='celljr.dmi'
 		bound_x=20
@@ -756,6 +895,23 @@ mob
 			..()
 			src.Create_Aura("Yellow")
 			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon)
+			src.equippedskill=src.skills[1]
+	raditz
+		icon='raditz.dmi'
+		bound_x=20
+		bound_y=2
+		bound_width=24
+		bound_height=38
+		pl=9000
+		special=/Beam/Doublesunday
+		behaviors=list(10,40,20,10,20) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+
+
+
+		New()
+			..()
+			src.Create_Aura("Purple")
+			src.skills=list(new/Skill/Doublesunday,new/Skill/Saturdaycrush)
 			src.equippedskill=src.skills[1]
 
 	saibamen
@@ -1037,6 +1193,9 @@ turf
 		indestructible=1
 		icon='tournament.png'
 		density=0
+	dark
+		density=1
+		opacity=1
 area/arena
 	var/x1,x2,y1,y2
 	New()
@@ -1053,7 +1212,7 @@ mob/proc/Heal(heal)
 
 mob/proc/Damage(damage,impact,critchance,mob/damager)
 	if(src.team && src.team==damager.team)return 0
-	if(!src.client && src.canaggro && !src.targetmob)
+	if(!src.client && src.canaggro && (!src.targetmob||src.aggrotag))
 		src.Detect(damager)
 	var/vector/v=src.pixloc-damager.pixloc
 	var/crit=prob(critchance)
@@ -1083,18 +1242,14 @@ mob/proc/Damage(damage,impact,critchance,mob/damager)
 mob/proc
 	Die(mob/damager)
 
-		if(src.detector)
-			src.detector.loc=null
-			src.detector.owner=null
-			src.detector=null
-		if(src.detector2)
-			src.detector2.loc=null
-			src.detector2.owner=null
-			src.detector2=null
+		if(src.spawnings.len)
+			for(var/mob/S in src.spawnings)
+				spawn()S.Die()
 		src.invulnerable=1
 		src.vis_contents=null
 		src.dead=1
 		src.density=0
+		src.client?.edge_limit=null
 		src.canmove=0
 		src.Clear_target()
 		sleep(10)
@@ -1104,8 +1259,6 @@ mob/proc
 
 		if(damager)
 			world<<"[src] has been killed by [damager]"
-		else
-			world<<"[src] has died!"
 
 		if(damager)damager.Clear_target()
 		var/matrix/M=src.transform
@@ -1423,7 +1576,7 @@ client/proc/GamePad2Key(button, keydown)
 		spawn()
 			if(keydown)//&&!src.keydown[b])
 				src.keydownverb(b)
-			else if(src.keydown[b])
+			else if(b&&src.keydown[b])
 				src.keyupverb(b)
 client/var/dashkey
 client/var/lasttapped[2]
@@ -1619,6 +1772,7 @@ client/verb/keyupverb(button as text)
 		src.HideAim()
 		var/skilltime=world.time-src.keydown[button]
 		src.screen-=M.gui_charge
+		if(!M.equippedskill)M.equippedskill=M.skills[1]
 		if(skilltime>=M.equippedskill.ctime)
 			M.UseSkill(world.time-src.keydown[button])
 		else

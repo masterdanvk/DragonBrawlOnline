@@ -30,6 +30,11 @@ menu "menu"
 		category = "&File"
 		saved-params = "is-checked"
 	elem 
+		name = "Raditz Fight"
+		command = "RaditzFight"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
 		name = "Join Tournament"
 		command = "Tournament"
 		category = "&File"
@@ -93,11 +98,6 @@ window "mainwindow"
 		can-minimize = false
 		macro = "macro"
 		menu = "menu"
-		outer-size = 1296x779
-		outer-pos = 291,0
-		inner-size = 1280x720
-		inner-pos = 8,51
-		screen-size = 1920x1032
 	elem "map1"
 		type = MAP
 		pos = 0,0

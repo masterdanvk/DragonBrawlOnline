@@ -2,6 +2,7 @@
 
 
 mob/var/tmp/Skill/equippedskill
+mob/var/tmp/kiblast=/obj/Kiblast/Basic
 obj/var
 	mob/owner
 mob/proc/UseSkill(time)
@@ -26,7 +27,8 @@ mob/proc/UseKiBlast()
 	if(src.Take_Ki(5))
 	//check ki sufficient
 		src.icon_state="blast2"
-		src.Energy_Blast(0,new/obj/Kiblast/Basic)
+		var/obj/Kiblast/K=new src.kiblast
+		src.Energy_Blast(0,K)
 		src.icon_state=""
 	else
 		var/red = list(100,40,40,40,40,40,40,40,40,40,40,40)
@@ -49,9 +51,10 @@ mob/proc/ChargeSkill()
 	src.equippedskill.Charge(src)
 
 
-mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset)
+mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset,icon/customki)
 	if(!offset)offset=new/vector(0,0)
 	K.owner=src
+	if(customki)K.icon=customki
 	if(!src.aim)
 		src.icon_state=""
 		if(src.bdir==EAST)
@@ -64,13 +67,18 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset)
 		src.CheckCanMove()
 	var/vector/aimvector=src.aim
 	var/turnd=round(rand(-K.spread,K.spread),1)
-	aimvector.Turn(turnd)
-	var/vector/stepvector=vector(aimvector)
-	if(!aimvector||!aimvector.size||!stepvector)
+	if(aimvector)aimvector.Turn(turnd)
+
+	if(!aimvector||!aimvector.size)
 		src.usingskill=0
 		src.canmove=1
 		return
+	var/vector/stepvector=vector(aimvector)
 	stepvector.size=K.speed
+	if(!stepvector)
+		src.usingskill=0
+		src.canmove=1
+		return
 	var/angle=vector2angle(aimvector)
 	if(K.carryowner)
 		src.RotateMob(stepvector,100)
@@ -78,7 +86,7 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset)
 	if(K.rotate)
 		m.TurnWithPivot(angle,K.bound_width/2,0,K.axisflip)
 		K.transform=m
-	K.pixloc=bound_pixloc(src,0)+stepvector+offset
+	K.pixloc=bound_pixloc(src,0)+stepvector+offset+vector(K.xoffset,K.yoffset)
 	K.stepv=stepvector
 
 	spawn(3)
@@ -169,7 +177,7 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset)
 					Hit.Damage(K.power*PLcompare(src,Hit),K.impact,0,src)
 					Hit.icon_state="hurt1"
 					spawn(5)
-						if(Hit.icon_state=="hurt1")Hit.icon_state=""
+						if(Hit&&Hit.icon_state=="hurt1")Hit.icon_state=""
 			//	world<<"Damage from [K] is [K.power*PLcompare(src,Hit)]"
 		sleep(world.tick_lag)
 		if(turnd)
@@ -258,6 +266,8 @@ obj/Kiblast
 		carryowner=0
 		axisflip=0
 		blockreduce=50
+		xoffset=0
+		yoffset=0
 
 
 	Spiritbomb
@@ -401,7 +411,64 @@ obj/Kiblast
 					sleep(1)
 			spawn(5)src.loc=null
 			..()
+	Saturdaycrush
+		icon='saturdaycrush.dmi'
+		layer=MOB_LAYER+1
+		bound_width=74
+		bound_height=112
+		bound_x=-37
+		bound_y=-56
+		pixel_z=-56
+		density=1
+		spread=0
+		distance=500
+		speed=8
+		power=40
+		impact=60
+		explode=0
+		push=1
+		Bump(atom/A)
+			if(istype(A,/mob) && !A:invulnerable)
+				src.hitmobs|=A
 
+		Explode()
+			src.icon=null
+			spawn()
+				Explosion(/obj/FX/Explosion,bound_pixloc(src,0))
+				destroy_turfs(bound_pixloc(src,0),100)
+				for(var/mob/M in bound_pixloc(src,0),100)
+					if(M!=src.owner)src.hitmobs|=M
+
+					sleep(1)
+			spawn(5)src.loc=null
+			..()
+	Fingerlaser
+		icon='fingerlaser.dmi'
+		bound_width=32
+		bound_height=17
+		bound_y=27
+		density=1
+		spread=0
+		distance=400
+		yoffset=-27
+		xoffset=-10
+		speed=12
+		power=3
+		impact=1
+		explode=1
+
+		Bump(atom/A)
+			if(istype(A,/obj))
+				if(A:destructible)
+					A:Destroy_Landscape()
+				src.Explode()
+				src.loc=null
+			..()
+		Explode()
+			src.icon=null
+			Explosion(/obj/FX/Explosion,bound_pixloc(src,0),0,0.25,0.25)
+			src.loc=null
+			..()
 	Basic
 		icon='kiblast.dmi'
 		bound_width=19
@@ -411,7 +478,7 @@ obj/Kiblast
 		spread=20
 		distance=400
 		speed=12
-		power=3
+		power=5
 		impact=5
 		explode=1
 		Bump(atom/A)
@@ -441,6 +508,8 @@ Skill
 	Kamehameha
 		ctime=4
 		kicost=60
+		state1="kame1"
+		state2="kame2"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -456,6 +525,17 @@ Skill
 			else
 				user.icon_state="blast2"
 			user.FireBeam(time,500,new/Beam/Galekgun)
+	Doublesunday
+		ctime=4
+		kicost=60
+		state1="kame1"
+		state2="kame2"
+		Use(mob/user,time)
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
+			user.FireBeam(time,500,new/Beam/Doublesunday)
 	Masenko
 		ctime=4
 		kicost=50
@@ -607,12 +687,25 @@ Skill
 			user.Energy_Blast(time,S,vector(0,0))
 			sleep(5)
 			if(user.icon_state=="blast2")user.icon_state=""
-
+	Saturdaycrush
+		ctime=10
+		kicost=60
+		Use(mob/user,time)
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
+			src.channel=0
+			var/obj/Kiblast/Bigbangattack/S=new/obj/Kiblast/Saturdaycrush
+			user.Energy_Blast(time,S,vector(0,0))
+			sleep(5)
+			if(user.icon_state=="blast2")user.icon_state=""
 	Kiblast
 		kicost=5
 		ctime=0
 		Use(mob/user,time)
 			user.icon_state="blast2"
-			user.Energy_Blast(time,new/obj/Kiblast/Basic)
+			var/obj/Kiblast/K=new user.kiblast
+			user.Energy_Blast(time,K)
 			user.icon_state=""
 

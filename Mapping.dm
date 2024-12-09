@@ -1,6 +1,13 @@
 obj
 	var
 		destructible=0
+
+	Pod
+		icon='pod.dmi'
+		density=1
+		destructible=0
+		bound_width=64
+		bound_height=64
 	Rock
 		density=1
 		destructible=1

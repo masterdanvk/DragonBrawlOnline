@@ -12,6 +12,7 @@ mob/var/tmp
 	wanderlist[0]
 	wander=0
 	canaggro=1
+	aggrotag=0
 var/AItick=0
 mob/var/skillcooldown
 proc/AI_Loop()
@@ -41,6 +42,7 @@ proc/AI_Loop()
 					prob(M.behaviors[5]);5)
 				M.posturetime=world.time
 			M.Face(M.targetmob)
+			if(M.block && M.icon_state!="block")M.block=0
 			switch(M.posture)
 				if(1)
 					if((world.time-M.posturetime)>=100 &&M.posture==1)
@@ -80,24 +82,35 @@ proc/AI_Loop()
 				if(2)
 					var/vector/dist=M.targetmob.pixloc-M.pixloc
 					if(dist.size<=64)
-						if(prob(50))
-							AI_Active-=M
-							spawn()
-								M.AIBlock()
-								AI_Active|=M
-								M.activeai=0
-						else if(prob(30))
-							dist.size=200
-							dist.Turn(pick(-90,90,-60,60,-30,30))
-							AI_Active-=M
-							spawn()
-								M.AIMove(M.targetmob.pixloc+dist)
-								sleep(pick(10,20,30,25,15))
-								AI_Active|=M
+						if(M.blocks>=1)
+							if(prob(30))
+								AI_Active-=M
+								spawn()
+									M.AIBlock()
+									AI_Active|=M
+									M.activeai=0
+							else if(prob(50))
+								dist.size=200
+								dist.Turn(pick(-90,90,-60,60,-30,30))
+								AI_Active-=M
+								var/turf/T=locate(M.targetmob.pixloc+dist)
+								if(T&&!T.density)
+									spawn()
+										M.AIMove(M.targetmob.pixloc+dist)
+										sleep(pick(10,20,30,25,15))
+										AI_Active|=M
+										M.activeai=0
+								else
+									AI_Active|=M
+									M.activeai=0
+							else
+								M.posture=3
 								M.activeai=0
 						else
-							M.posture=3
-							M.activeai=0
+							M.blocks++
+							M.Update_Blocks()
+							M.posture=0
+
 					else
 						if(M.ki<M.maxki&&prob(30))
 							AI_Active-=M
@@ -133,7 +146,7 @@ proc/AI_Loop()
 						M.block=0
 					AI_Active-=M
 					spawn()
-						M.AIMove(M.targetmob.pixloc,50)
+						M.AIMoveto(M.targetmob,50)
 						sleep(3)
 						AI_Active|=M
 						M.activeai=0
@@ -246,11 +259,14 @@ mob/proc/Wander(mob/A)
 
 
 mob/proc/AIBlock()
-	set waitfor = 0
 	src.block=1
+	src.blocks+=1
+	if(src.blocks>src.maxblocks)src.blocks=src.maxblocks
+	else
+		src.Update_Blocks()
 	animate(src,icon_state="block",time=4)
 	src.movevector=vector(0,0)
-	sleep(10)
+	sleep(30)
 	src.icon_state=""
 
 mob/var/tmp/hue=0
@@ -288,12 +304,12 @@ mob/verb/MakeShiny(mob/M in view(10))
 
 mob/verb/ChangeHue(mob/M in view(10))
 	var/hueshift=input(usr,"Set a hue shift from 0 to 360","Hue") as num
-	src.hue=hueshift
-	src.filters=null
-	src.filters += filter(
+	M.hue=hueshift
+	M.filters=null
+	M.filters += filter(
 		type = "color",
 		space = FILTER_COLOR_HSV,
-	 	color = list(1,0,0, 0,1,0, 0,0,1, src.hue/360,0,0)
+	 	color = list(1,0,0, 0,1,0, 0,0,1, M.hue/360,0,0)
 	 	)
 
 
@@ -319,6 +335,27 @@ mob/proc/AIMove(pixloc/P,iterations=20)
 	if(src.icon_state=="dash1"||src.icon_state=="dash2")src.icon_state=""
 	src.moving=0
 
+mob/proc/AIMoveto(mob/M,iterations=20)
+	if(src.moving)return
+	src.moving=1
+	var/i=0
+	if(src.tossed && src.icon_state!="hurt2")src.tossed=0
+	src.CheckCanMove()
+	while(((src.canmove && !src.tossed))&&i<=iterations&&M&&M.z==src.z&&!M.dead)
+		src.step_size=src.maxspeed*0.8
+		if(i<=3)
+			src.icon_state="dash1"
+		else
+			src.icon_state="dash2"
+		var/vector/stepv=M.pixloc-src.pixloc
+		stepv.size=src.step_size
+		src.RotateMob(stepv,5)
+		src.Move(stepv)
+		src.movevector=stepv
+		sleep(world.tick_lag)
+		i++
+	if(src.icon_state=="dash1"||src.icon_state=="dash2")src.icon_state=""
+	src.moving=0
 
 mob/proc/AICharge()
 	src.charging=1

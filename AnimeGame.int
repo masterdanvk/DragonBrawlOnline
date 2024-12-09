@@ -2,21 +2,21 @@
 /*
 MAP_PLANE_MASTERS: 
 MAP_ZOOM: 1.500
-LAST_COMPILE_TIME: 1733691323
-PACKAGE_RSC_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\AnimeGame_rsc.zip
+LAST_COMPILE_TIME: 1733731411
 DIR: gui ter gui bar demo tileset Lib 
+PACKAGE_RSC_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\AnimeGame_rsc.zip
 AUTO_FILE_DIR: ON
 PACKAGE_DMB_INFO: 
 MAP_ICON_TYPE: 0
 PACKAGE_DME_NAME: C:\Users\Danva\OneDrive\Desktop\AnimeGame_src.zip
 LAST_COMPILE_VERSION: 516.1647
-PACKAGE_DME_START: 
 PACKAGE_TYPE: 0
+PACKAGE_DME_START: 
+WINDOW: Base.dm;gui\gui_name_entry.dm;gui\gui_menu.dm;AnimeGame.dme;chunks.dm;AI.dm;interface.dmf;Beams.dm;FX.dm;Skills.dm;Turfs.dm;gui.dm;ter gui bar demo\UIbars.dm;saibamen.dmi;kaio_lib_mapresize.dm;Procs.dm;celljr.dmi;cell.dmi;fingerlaser.dmi;kiblast.dmi;bigbangattack.dmi;Mapping.dm;map.dmm
 PACKAGE_DME_INFO: 
-WINDOW: Base.dm;gui\gui_name_entry.dm;gui\gui_menu.dm;AnimeGame.dme;chunks.dm;AI.dm;interface.dmf;Beams.dm;FX.dm;Skills.dm;map.dmm;Turfs.dm;gui.dm;ter gui bar demo\UIbars.dm;saibamen.dmi;kaio_lib_mapresize.dm;Procs.dm;celljr.dmi;piccolo.dmi
 FILE: AI.dm
 MAP_INSTANCE_MODE: copy
-PACKAGE_DME_DEMO: 
 PACKAGE_DMB_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\DragonBrawlOnlineDec32024.zip
+PACKAGE_DME_DEMO: 
 */
 // END_INTERNALS
