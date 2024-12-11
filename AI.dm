@@ -20,6 +20,8 @@ proc/AI_Loop()
 	if(AItick>=5)
 		AItick=0
 		for(var/mob/M in AI_Active)
+			if(M.stunned&&M.stunned>world.time)
+				continue
 			if(M.dead)
 				AI_Active-=M
 				continue

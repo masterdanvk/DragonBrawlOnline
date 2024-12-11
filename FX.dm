@@ -19,6 +19,22 @@ obj
 		Del()
 			FX["[src.type]"]-=src
 			..()
+		Solarflare
+			icon='solarflare.dmi'
+			pixel_z=-32
+			pixel_w=-72
+			duration=5
+			bound_width=144 //144,96
+			bound_height=96
+			density=0
+		Explosivewave
+			icon='explosivewave.dmi'
+			duration=6
+			bound_width=128
+			bound_height=128
+			density=0
+			pixel_z=-64
+			pixel_w=-64
 
 		Smack
 			icon='fx_smack.dmi'

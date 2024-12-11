@@ -96,23 +96,23 @@ mob/proc/FireBeam(charge,maxdistance,Beam/B)
 	var/distremaining=maxdistance
 	while(distremaining>0)
 		distremaining-=8
+		if(B)
+			for(var/mob/M in B.hitmobs)
+				if(!B.pierce)M.Move(M.pixloc+stepvector)
+				M.icon_state="hurt1"
+			if(!B.clash)
+				if(B.head.Move(B.head.pixloc+stepvector))
+					B.length+=stepvector
+					var/matrix/m=new/matrix()
 
-		for(var/mob/M in B.hitmobs)
-			if(!B.pierce)M.Move(M.pixloc+stepvector)
-			M.icon_state="hurt1"
-		if(!B.clash)
-			if(B.head.Move(B.head.pixloc+stepvector))
-				B.length+=stepvector
-				var/matrix/m=new/matrix()
-
-				if(!B.statebased)m.TurnandScaleWithPivot(angle,(B.length.size+2)/B.beam.bound_width,1,B.beam.bound_width/2,0)
+					if(!B.statebased)m.TurnandScaleWithPivot(angle,(B.length.size+2)/B.beam.bound_width,1,B.beam.bound_width/2,0)
+					else
+						B.base.icon_state="[round(B.length.size/17,1)]"
+					B.beam.transform=m
 				else
-					B.base.icon_state="[round(B.length.size/17,1)]"
-				B.beam.transform=m
-			else
-				distremaining-=8
+					distremaining-=8
 		var/plcompare
-		if(B.clash)
+		if(B?.clash)
 			plcompare=PLcompare(src,B.clash.owner)
 		var/i=0
 		while(B&&B.clash&&B.clash.head?.loc)
@@ -285,6 +285,20 @@ Beam
 			src.base=new/obj/Beam/Doublesunday/Base
 			src.head=new/obj/Beam/Doublesunday/Head
 			src.beam=new/obj/Beam/Doublesunday/Beam
+			src.base.BeamParent=src
+			src.head.BeamParent=src
+			src.beam.BeamParent=src
+			parts=new/list
+			parts+=src.base
+			parts+=src.head
+			parts+=src.beam
+	Mouthblast
+		power=80
+		New()
+			..()
+			src.base=new/obj/Beam/Mouthblast/Base
+			src.head=new/obj/Beam/Mouthblast/Head
+			src.beam=new/obj/Beam/Mouthblast/Beam
 			src.base.BeamParent=src
 			src.head.BeamParent=src
 			src.beam.BeamParent=src
@@ -470,6 +484,25 @@ obj/Beam
 			icon='beam.dmi'
 			bound_width=8
 			pixel_z=-16
+	Mouthblast
+		icon='mouthblast.dmi'
+		Base
+			icon_state="start"
+			layer=OBJ_LAYER+0.1
+			bound_width=64
+			pixel_z=-16
+		Head
+			icon_state="head"
+			layer=MOB_LAYER+0.2
+			bound_width=64
+			pixel_z=-16
+			density=1
+			head=1
+		Beam
+			icon_state="mouthblast"
+			icon='beam.dmi'
+			bound_width=8
+			pixel_z=-16
 	Galekgun
 		icon='galekgun.dmi'
 		Base
@@ -533,8 +566,10 @@ obj/Beam
 		if(istype(A,/obj)&&A:destructible)
 			A:Destroy_Landscape()
 		if(istype(A,/mob) && !A:invulnerable &&!src.BeamParent.clash)
-			if(src.BeamParent && src.BeamParent!=A)src.BeamParent.hitmobs|=A
-			A:canmove=0
+			if(src.BeamParent && src.BeamParent!=A)
+				src.BeamParent.hitmobs|=A
+				A:stunned=world.time+50
+
 		if(istype(A,/obj/Beam)&&abs(A:BeamParent.angle-src.BeamParent.angle)>140&&abs(A:BeamParent.angle-src.BeamParent.angle)<220)
 			if(src.BeamParent && A:BeamParent && src.BeamParent!=A:BeamParent && A:head && !A:BeamParent.clash && !src.BeamParent.clash)
 				src.BeamParent.clash=A:BeamParent

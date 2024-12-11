@@ -297,9 +297,9 @@ obj/Kiblast
 			src.icon=null
 			Explosion(/obj/FX/Explosion,bound_pixloc(src,0),0,1+src.charge*0.05,1+src.charge*0.05)
 			destroy_turfs(bound_pixloc(src,0),max(40,16*(1+0.5*src.charge)))
-			for(var/mob/M in bound_pixloc(src,0),max(40,16*(1+0.5*src.charge)))
+			for(var/mob/M in bounds(bound_pixloc(src,0),max(40,16*(1+0.5*src.charge))))
 				if(M!=src.owner)src.hitmobs|=M
-				sleep(1)
+			//	sleep(1)
 			src.loc=null
 			..()
 	Destructodisc
@@ -380,6 +380,35 @@ obj/Kiblast
 		axisflip=1
 		blockreduce=35
 
+	Energyblast
+		icon='energyblast.dmi'
+		layer=MOB_LAYER+1
+		bound_width=64
+		bound_height=64
+		yoffset=-16
+		density=1
+		spread=0
+		distance=500
+		speed=8
+		power=40
+		impact=60
+		explode=0
+		push=1
+		Bump(atom/A)
+			if(istype(A,/mob) && !A:invulnerable)
+				src.hitmobs|=A
+
+		Explode()
+			src.icon=null
+			spawn()
+				Explosion(/obj/FX/Explosion,bound_pixloc(src,0))
+				destroy_turfs(bound_pixloc(src,0),100)
+				for(var/mob/M in bound_pixloc(src,0),100)
+					if(M!=src.owner)src.hitmobs|=M
+
+					sleep(1)
+			spawn(5)src.loc=null
+			..()
 	Bigbangattack
 		icon='bigbangattack.dmi'
 		layer=MOB_LAYER+1
@@ -425,6 +454,37 @@ obj/Kiblast
 		speed=8
 		power=40
 		impact=60
+		explode=0
+		push=1
+		Bump(atom/A)
+			if(istype(A,/mob) && !A:invulnerable)
+				src.hitmobs|=A
+
+		Explode()
+			src.icon=null
+			spawn()
+				Explosion(/obj/FX/Explosion,bound_pixloc(src,0))
+				destroy_turfs(bound_pixloc(src,0),100)
+				for(var/mob/M in bound_pixloc(src,0),100)
+					if(M!=src.owner)src.hitmobs|=M
+
+					sleep(1)
+			spawn(5)src.loc=null
+			..()
+	Mouthblast
+		icon='mouthblast.dmi'
+		layer=MOB_LAYER+1
+		bound_width=74
+		bound_height=112
+		bound_x=-37
+		bound_y=-56
+		pixel_z=-56
+		density=1
+		spread=0
+		distance=600
+		speed=12
+		power=60
+		impact=120
 		explode=0
 		push=1
 		Bump(atom/A)
@@ -536,6 +596,17 @@ Skill
 			else
 				user.icon_state="blast2"
 			user.FireBeam(time,500,new/Beam/Doublesunday)
+	Mouthblast
+		ctime=7
+		kicost=80
+		state1="mouth1"
+		state2="mouth2"
+		Use(mob/user,time)
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
+			user.FireBeam(time,600,new/Beam/Mouthblast)
 	Masenko
 		ctime=4
 		kicost=50
@@ -548,6 +619,8 @@ Skill
 	Dondonpa
 		ctime=3
 		kicost=40
+		state1="don1"
+		state2="don2"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -578,6 +651,8 @@ Skill
 	Destructodisc
 		ctime=5
 		kicost=40
+		state1="ddisc1"
+		state2="ddisc2"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -672,7 +747,27 @@ Skill
 		Use(mob/user,time)
 			animate(user,icon_state="punch2",flags=ANIMATION_PARALLEL,time=2)
 			user.Energy_Blast(time,new/obj/Kiblast/Dragonfist,vector(0,-96))
-
+	Solarflare
+		ctime=6
+		kicost=30
+		state1=""
+		state2="tayo"
+		Use(mob/user,time)
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="block"
+			for(var/mob/M in oview(3,user))
+				M.icon_state="hurt1"
+				M.stunned=world.time+50
+				spawn(50)
+					M.icon_state=""
+			user.canmove=1
+			var/obj/FX/Solarflare/S=new/obj/FX/Solarflare(bound_pixloc(user,0))
+			sleep(5)
+			user.canmove=0
+			del(S)
+			user.icon_state=""
 
 	Bigbangattack
 		ctime=10
@@ -684,6 +779,56 @@ Skill
 				user.icon_state="blast2"
 			src.channel=0
 			var/obj/Kiblast/Bigbangattack/S=new/obj/Kiblast/Bigbangattack
+			user.Energy_Blast(time,S,vector(0,0))
+			sleep(5)
+			if(user.icon_state=="blast2")user.icon_state=""
+
+	Explosivewave
+		ctime=10
+		kicost=30
+		state1="block"
+		state2="ewave"
+		Use(mob/user,time)
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
+			var/vector/aimvector=user.aim
+			var/pixloc/P
+			var/mob/M=user.Target()
+			if(!M)
+				var/vector/V=vector(aimvector)
+				V.size=256
+				P=bound_pixloc(user,0)+V
+
+			else
+				P=bound_pixloc(M,0)
+			if(!P)return
+			sleep(4)
+			var/obj/FX/Explosivewave/E=new/obj/FX/Explosivewave(P+vector(0,32))
+			sleep(4)
+			for(var/mob/Hit in bounds(P,64))
+				if(Hit==user)continue
+				if(Hit.block)
+					Hit.Damage(45*PLcompare(user,Hit)*(0.40),20,0,user)
+				else
+					Hit.Damage(45*PLcompare(user,Hit),80,0,user)
+				Hit.stunned=max(Hit.stunned,world.time+30)
+				Hit.icon_state="hurt1"
+				spawn(5)Hit.icon_state=""
+			sleep(2)
+			E.loc=null
+
+	Energyblast
+		ctime=5
+		kicost=60
+		Use(mob/user,time)
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
+			src.channel=0
+			var/obj/Kiblast/Energyblast/S=new/obj/Kiblast/Energyblast
 			user.Energy_Blast(time,S,vector(0,0))
 			sleep(5)
 			if(user.icon_state=="blast2")user.icon_state=""

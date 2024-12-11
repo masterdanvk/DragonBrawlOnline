@@ -143,9 +143,9 @@ client/verb/RaditzFight()
 	O.wanderrange=4
 
 
-
+	var/client/F
 	if(p!="Computer")
-		var/client/F=friend.client
+		F=friend.client
 		var/mob/friendold=friend
 		F.screen=null
 		F.mob=new p2type(locate(76,14,2))
@@ -167,12 +167,12 @@ client/verb/RaditzFight()
 	RefreshChunks|=O
 	RefreshChunks|=friend
 	RefreshChunks|=src.mob
-	while(!O.dead&&(!src.mob.dead||!friend.dead))
+	while(O&&!O.dead&&((src.mob&&!src.mob.dead)||(friend&&!friend.dead)))
 		if(p=="Computer")
 			friend.Heal(20)
 		sleep(50)
 	src.edge_limit=null
-	friend.client?.edge_limit=null
+	F?.edge_limit=null
 	if(!O||O.dead)
 		world<<"[src.mob] and [friend] defeated Raditz!"
 		if(src.mob)spawn()src.mob.Die()
@@ -345,6 +345,7 @@ mob
 	var
 		step_delay = 0.25
 		tmp/next_move = 0
+		tmp/stunned
 
 	Step(Dir = src.dir, Dist = move_speed, Delay = step_delay)
 		if(next_move>world.time) return 0
@@ -388,6 +389,7 @@ var/alist/playerselection=new/alist(
 	Yamcha=/mob/yamcha,
 	Chaiotzu=/mob/chaotzu,
 	Raditz=/mob/raditz,
+	Nappa=/mob/nappa,
 	Saibamen=/mob/saibamen,
 	Cell = /mob/cell,
 	CellJr = /mob/celljr)
@@ -637,6 +639,13 @@ mob/proc/Create_Aura(color)
 		if("Yellow")
 			O.alpha=50
 			col=rgb(225,210,30)
+		if("Lightyellow")
+			O.alpha=50
+			U.alpha=150
+			col=rgb(255,240,150)
+		if("Red")
+			O.alpha=50
+			col=rgb(225,50,50)
 		if("Lightgreen")
 			O.alpha=50
 			U.alpha=150
@@ -653,6 +662,39 @@ mob/var/skills[]
 mob/var/alist/unlocked[]
 mob/var/spawnings[0]
 
+mob/proc
+	Kaioken()
+		src.icon_state="transform"
+		src.form="kaioken"
+		src.icon_state=""
+		src.Set_PL(round(src.pl*4.2,1))
+		src.Create_Aura("Red")
+		src.vis_contents|=src.aura
+		src.vis_contents|=src.auraover
+		src.aura.icon_state="start"
+		src.auraover.icon_state="start"
+
+		sleep(2)
+		src.aura.icon_state="aura"
+		src.auraover.icon_state="aura"
+		sleep(4)
+		src.filters += filter(
+			type = "color",,
+		 	color = list(255,220,220)
+		 	)
+
+		src.aura.icon_state=""
+		src.auraover.icon_state=""
+		sleep(10)
+		src.vis_contents-=src.aura
+		src.vis_contents-=src.auraover
+
+	Kaioken_end()
+		src.icon_state=""
+		src.Set_PL(round(src.pl/4.2,1))
+		src.form=null
+		src.filters=null
+		src.Create_Aura("White")
 
 mob
 	proc/Reset_Portrait()
@@ -793,11 +835,21 @@ mob
 		bound_height=38
 		pl=9000
 		special=/Beam/Tribeam
+		unlocked=alist("kaioken"=1)
 		behaviors=list(15,5,30,10,45) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		Transform()
+			if(src.unlocked["kaioken"])
+				if(!form)
+					src.Kaioken()
+
+
+
+				else
+					src.Kaioken_end()
 		New()
 			..()
 			src.Create_Aura("White")
-			src.skills=list(new/Skill/Tribeam)
+			src.skills=list(new/Skill/Tribeam,new/Skill/Dondonpa,new/Skill/Solarflare)
 			src.equippedskill=src.skills[1]
 
 	krillin
@@ -808,12 +860,19 @@ mob
 		bound_height=28
 		pl=9000
 		special=/Beam/Kamehameha
+		unlocked=alist("kaioken"=1)
 		behaviors=list(15,25,30,5,25) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		New()
 			..()
 			src.Create_Aura("White")
-			src.skills=list(new/Skill/Destructodisc,new/Skill/Kamehameha)
+			src.skills=list(new/Skill/Destructodisc,new/Skill/Kamehameha,new/Skill/Solarflare)
 			src.equippedskill=src.skills[1]
+		Transform()
+			if(src.unlocked["kaioken"])
+				if(!form)
+					src.Kaioken()
+				else
+					src.Kaioken_end()
 	yamcha
 		icon='yamcha.dmi'
 		bound_x=20
@@ -822,12 +881,20 @@ mob
 		bound_height=38
 		pl=9000
 		special=/Beam/Kamehameha
+		unlocked=alist("kaioken"=1)
 		behaviors=list(15,5,50,10,25) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		New()
 			..()
 			src.Create_Aura("White")
 			src.skills=list(new/Skill/Spiritball,new/Skill/Wolffangfist)
 			src.equippedskill=src.skills[1]
+
+		Transform()
+			if(src.unlocked["kaioken"])
+				if(!form)
+					src.Kaioken()
+				else
+					src.Kaioken_end()
 	chaotzu
 		icon='chaotzu.dmi'
 		bound_x=25
@@ -848,7 +915,7 @@ mob
 		bound_y=2
 		bound_width=24
 		bound_height=38
-		pl=40000
+		pl=38000
 		special=/Beam/Kamehameha
 		unlocked=alist("celljr"=1)
 		kiblast=/obj/Kiblast/Fingerlaser
@@ -912,6 +979,22 @@ mob
 			..()
 			src.Create_Aura("Purple")
 			src.skills=list(new/Skill/Doublesunday,new/Skill/Saturdaycrush)
+			src.equippedskill=src.skills[1]
+	nappa
+		icon='nappa.dmi'
+		pixel_w=-4
+		bound_x=18
+		bound_y=0
+		bound_width=30
+		bound_height=40
+		portrait_offset=-15
+		pl=9000
+		special=/Beam/Mouthblast
+		behaviors=list(10,25,30,5,30) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		New()
+			..()
+			src.Create_Aura("Lightyellow")
+			src.skills=list(new/Skill/Explosivewave,new/Skill/Mouthblast,new/Skill/Energyblast)
 			src.equippedskill=src.skills[1]
 
 	saibamen
@@ -1196,6 +1279,7 @@ turf
 	dark
 		density=1
 		opacity=1
+		indestructible=1
 area/arena
 	var/x1,x2,y1,y2
 	New()
@@ -1525,6 +1609,7 @@ mob/proc/Counter(mob/M)
 	fade.vis_contents+=olay
 
 	if(M)
+		M.stunned=world.time+20
 		var/vector/V=M.pixloc-src.pixloc
 		V.size=V.size*2
 		var/pixloc/destination=src.pixloc+V
@@ -1573,6 +1658,7 @@ client/proc/GamePad2Key(button, keydown)
 		if("GamepadDownRight","Gamepad2DownRight")b="Southeast"
 
 	if(b)
+		if(!src.keydown)src.keydown=new/alist()
 		spawn()
 			if(keydown)//&&!src.keydown[b])
 				src.keydownverb(b)
@@ -1598,6 +1684,7 @@ client/verb/keydownverb(button as text)
 		src.GamePad2Key(button,1)
 		return
 	var/mob/M=src.mob
+
 	if(M.selecting)
 		src.SelectingInput(button)
 		return
@@ -1612,7 +1699,13 @@ client/verb/keydownverb(button as text)
 	if(src.lasttapped[1]==button)
 		tapbetween=world.time-src.lasttapped[2]
 
+
+	if(M.stunned&&M.stunned>world.time)
+		return
+	else
+		if(M.stunned)M.stunned=0
 	src.keydown[button]=world.time
+
 	var/starttime=world.time
 
 	src.lasttapped[1]=button
@@ -1718,12 +1811,21 @@ client/verb/keyupverb(button as text)
 	//if the user has a focus target, call onKeyUp() on the focus target.
 	//if the object returns null or 0 (or doesn't return anything), stop this input from propagating further.
 	//the focus target can return a true value with some or no keys to allow this input to propagate.
+
 	if(focus_target && !focus_target.onKeyUp(button))
 		return
 	if(button=="GamepadSelect"||button=="Gamepad2Select"||button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight"||button=="Gamepad2Face1"||button=="Gamepad2Face2"||button=="Gamepad2Face3"||button=="Gamepad2Face4"||button=="Gamepad2L1"||button=="Gamepad2R1"||button=="Gamepad2Left"||button=="Gamepad2Right"||button=="Gamepad2Up"||button=="Gamepad2Down"||button=="Gamepad2UpLeft"||button=="Gamepad2DownLeft"||button=="Gamepad2UpRight"||button=="Gamepad2DownRight")
 		src.GamePad2Key(button,0)
 		return
 	var/mob/M=src.mob
+	if(M.stunned&&M.stunned>world.time)
+		if(src.keydown[button])
+			sleep(M.stunned-world.time)
+		else
+			return
+	else
+		if(M.stunned)M.stunned=0
+
 	if(button==src.dashkey)
 		M.Chargestop()
 		src.dashkey=null
@@ -2052,7 +2154,7 @@ world/Tick()
 		winset(C, "mainwindow", "title=[title]")
 		var/mob/M = C:mob
 		if(M)
-			if(M.canmove && !M.tossed)
+			if(M.canmove && !M.tossed&&(!M.stunned||M.stunned<=world.time))
 				M.client?.UpdateMoveVector()
 				try
 					if(!(M.Move(M.pixloc+M.movevector)))
@@ -2086,7 +2188,7 @@ var/clients[0]
 mob
 	Bump(atom/o)
 		..()
-	//	if(src.client)src.client<<"Bump [o]"
+		if(src.client)src.client<<"Bump [o]"
 		if(istype(o,/mob))
 			var/mob/M=o
 
