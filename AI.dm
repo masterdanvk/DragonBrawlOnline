@@ -25,6 +25,11 @@ proc/AI_Loop()
 			if(M.dead)
 				AI_Active-=M
 				continue
+			if(M.lastloc!=M.loc)
+				M.storeddamage=0
+				M.lastloc=M.loc
+			if(M.storeddamage>=5)
+				M.posture=6
 			if(M.targetmob&&M.targetmob.dead)
 				M.targetmob=null
 
@@ -82,7 +87,11 @@ proc/AI_Loop()
 							AI_Active|=M
 							M.activeai=0
 				if(2)
-					var/vector/dist=M.targetmob.pixloc-M.pixloc
+					var/vector/dist
+					if(M?.pixloc&&M.targetmob?.pixloc)dist=M.targetmob.pixloc-M.pixloc
+					else
+						M.posture=0
+						return
 					if(dist.size<=64)
 						if(M.blocks>=1)
 							if(prob(30))
@@ -223,8 +232,11 @@ proc/AI_Loop()
 						else
 							M.posture=2
 							M.activeai=0
+				if(6) //escape
+					M.Counter(M.targetmob)
+					M.posture=pick(1,3,5)
 
-
+mob/var/tmp/turf/lastloc
 
 
 mob/proc/Detect(mob/A)

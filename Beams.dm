@@ -28,7 +28,7 @@ mob/proc/Target()
 	var/list/targets=new/list
 	var/mob/target
 	for(var/mob/M in obounds(src,500))
-		targets+=M
+		if(!M.dead)targets+=M
 
 	if(src.lastattacked in targets)
 		target=src.lastattacked
@@ -37,7 +37,8 @@ mob/proc/Target()
 		target=src.lastattackedby
 	else
 		if(targets.len)
-			target=pick(targets)
+			src.lastattacked=targets[1]
+			target=targets[1]
 
 
 	if(target && target!=src)
@@ -568,7 +569,7 @@ obj/Beam
 		if(istype(A,/mob) && !A:invulnerable &&!src.BeamParent.clash)
 			if(src.BeamParent && src.BeamParent!=A)
 				src.BeamParent.hitmobs|=A
-				A:stunned=world.time+50
+				A:stunned=world.time+10
 
 		if(istype(A,/obj/Beam)&&abs(A:BeamParent.angle-src.BeamParent.angle)>140&&abs(A:BeamParent.angle-src.BeamParent.angle)<220)
 			if(src.BeamParent && A:BeamParent && src.BeamParent!=A:BeamParent && A:head && !A:BeamParent.clash && !src.BeamParent.clash)

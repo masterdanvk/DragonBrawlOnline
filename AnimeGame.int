@@ -2,21 +2,21 @@
 /*
 MAP_PLANE_MASTERS: 
 MAP_ZOOM: 1.500
-LAST_COMPILE_TIME: 1733901441
+LAST_COMPILE_TIME: 1734060998
+DIR: gui tileset Lib 
 PACKAGE_RSC_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\AnimeGame_rsc.zip
-DIR: gui ter gui bar demo tileset Lib 
 AUTO_FILE_DIR: ON
 PACKAGE_DMB_INFO: 
 MAP_ICON_TYPE: 0
 PACKAGE_DME_NAME: C:\Users\Danva\OneDrive\Desktop\AnimeGame_src.zip
 LAST_COMPILE_VERSION: 516.1647
-PACKAGE_DME_START: 
 PACKAGE_TYPE: 0
-WINDOW: AI.dm;Skills.dm;map.dmm
+PACKAGE_DME_START: 
 PACKAGE_DME_INFO: 
-FILE: map.dmm
+WINDOW: AI.dm;Skills.dm;map.dmm;Base.dm;Beams.dm
+FILE: Base.dm
 MAP_INSTANCE_MODE: copy
-PACKAGE_DME_DEMO: 
 PACKAGE_DMB_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\DragonBrawlOnlineDec32024.zip
+PACKAGE_DME_DEMO: 
 */
 // END_INTERNALS

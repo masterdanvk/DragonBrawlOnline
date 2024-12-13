@@ -106,6 +106,7 @@ client/verb/RaditzFight()
 	var/prompt
 	var/p1type
 	var/p2type
+
 	if(hero=="Goku")
 		p1type=/mob/goku/raditzfight
 		p2type=/mob/piccolo/raditzfight
@@ -123,6 +124,9 @@ client/verb/RaditzFight()
 	var/p=input(usr,"[prompt]","Ally Select") in choices
 	var/mob/friend
 	if(p=="Cancel")return
+	for(var/mob/m in block(locate(48,1,2),locate(92,27,2)))
+		m.loc=null
+		m.Die()
 
 	//72,19 raditz
 	//68,14 goku
@@ -710,6 +714,7 @@ mob
 		src.Reset_Portrait()
 	dir=EAST
 	goku
+		name="Goku"
 		icon='goku.dmi'
 		bound_x=20
 		bound_y=2
@@ -758,6 +763,7 @@ mob
 			src.equippedskill=src.skills[1]
 
 	vegeta
+		name="Vegeta"
 		icon='vegeta.dmi'
 		portrait_offset=5
 		bound_x=20
@@ -796,6 +802,7 @@ mob
 					src.Create_Aura("Blue")
 			..()
 	piccolo
+		name="Piccolo"
 		icon='piccolo.dmi'
 		bound_x=20
 		bound_y=2
@@ -814,6 +821,7 @@ mob
 			src.equippedskill=src.skills[1]
 
 	gohan
+		name="Gohan"
 		icon='gohan.dmi'
 		bound_x=20
 		bound_y=2
@@ -828,6 +836,7 @@ mob
 			src.skills=list(new/Skill/Masenko,new/Skill/Kamehameha)
 			src.equippedskill=src.skills[1]
 	tien
+		name="Tienshinhan"
 		icon='tien.dmi'
 		bound_x=20
 		bound_y=2
@@ -853,6 +862,7 @@ mob
 			src.equippedskill=src.skills[1]
 
 	krillin
+		name="Krillin"
 		icon='krillin.dmi'
 		bound_x=20
 		bound_y=2
@@ -874,6 +884,7 @@ mob
 				else
 					src.Kaioken_end()
 	yamcha
+		name="Yamcha"
 		icon='yamcha.dmi'
 		bound_x=20
 		bound_y=2
@@ -896,6 +907,7 @@ mob
 				else
 					src.Kaioken_end()
 	chaotzu
+		name="Chaiotzu"
 		icon='chaotzu.dmi'
 		bound_x=25
 		bound_y=10
@@ -910,6 +922,7 @@ mob
 			src.skills=list(new/Skill/Dondonpa,new/Skill/Spiritball)
 			src.equippedskill=src.skills[1]
 	cell
+		name="Perfect Cell"
 		icon='cell.dmi'
 		bound_x=20
 		bound_y=2
@@ -949,6 +962,7 @@ mob
 
 
 	celljr
+		name="Cell Jr."
 		icon='celljr.dmi'
 		bound_x=20
 		bound_y=2
@@ -964,6 +978,7 @@ mob
 			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon)
 			src.equippedskill=src.skills[1]
 	raditz
+		name="Raditz"
 		icon='raditz.dmi'
 		bound_x=20
 		bound_y=2
@@ -981,6 +996,7 @@ mob
 			src.skills=list(new/Skill/Doublesunday,new/Skill/Saturdaycrush)
 			src.equippedskill=src.skills[1]
 	nappa
+		name="Nappa"
 		icon='nappa.dmi'
 		pixel_w=-4
 		bound_x=18
@@ -1294,6 +1310,7 @@ mob/proc/Heal(heal)
 	if(src.hp>src.maxhp)src.hp=src.maxhp
 	gui_hpbar.setValue(src.hp/src.maxhp,10)
 
+mob/var/tmp/storeddamage=0
 mob/proc/Damage(damage,impact,critchance,mob/damager)
 	if(src.team && src.team==damager.team)return 0
 	if(!src.client && src.canaggro && (!src.targetmob||src.aggrotag))
@@ -1306,6 +1323,7 @@ mob/proc/Damage(damage,impact,critchance,mob/damager)
 	src.lasthostile=world.time
 	damager.lasthostile=world.time
 	src.Show_target(damager)
+	storeddamage++
 	if(crit)
 		src.Flash(1.5,100)
 		v.size=impact*10
@@ -1377,11 +1395,20 @@ mob/proc/Punch(mob/hit)
 		var/mob/t
 		var/backstab
 		var/counter=0
-		var/vector/aim= Dir2Vector(src.dir)
+		var/mob/T=src.Target()
+		var/vector/aim
+		if(T)
+			aim=T.pixloc-src.pixloc
+			if(aim.size>40)T=null
+		if(!T)aim= Dir2Vector(src.dir)
 
-		aim.size=15
-		src.Move(src.pixloc+aim,src.dir)
-		sleep(1)
+		var/i=40
+		while(i>0)
+			src.step_size=src.maxspeed
+			aim.size=src.step_size
+			Move(src.pixloc+aim)
+			sleep(world.tick_lag)
+			i-=src.step_size
 		aim.size=30
 		if(hit) t=hit
 		else
@@ -1454,11 +1481,21 @@ mob/proc/Kick(mob/hit)
 		var/mob/t
 		var/backstab
 		var/counter=0
-		var/vector/aim= Dir2Vector(src.dir)
-		aim.size=30
+		var/mob/T=src.Target()
+		var/vector/aim
+		if(T)
+			aim=T.pixloc-src.pixloc
+			if(aim.size>60)T=null
+		if(!T)aim= Dir2Vector(src.dir)
 
-		src.Move(src.pixloc+aim,src.dir)
-		sleep(1)
+		var/i=60
+		while(i>0)
+			src.step_size=src.maxspeed
+			aim.size=src.step_size
+			Move(src.pixloc+aim)
+			sleep(world.tick_lag)
+			i-=src.step_size
+		aim.size=40
 		if(hit) t=hit
 		else
 			for(var/mob/M in bounds(bound_pixloc(src,src.dir)+aim,40))
@@ -1609,7 +1646,8 @@ mob/proc/Counter(mob/M)
 	fade.vis_contents+=olay
 
 	if(M)
-		M.stunned=world.time+20
+		if(!M.client)M.stunned=world.time+20
+		else M.stunned=world.time+5
 		var/vector/V=M.pixloc-src.pixloc
 		V.size=V.size*2
 		var/pixloc/destination=src.pixloc+V
@@ -2039,10 +2077,16 @@ client/proc/ShowAim()
 
 	src.mob.transform.Scale(flip,1)
 	src.images|=src.aimimage
+	if(src.autoaim)
+		sleep(2)
+		if(src.autoaim&&src.aimimage in src.images)
+			src.mob.aim=src.mob.Target()?.pixloc-src.mob.pixloc
+			src.ShowAim()
 
 client/proc/HideAim()
 	if(src.aimimage in src.images)src.images-=src.aimimage
 
+client/var/autoaim=1
 
 
 client/proc/UpdateMoveVector()
@@ -2097,9 +2141,10 @@ client/proc/UpdateMoveVector()
 			adjust.size=16
 			src.mob.aim+=adjust
 			src.mob.aim.size=16
+		src.autoaim=0
 		src.ShowAim()
 		return
-
+	if(src.autoaim==0)src.autoaim=1
 	if(!(V.x==0&&V.y==0))
 		V.size=max(src.mob.minspeed,src.mob.movevector?.size/2)
 	else

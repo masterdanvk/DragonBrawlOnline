@@ -813,7 +813,7 @@ Skill
 					Hit.Damage(45*PLcompare(user,Hit)*(0.40),20,0,user)
 				else
 					Hit.Damage(45*PLcompare(user,Hit),80,0,user)
-				Hit.stunned=max(Hit.stunned,world.time+30)
+				Hit.stunned=max(Hit.stunned,world.time+10)
 				Hit.icon_state="hurt1"
 				spawn(5)Hit.icon_state=""
 			sleep(2)
