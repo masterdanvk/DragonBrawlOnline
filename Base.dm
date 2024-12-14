@@ -834,12 +834,33 @@ mob
 		bound_height=28
 		pl=9000
 		special=/Beam/Masenko
+		unlocked=alist("ssj"=1,"ssj2"=1)
 		behaviors=list(25,25,10,10,30) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		New()
 			..()
 			src.Create_Aura("White")
 			src.skills=list(new/Skill/Masenko,new/Skill/Kamehameha,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
+		Transform()
+			if(src.unlocked["ssj"])
+				if(!form)
+					src.icon_state="transform"
+					sleep(6)
+					src.icon='gohanssj.dmi'
+					src.form="SSJ"
+					src.icon_state=""
+					src.Set_PL(round(src.pl*4.2,1))
+					src.Create_Aura("Yellow")
+
+
+				else
+					src.icon_state="transform"
+					sleep(5)
+					src.icon_state=""
+					src.Set_PL(round(src.pl/4.2,1))
+					src.icon='gohan.dmi'
+					src.form=null
+					src.Create_Aura("White")
 	tien
 		name="Tienshinhan"
 		icon='tien.dmi'
