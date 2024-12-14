@@ -854,7 +854,7 @@ mob
 
 
 				else
-					src.icon_state="transform"
+					src.icon_state="revert"
 					sleep(5)
 					src.icon_state=""
 					src.Set_PL(round(src.pl/4.2,1))
