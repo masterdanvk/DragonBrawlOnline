@@ -203,8 +203,9 @@ obj/skillbar
 
 client/proc/initskillbar()
 	var/mob/M=src.mob
-	src.skillgui=new/list
-	src.skillgui.len=7
+	if(!src.skillgui)
+		src.skillgui=new/list
+		src.skillgui.len=7
 	if(M.skills.len>=1)
 		if(!src.skillgui[1])src.skillgui[1]=new/obj/skillbar/S1
 		src.skillgui[1].icon=M.skills[1].icon
@@ -241,6 +242,13 @@ client/proc/initskillbar()
 		src.screen|=O
 	if(s)
 		src.skillgui[s].Activate()
+
+client/proc/removeskillbar()
+
+	for(var/obj/O in src.skillgui)
+		src.screen-=O
+		src.skillgui-=O
+	src.skillgui=null
 
 client/proc/updateskillbar()
 	var/mob/M=src.mob

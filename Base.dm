@@ -362,6 +362,7 @@ mob
 mob
 	Login()
 		..()
+		src.client?.removeskillbar()
 		src.name=src.client.name
 		src.team=src.ckey
 		if(!istype(src,/mob/picking))
@@ -2084,9 +2085,9 @@ client/proc/ShowAim()
 	if(src.autoaim)
 		sleep(2)
 		var/mob/targ=src.mob.Target()
-		if(src.autoaim&&src.aimimage in src.images&&targ&&targ.pixloc)
+		if(src.autoaim&&(src.aimimage in src.images)&&targ&&targ.pixloc)
 			src.mob.aim=targ.pixloc-src.mob.pixloc
-			src.ShowAim()
+			spawn()src.ShowAim()
 
 client/proc/HideAim()
 	if(src.aimimage in src.images)src.images-=src.aimimage

@@ -2,7 +2,7 @@
 /*
 MAP_PLANE_MASTERS: 
 MAP_ZOOM: 1.500
-LAST_COMPILE_TIME: 1734146390
+LAST_COMPILE_TIME: 1734207811
 PACKAGE_RSC_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\AnimeGame_rsc.zip
 DIR: gui tileset Lib 
 AUTO_FILE_DIR: ON
@@ -12,7 +12,7 @@ PACKAGE_DME_NAME: C:\Users\Danva\OneDrive\Desktop\AnimeGame_src.zip
 LAST_COMPILE_VERSION: 516.1647
 PACKAGE_DME_START: 
 PACKAGE_TYPE: 0
-WINDOW: Skills.dm;map.dmm;Base.dm;Beams.dm;interface.dmf;kaio_lib_mapresize.dm;skills.dmi;gui.dm;galekgun.dmi;doublesunday.dmi;beam.dmi;nappa.dmi;mouthblast.dmi;masenko.dmi;dondonpa.dmi;tribeam.dmi;tien.dmi;specialbeamcannon.dmi;specialbeamcannon2.dmi;destructodisc.dmi;spiritball.dmi;wolffangfist.dmi;dragonfist.dmi;krillin.dmi;solarflare.dmi;bigbangattack.dmi;explosivewave.dmi;kiblast.dmi;energyblast.dmi;saturdaycrush.dmi
+WINDOW: Skills.dm;interface.dmf;kaio_lib_mapresize.dm;skills.dmi;gui.dm;galekgun.dmi;doublesunday.dmi;beam.dmi;nappa.dmi;mouthblast.dmi;masenko.dmi;dondonpa.dmi;tribeam.dmi;tien.dmi;specialbeamcannon.dmi;specialbeamcannon2.dmi;destructodisc.dmi;spiritball.dmi;wolffangfist.dmi;dragonfist.dmi;krillin.dmi;solarflare.dmi;bigbangattack.dmi;explosivewave.dmi;kiblast.dmi;energyblast.dmi;saturdaycrush.dmi;gui\gui_menu.dm;gui\gui_name_entry.dm;Base.dm
 PACKAGE_DME_INFO: 
 FILE: Skills.dm
 MAP_INSTANCE_MODE: copy

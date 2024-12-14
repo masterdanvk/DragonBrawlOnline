@@ -877,7 +877,22 @@ Skill
 		icon_state="kiblast"
 		Use(mob/user,time)
 			user.icon_state="blast2"
+			src.channel=0
 			var/obj/Kiblast/K=new user.kiblast
 			user.Energy_Blast(time,K)
 			user.icon_state=""
+
+		Charge(mob/user)
+			src.channel=1
+			while(user.ki>=kicost && src.channel && !user.dead && user.client?.keydown["S"])
+				user.Take_Ki(src.kicost)
+				user.icon_state="blast1"
+				sleep(1.5)
+				if(src.channel)
+					user.icon_state="blast2"
+					var/obj/Kiblast/K=new user.kiblast
+					spawn()user.Energy_Blast(0,K)
+				sleep(1)
+
+
 
