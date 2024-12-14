@@ -166,6 +166,93 @@ obj/maskbar
 		height = 4
 		orientation = EAST
 
+obj/skillbar
+	var/selected=0
+	var/Skill/linkedskill
+	var/active=0
+	icon='skills.dmi'
+	Click()
+		if(!src.selected)src.Activate()
+		else src.Deactivate()
+	proc/Activate()
+		src.transform=matrix().Scale(0.75,0.75)
+		src.selected=1
+	proc/Deactivate()
+		src.transform=matrix().Scale(0.5,0.5)
+		src.selected=0
+
+	New()
+		..()
+		src.transform=matrix().Scale(0.5,0.5)
+		src.selected=0
+	S1
+		screen_loc="BOTTOM:+2,LEFT:+2"
+	S2
+		screen_loc="BOTTOM:+2,LEFT+2:+2"
+	S3
+		screen_loc="BOTTOM:+2,LEFT+4:+2"
+	S4
+		screen_loc="BOTTOM:+2,LEFT+6:+2"
+	S5
+		screen_loc="BOTTOM:+2,LEFT+8:+2"
+	S6
+		screen_loc="BOTTOM:+2,LEFT+10:+2"
+	S7
+		screen_loc="BOTTOM:+2,LEFT+12:+2"
+
+
+client/proc/initskillbar()
+	var/mob/M=src.mob
+	src.skillgui=new/list
+	src.skillgui.len=7
+	if(M.skills.len>=1)
+		if(!src.skillgui[1])src.skillgui[1]=new/obj/skillbar/S1
+		src.skillgui[1].icon=M.skills[1].icon
+		src.skillgui[1].icon_state=M.skills[1].icon_state
+	if(M.skills.len>=2)
+		if(!src.skillgui[2])src.skillgui[2]=new/obj/skillbar/S2
+		src.skillgui[2].icon=M.skills[2].icon
+		src.skillgui[2].icon_state=M.skills[2].icon_state
+	if(M.skills.len>=3)
+		if(!src.skillgui[3])src.skillgui[3]=new/obj/skillbar/S3
+		src.skillgui[3].icon=M.skills[3].icon
+		src.skillgui[3].icon_state=M.skills[3].icon_state
+	if(M.skills.len>=4)
+		if(!src.skillgui[4])src.skillgui[4]=new/obj/skillbar/S4
+		src.skillgui[4].icon=M.skills[4].icon
+		src.skillgui[4].icon_state=M.skills[4].icon_state
+	if(M.skills.len>=5)
+		if(!src.skillgui[5])src.skillgui[5]=new/obj/skillbar/S5
+		src.skillgui[5].icon=M.skills[5].icon
+		src.skillgui[5].icon_state=M.skills[5].icon_state
+	if(M.skills.len>=6)
+		if(!src.skillgui[6])src.skillgui[6]=new/obj/skillbar/S6
+		src.skillgui[6].icon=M.skills[6].icon
+		src.skillgui[6].icon_state=M.skills[6].icon_state
+	if(M.skills.len>=7)
+		if(!src.skillgui[7])src.skillgui[7]=new/obj/skillbar/S7
+		src.skillgui[7].icon=M.skills[7].icon
+		src.skillgui[7].icon_state=M.skills[7].icon_state
+	var/s=0
+	for(var/i =1 to M.skills.len)
+		if(M.equippedskill==M.skills[i])
+			s=i
+	for(var/obj/O in src.skillgui)
+		src.screen|=O
+	if(s)
+		src.skillgui[s].Activate()
+
+client/proc/updateskillbar()
+	var/mob/M=src.mob
+	for(var/i =1 to M.skills.len)
+		if(M.equippedskill==M.skills[i])
+			src.skillgui[i].Activate()
+		else
+			if(src.skillgui.len>=i)
+				src.skillgui[i].Deactivate()
+
+
+client/var/tmp/list/skillgui
 mob/proc
 	Update_Counters()
 		set waitfor = 0

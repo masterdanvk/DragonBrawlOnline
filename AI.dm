@@ -401,6 +401,12 @@ mob/proc/AICharge()
 mob/proc/FaceAI(mob/T)
 	src.RotateMob((T.pixloc-src.pixloc),20)
 
+client/var/fullscreen=0
+client/verb/FullScreen()
+	if(src.fullscreen=="true")src.fullscreen="false"
+	else
+		src.fullscreen="true"
+	winset(src, "mainwindow", "is-fullscreen=[src.fullscreen]")
 
 client/verb/SpawnAI()
 	var/P =input(usr,"What powerlevel to spawn?","Powerlevel",1000) as num

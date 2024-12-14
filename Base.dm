@@ -364,6 +364,9 @@ mob
 		..()
 		src.name=src.client.name
 		src.team=src.ckey
+		if(!istype(src,/mob/picking))
+			src.client?.initskillbar()
+
 mob/picking
 	icon=null
 	selecting=1
@@ -604,6 +607,7 @@ mob/proc/Next_Skill()
 	cur++
 	if(cur>src.skills.len)cur=1
 	src.equippedskill=src.skills[cur]
+	src.client?.updateskillbar()
 
 mob/proc/Prev_Skill()
 	var/cur=1
@@ -613,7 +617,7 @@ mob/proc/Prev_Skill()
 	cur--
 	if(cur<=0)cur=src.skills.len
 	src.equippedskill=src.skills[cur]
-
+	src.client?.updateskillbar()
 
 
 mob/proc/Create_Aura(color)
@@ -759,7 +763,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("White")
-			src.skills=list(new/Skill/Kamehameha,new/Skill/Spiritbomb)
+			src.skills=list(new/Skill/Kamehameha,new/Skill/Spiritbomb,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 
 	vegeta
@@ -778,7 +782,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("Blue")
-			src.skills=list(new/Skill/Galekgun,new/Skill/Bigbangattack)
+			src.skills=list(new/Skill/Galekgun,new/Skill/Bigbangattack,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 		Transform()
 			if(src.unlocked["ssj"])
@@ -817,7 +821,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("Purple")
-			src.skills=list(new/Skill/Specialbeamcannon)
+			src.skills=list(new/Skill/Specialbeamcannon,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 
 	gohan
@@ -833,7 +837,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("White")
-			src.skills=list(new/Skill/Masenko,new/Skill/Kamehameha)
+			src.skills=list(new/Skill/Masenko,new/Skill/Kamehameha,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 	tien
 		name="Tienshinhan"
@@ -858,7 +862,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("White")
-			src.skills=list(new/Skill/Tribeam,new/Skill/Dondonpa,new/Skill/Solarflare)
+			src.skills=list(new/Skill/Tribeam,new/Skill/Dondonpa,new/Skill/Solarflare,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 
 	krillin
@@ -875,7 +879,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("White")
-			src.skills=list(new/Skill/Destructodisc,new/Skill/Kamehameha,new/Skill/Solarflare)
+			src.skills=list(new/Skill/Destructodisc,new/Skill/Kamehameha,new/Skill/Solarflare,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 		Transform()
 			if(src.unlocked["kaioken"])
@@ -897,7 +901,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("White")
-			src.skills=list(new/Skill/Spiritball,new/Skill/Wolffangfist)
+			src.skills=list(new/Skill/Spiritball,new/Skill/Wolffangfist,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 
 		Transform()
@@ -919,7 +923,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("Lightgreen")
-			src.skills=list(new/Skill/Dondonpa,new/Skill/Spiritball)
+			src.skills=list(new/Skill/Dondonpa,new/Skill/Spiritball,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 	cell
 		name="Perfect Cell"
@@ -937,7 +941,7 @@ mob
 			..()
 			src.Create_Aura("Yellow")
 
-			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon)
+			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 		Transform()
 			if(src.unlocked["celljr"])
@@ -975,7 +979,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("Yellow")
-			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon)
+			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 	raditz
 		name="Raditz"
@@ -993,7 +997,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("Purple")
-			src.skills=list(new/Skill/Doublesunday,new/Skill/Saturdaycrush)
+			src.skills=list(new/Skill/Doublesunday,new/Skill/Saturdaycrush,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 	nappa
 		name="Nappa"
@@ -1010,7 +1014,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("Lightyellow")
-			src.skills=list(new/Skill/Explosivewave,new/Skill/Mouthblast,new/Skill/Energyblast)
+			src.skills=list(new/Skill/Explosivewave,new/Skill/Mouthblast,new/Skill/Energyblast,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 
 	saibamen
@@ -1088,7 +1092,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("Lightgreen")
-			src.skills=list(new/Skill/Masenko)
+			src.skills=list(new/Skill/Masenko,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 
 	var
@@ -2079,8 +2083,9 @@ client/proc/ShowAim()
 	src.images|=src.aimimage
 	if(src.autoaim)
 		sleep(2)
-		if(src.autoaim&&src.aimimage in src.images)
-			src.mob.aim=src.mob.Target()?.pixloc-src.mob.pixloc
+		var/mob/targ=src.mob.Target()
+		if(src.autoaim&&src.aimimage in src.images&&targ&&targ.pixloc)
+			src.mob.aim=targ.pixloc-src.mob.pixloc
 			src.ShowAim()
 
 client/proc/HideAim()

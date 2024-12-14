@@ -69,7 +69,8 @@ mob/proc/FireBeam(charge,maxdistance,Beam/B)
 
 	var/vector/aimvector=src.aim
 
-	var/vector/stepvector=vector(aimvector)
+	var/vector/stepvector
+	if(aimvector)stepvector=vector(aimvector)
 	if(!aimvector||!aimvector.size||!stepvector)
 		src.usingskill=0
 		src.canmove=1

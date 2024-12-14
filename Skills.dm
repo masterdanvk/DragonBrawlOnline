@@ -43,7 +43,12 @@ mob/proc/UseKiBlast()
 
 mob/verb/ChangeSkill()
 	var/S=input(usr,"Change your skill","Skill",src.equippedskill) in typesof(/Skill)
-	usr.equippedskill=new S
+	if(usr.skills.len<7)
+		usr.skills+=new S
+	else
+		usr.skills[7]=new S
+	usr.client?.initskillbar()
+
 
 mob/proc/ChargeSkill()
 	set waitfor = 0
@@ -557,6 +562,9 @@ obj/Kiblast
 mob/var/tmp/holdskill
 
 Skill
+	var/icon
+	var/icon_state
+	icon='skills.dmi'
 	var/kicost=0
 	var/channel=0
 	var/ctime=0
@@ -566,6 +574,7 @@ Skill
 	proc/Charge()
 
 	Kamehameha
+		icon_state="kamehameha"
 		ctime=4
 		kicost=60
 		state1="kame1"
@@ -577,6 +586,7 @@ Skill
 				user.icon_state="blast2"
 			user.FireBeam(time,500,new/Beam/Kamehameha)
 	Galekgun
+		icon_state="galekgun"
 		ctime=4
 		kicost=60
 		Use(mob/user,time)
@@ -588,6 +598,7 @@ Skill
 	Doublesunday
 		ctime=4
 		kicost=60
+		icon_state="doublesunday"
 		state1="kame1"
 		state2="kame2"
 		Use(mob/user,time)
@@ -601,6 +612,7 @@ Skill
 		kicost=80
 		state1="mouth1"
 		state2="mouth2"
+		icon_state="mouthblast"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -610,6 +622,7 @@ Skill
 	Masenko
 		ctime=4
 		kicost=50
+		icon_state="masenko"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -619,6 +632,7 @@ Skill
 	Dondonpa
 		ctime=3
 		kicost=40
+		icon_state="dondonpa"
 		state1="don1"
 		state2="don2"
 		Use(mob/user,time)
@@ -630,6 +644,7 @@ Skill
 	Tribeam
 		ctime=3
 		kicost=60
+		icon_state="tribeam"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -641,6 +656,7 @@ Skill
 		kicost=60
 		state1="sbc1"
 		state2="sbc2"
+		icon_state="specialbeamcannon"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -653,6 +669,7 @@ Skill
 		kicost=40
 		state1="ddisc1"
 		state2="ddisc2"
+		icon_state="destructodisc"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -673,6 +690,7 @@ Skill
 	Spiritbomb
 		ctime=15
 		kicost=40
+		icon_state="spiritbomb"
 		state1="spiritbomb"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
@@ -714,6 +732,7 @@ Skill
 	Spiritball
 		ctime=3
 		kicost=50
+		icon_state="spiritball"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -731,6 +750,7 @@ Skill
 	Wolffangfist
 		ctime=3
 		kicost=40
+		icon_state="wolffangfist"
 		Use(mob/user,time)
 			animate(user,icon_state="punch1",flags=ANIMATION_PARALLEL,time=2)
 			animate(user,icon_state="punch2",flags=ANIMATION_PARALLEL,delay=1,time=2)
@@ -744,6 +764,7 @@ Skill
 	Dragonfist
 		ctime=3
 		kicost=80
+		icon_state="dragonfist"
 		Use(mob/user,time)
 			animate(user,icon_state="punch2",flags=ANIMATION_PARALLEL,time=2)
 			user.Energy_Blast(time,new/obj/Kiblast/Dragonfist,vector(0,-96))
@@ -752,6 +773,7 @@ Skill
 		kicost=30
 		state1=""
 		state2="tayo"
+		icon_state="solarflare"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -772,6 +794,7 @@ Skill
 	Bigbangattack
 		ctime=10
 		kicost=60
+		icon_state="bigbangattack"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -786,6 +809,7 @@ Skill
 	Explosivewave
 		ctime=10
 		kicost=30
+		icon_state="explosivewave"
 		state1="block"
 		state2="ewave"
 		Use(mob/user,time)
@@ -822,6 +846,7 @@ Skill
 	Energyblast
 		ctime=5
 		kicost=60
+		icon_state="energyblast"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -835,6 +860,7 @@ Skill
 	Saturdaycrush
 		ctime=10
 		kicost=60
+		icon_state="saturdaycrush"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -848,6 +874,7 @@ Skill
 	Kiblast
 		kicost=5
 		ctime=0
+		icon_state="kiblast"
 		Use(mob/user,time)
 			user.icon_state="blast2"
 			var/obj/Kiblast/K=new user.kiblast
