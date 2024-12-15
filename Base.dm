@@ -663,9 +663,28 @@ mob/proc/Create_Aura(color)
 		if("Purple")
 			O.alpha=50
 			col=rgb(222,132,255)
+		if("SSJ2")
+			O.alpha=50
+			col=rgb(225,210,30)
+			O.vis_contents+=new/obj/electricity
+			U.vis_contents+=new/obj/dustup
 	U.icon+=col
 	O.icon+=col
 
+obj/electricity
+	layer=MOB_LAYER+0.2
+	icon='elec.dmi'
+	bound_width=69
+	bound_height=65
+	pixel_w=14
+	appearance_flags=RESET_ALPHA
+
+obj/dustup
+	icon='dustup.dmi'
+	bound_width=256
+	bound_height=96
+	pixel_w=-80
+	pixel_z=-48
 
 mob/var/skills[]
 mob/var/alist/unlocked[]
@@ -676,7 +695,7 @@ mob/proc
 		src.icon_state="transform"
 		src.form="kaioken"
 		src.icon_state=""
-		src.Set_PL(round(src.pl*4.2,1))
+		src.Set_PL(round(src.basepl*4.2,1))
 		src.Create_Aura("Red")
 		src.vis_contents|=src.aura
 		src.vis_contents|=src.auraover
@@ -700,7 +719,7 @@ mob/proc
 
 	Kaioken_end()
 		src.icon_state=""
-		src.Set_PL(round(src.pl/4.2,1))
+		src.Set_PL(round(src.basepl,1))
 		src.form=null
 		src.filters=null
 		src.Create_Aura("White")
@@ -716,6 +735,8 @@ mob
 
 
 	proc/Transform()
+		src.Reset_Portrait()
+	proc/Revert()
 		src.Reset_Portrait()
 	dir=EAST
 	goku
@@ -745,19 +766,21 @@ mob
 					src.icon='goku_ssj.dmi'
 					src.form="SSJ"
 					src.icon_state=""
-					src.Set_PL(round(src.pl*4.2,1))
+					src.Set_PL(round(src.basepl*4.2,1))
 					src.Create_Aura("Yellow")
+				else return
+			..()
 
-
-				else
-					src.icon_state="transform"
-					sleep(5)
-					src.icon_state=""
-					src.Set_PL(round(src.pl/4.2,1))
-					src.icon='goku.dmi'
-					src.form=null
-					src.Create_Aura("White")
-				..()
+		Revert()
+			if(form)
+				src.icon_state="revert"
+				sleep(5)
+				src.icon_state=""
+				src.Set_PL(src.basepl)
+				src.icon='goku.dmi'
+				src.form=null
+				src.Create_Aura("White")
+			..()
 
 
 
@@ -793,19 +816,23 @@ mob
 					src.icon='vegeta_ssj.dmi'
 					src.form="SSJ"
 					src.icon_state=""
-					src.Set_PL(round(src.pl*4.2,1))
+					src.Set_PL(round(src.basepl*4.2,1))
 					src.Create_Aura("Yellow")
-
-
-				else
-					src.icon_state="transform"
-					sleep(5)
-					src.icon_state=""
-					src.Set_PL(round(src.pl/4.2,1))
-					src.icon='vegeta.dmi'
-					src.form=null
-					src.Create_Aura("Blue")
+				else return
 			..()
+
+
+		Revert()
+			if(form)
+				src.icon_state="revert"
+				sleep(5)
+				src.icon_state=""
+				src.Set_PL(src.basepl)
+				src.icon='vegeta.dmi'
+				src.form=null
+				src.Create_Aura("Blue")
+			..()
+
 	piccolo
 		name="Piccolo"
 		icon='piccolo.dmi'
@@ -842,25 +869,34 @@ mob
 			src.skills=list(new/Skill/Masenko,new/Skill/Kamehameha,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 		Transform()
-			if(src.unlocked["ssj"])
-				if(!form)
-					src.icon_state="transform"
-					sleep(6)
-					src.icon='gohanssj.dmi'
-					src.form="SSJ"
-					src.icon_state=""
-					src.Set_PL(round(src.pl*4.2,1))
-					src.Create_Aura("Yellow")
+			if(src.unlocked["ssj"] && !src.form)
+				src.icon_state="transform"
+				sleep(6)
+				src.icon='gohan_ssj.dmi'
+				src.form="SSJ"
+				src.icon_state=""
+				src.Set_PL(round(src.basepl*4.2,1))
+				src.Create_Aura("Yellow")
+			else if(src.unlocked["ssj2"]&&src.form=="SSJ")
+				src.icon_state="transform"
+				sleep(8)
+				src.icon='gohan_ssj2.dmi'
+				src.form="SSJ2"
+				src.icon_state=""
+				src.Set_PL(round(src.basepl*6.4,1))
+				src.Create_Aura("SSJ2")
+			..()
+		Revert()
+			if(form)
+				src.icon_state="revert"
+				sleep(5)
+				src.icon_state=""
+				src.Set_PL(src.basepl)
+				src.icon='gohan.dmi'
+				src.form=null
+				src.Create_Aura("White")
+			..()
 
-
-				else
-					src.icon_state="revert"
-					sleep(5)
-					src.icon_state=""
-					src.Set_PL(round(src.pl/4.2,1))
-					src.icon='gohan.dmi'
-					src.form=null
-					src.Create_Aura("White")
 	tien
 		name="Tienshinhan"
 		icon='tien.dmi'
@@ -876,11 +912,11 @@ mob
 			if(src.unlocked["kaioken"])
 				if(!form)
 					src.Kaioken()
-
-
-
-				else
-					src.Kaioken_end()
+			..()
+		Revert()
+			if(form)
+				src.Kaioken_end()
+			..()
 		New()
 			..()
 			src.Create_Aura("White")
@@ -907,8 +943,11 @@ mob
 			if(src.unlocked["kaioken"])
 				if(!form)
 					src.Kaioken()
-				else
-					src.Kaioken_end()
+			..()
+		Revert()
+			if(form)
+				src.Kaioken_end()
+			..()
 	yamcha
 		name="Yamcha"
 		icon='yamcha.dmi'
@@ -930,8 +969,11 @@ mob
 			if(src.unlocked["kaioken"])
 				if(!form)
 					src.Kaioken()
-				else
-					src.Kaioken_end()
+			..()
+		Revert()
+			if(form)
+				src.Kaioken_end()
+			..()
 	chaotzu
 		name="Chaiotzu"
 		icon='chaotzu.dmi'
@@ -1122,6 +1164,7 @@ mob
 		maxki=100
 		ki=100
 		team
+		basepl=9000
 	var/tmp
 		mob/lastattacked
 		mob/lastattackedby
@@ -1774,6 +1817,8 @@ client/verb/keydownverb(button as text)
 
 	src.lasttapped[1]=button
 	src.lasttapped[2]=world.time
+	if(src.keydown["D"]&&src.keydown["South"]&&M.form)
+		M.Revert()
 	if((src.keydown["F"]||(src.keydown["D"]&&src.keydown["North"]))&&world.time>M.chargecd) //charge
 		if(!M.charging&&!M.aiming)
 			if(M.block)
