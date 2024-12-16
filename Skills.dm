@@ -89,7 +89,7 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset,icon/customki)
 		src.RotateMob(stepvector,100)
 	var/matrix/m=new/matrix()
 	if(K.rotate)
-		m.TurnandScaleWithPivot(angle,K.scale,K.scale,K.bound_width/2,0,K.axisflip)
+		m.TurnWithPivot(angle,K.bound_width/2,0,K.axisflip)
 		K.transform=m
 	K.pixloc=bound_pixloc(src,0)+stepvector+offset+vector(K.xoffset,K.yoffset)
 	K.stepv=stepvector
@@ -149,7 +149,7 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset,icon/customki)
 						stepvector.Turn(10)
 				m=new/matrix()
 				if(K.rotate)
-					m.TurnandScaleWithPivot(vector2angle(stepvector),K.scale,K.scale,K.bound_width/2,0,K.axisflip)
+					m.TurnWithPivot(vector2angle(stepvector),K.bound_width/2,0,K.axisflip)
 					K.transform=m
 
 
@@ -191,7 +191,7 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset,icon/customki)
 			angle=vector2angle(stepvector)
 			m=new/matrix()
 			if(K.rotate)
-				m.TurnandScaleWithPivot(angle,K.scale,K.scale,K.bound_width/2,0,K.axisflip)
+				m.TurnWithPivot(angle,K.bound_width/2,0,K.axisflip)
 				K.transform=m
 	if(!K.persist)K.Explode()
 	var/list/hits=K.hitmobs
@@ -308,6 +308,9 @@ obj/Kiblast
 		else if(istype(A,/obj/Beam)||istype(A,/obj/Kiblast/Spiritbomb))
 			src.Explode()
 			src.loc=null
+		else if(src.destroyable&&istype(A,/obj/Kiblast)&&A:owner!=src.owner)
+			src.Explode()
+			src.loc=null
 
 		//else
 		//	src.loc=null
@@ -336,6 +339,7 @@ obj/Kiblast
 		xoffset=0
 		yoffset=0
 		persist=0
+		destroyable=0
 
 
 	Spiritbomb
@@ -396,14 +400,14 @@ obj/Kiblast
 	HellzoneGrenade
 		icon='spiritball.dmi'
 		layer=MOB_LAYER
-		bound_width=16
-		bound_height=10
+		bound_width=32
+		bound_height=21
 		bound_x=0
 		density=1
 		spread=0
 		distance=500
 		speed=8
-		power=5
+		power=2
 		impact=0
 		push=0
 		pierce=1
@@ -413,6 +417,7 @@ obj/Kiblast
 		explode=0
 		persist=1
 		scale=0.5
+		destroyable=1
 		New()
 			..()
 			src.scale=pick(0.6,0.40,0.5,0.55,0.35)
@@ -587,6 +592,7 @@ obj/Kiblast
 		power=60
 		impact=120
 		explode=0
+
 		push=1
 		Bump(atom/A)
 			if(istype(A,/mob) && !A:invulnerable)
@@ -857,8 +863,9 @@ Skill
 			var/list/L=new/list()
 			user.usingskill=1
 			while(c>0)
-				user.icon_state="blast2"
+
 				sleep(0.5)
+				user.icon_state="blast2"
 				var/obj/Kiblast/HellzoneGrenade/S=new/obj/Kiblast/HellzoneGrenade
 				spawn(5)
 					S.pierce=0
@@ -871,22 +878,23 @@ Skill
 				var/pixloc/dest=bound_pixloc(target,0)+spread
 				S.pixloc=bound_pixloc(user,0)
 				spawn()user.Shootto(S,dest)
+				if(c%2)sleep(1)
 				L+=S
 				user.icon_state="blast1"
-				sleep(1)
+
 
 				c--
 
-			sleep(10)
+			sleep(15)
 			user.usingskill=0
 			user.CheckCanMove()
 			for(var/obj/Kiblast/O in L)
 				if(!O.loc)continue
 				O.persist=0
-				O.speed=16
 				O.explode=1
 				O.push=0
 				O.pierce=1
+				O.power*=3
 				O.distance=96
 				O.spread=0
 				spawn()user.Shootto(O,bound_pixloc(target,0))
@@ -917,6 +925,50 @@ Skill
 		Use(mob/user,time)
 			animate(user,icon_state="punch2",flags=ANIMATION_PARALLEL,time=2)
 			user.Energy_Blast(time,new/obj/Kiblast/Dragonfist,vector(0,-96))
+
+	ExplosiveDemonWave
+		ctime=5
+		kicost=33
+		state1="dwave1"
+		state2="dwave2"
+		icon_state="explosivedemonwave"
+		Use(mob/user,time)
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="punch2"
+			if(!user.aim)
+				user.icon_state=""
+				if(user.bdir==EAST)
+					user.transform=matrix()
+					user.rotation=0
+				else
+					user.transform=matrix().Scale(-1,1)
+					user.rotation=0
+				user.usingskill=0
+				user.CheckCanMove()
+			var/vector/aimvector=user.aim
+
+			if(!aimvector||!aimvector.size)
+				user.usingskill=0
+				user.canmove=1
+				return
+			aimvector.size=18
+			var/obj/W=new/obj/FX/ExplosiveDemonWave()
+			var/matrix/m=matrix()
+			var/ang=-vector2angle(aimvector)
+			user.AngleRotateMob(-ang)
+			m.TurnandScaleWithPivot(-ang,W.scale,W.scale,W.bound_width/2,0)
+			W.transform=m
+			W.pixloc=bound_pixloc(user,0)+aimvector
+			for(var/mob/M in bounds(W.pixloc,90))
+				if(M.invulnerable||M==user)continue
+				spawn()M.Damage(15*PLcompare(user,M),45,PLcompare(user,M)*50,user)
+			sleep(5)
+			user.usingskill=0
+			user.CheckCanMove()
+			W.loc=null
+
 	Solarflare
 		ctime=6
 		kicost=30

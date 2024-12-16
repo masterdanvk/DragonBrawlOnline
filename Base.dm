@@ -683,6 +683,12 @@ mob/proc/Create_Aura(color)
 			U.transform=matrix().Scale(1.3).Translate(0,15)
 			O.vis_contents+=new/obj/lightning
 			U.vis_contents+=new/obj/dustup
+		if("Orange")
+			O.alpha=50
+			col=rgb(185,110,30)
+			O.transform=matrix().Scale(1.3).Translate(0,15)
+			U.transform=matrix().Scale(1.3).Translate(0,15)
+			U.vis_contents+=new/obj/dustup
 	U.icon+=col
 	O.icon+=col
 
@@ -865,6 +871,7 @@ mob
 		bound_height=38
 		pl=9000
 		special=/Beam/Specialbeamcannon
+		unlocked=alist("orange"=1)
 		behaviors=list(5,25,25,20,25) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		raditzfight
 			pl=408
@@ -872,8 +879,37 @@ mob
 		New()
 			..()
 			src.Create_Aura("Purple")
-			src.skills=list(new/Skill/Specialbeamcannon,new/Skill/HellzoneGrenade,new/Skill/Kiblast)
+			src.skills=list(new/Skill/Specialbeamcannon,new/Skill/HellzoneGrenade,new/Skill/ExplosiveDemonWave,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
+		Transform()
+			if(src.unlocked["orange"] && !src.form)
+				src.icon_state="transform"
+				//sleep(6)
+				src.icon='piccolo_orange.dmi'
+				src.bound_width=32
+				src.bound_height=46
+				src.bound_x=15
+				src.pixel_z=-14
+				src.form="Orange"
+				src.icon_state=""
+				src.Set_PL(round(src.basepl*4.2,1))
+				src.Create_Aura("Orange")
+			..()
+		Revert()
+			if(form)
+				src.icon_state="revert"
+				src.bound_width=24
+				src.bound_height=38
+				src.bound_x=20
+				src.pixel_z=0
+				sleep(5)
+				src.icon_state=""
+				src.Set_PL(src.basepl)
+				src.icon='piccolo.dmi'
+				src.form=null
+				src.Create_Aura("Purple")
+
+			..()
 
 	gohan
 		name="Gohan"

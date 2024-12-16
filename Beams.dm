@@ -583,6 +583,12 @@ obj/Beam
 			src.BeamParent.base.loc=null
 			src.BeamParent.head.loc=null
 			src.BeamParent.beam.loc=null
+		else if(istype(A,/obj/Kiblast))
+			var/obj/Kiblast/B=A
+			if(B.destroyable)
+				B.Explode()
+				B.loc=null
+
 
 		..()
 

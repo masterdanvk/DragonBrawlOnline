@@ -13,6 +13,7 @@ mob/var/tmp
 	wander=0
 	canaggro=1
 	aggrotag=0
+	stucksince
 var/AItick=0
 mob/var/skillcooldown
 proc/AI_Loop()
@@ -28,8 +29,12 @@ proc/AI_Loop()
 			if(M.lastloc!=M.loc)
 				M.storeddamage=0
 				M.lastloc=M.loc
-			if(M.storeddamage>=5)
-				M.posture=6
+			else if(M.storeddamage>=5)
+				if(!M.stucksince)M.stucksince=world.time
+				else
+					if(world.time-M.stucksince>30)
+						M.posture=6
+						M.stucksince=null
 			if(M.targetmob&&M.targetmob.dead)
 				M.targetmob=null
 
