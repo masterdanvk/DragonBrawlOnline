@@ -43,9 +43,16 @@ client/verb/Togglechat()
 		winset(src,"input1","is-visible=1")
 
 client/verb/SaibamenSeeding(var/n as num)
+	set background = 1
+	var/e=0
 	for(var/i=1 to n)
 		var/mob/M=new/mob/saibamen/NPC(locate(rand(10,90),rand(10,90),1))
 		RefreshChunks|=M
+		e++
+		if(e>=50)
+			sleep(1)
+			e=0
+
 
 
 
@@ -337,6 +344,7 @@ atom/movable
 	step_size = 4
 	var
 		move_speed = 4
+		scale=1
 
 	appearance_flags = LONG_GLIDE
 
@@ -668,6 +676,13 @@ mob/proc/Create_Aura(color)
 			col=rgb(225,210,30)
 			O.vis_contents+=new/obj/electricity
 			U.vis_contents+=new/obj/dustup
+		if("Lightningarmor")
+			O.alpha=50
+			col=rgb(255,240,150)
+			O.transform=matrix().Scale(1.3).Translate(0,15)
+			U.transform=matrix().Scale(1.3).Translate(0,15)
+			O.vis_contents+=new/obj/lightning
+			U.vis_contents+=new/obj/dustup
 	U.icon+=col
 	O.icon+=col
 
@@ -679,7 +694,15 @@ obj/electricity
 	pixel_w=14
 	appearance_flags=RESET_ALPHA
 
+obj/lightning
+	layer=MOB_LAYER+0.2
+	icon='lightning.dmi'
+	bound_width=69
+	bound_height=65
+	pixel_w=14
+	appearance_flags=RESET_ALPHA
 obj/dustup
+	appearance_flags=RESET_TRANSFORM|RESET_ALPHA
 	icon='dustup.dmi'
 	bound_width=256
 	bound_height=96
@@ -849,7 +872,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("Purple")
-			src.skills=list(new/Skill/Specialbeamcannon,new/Skill/Kiblast)
+			src.skills=list(new/Skill/Specialbeamcannon,new/Skill/HellzoneGrenade,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 
 	gohan
@@ -884,6 +907,7 @@ mob
 				src.form="SSJ2"
 				src.icon_state=""
 				src.Set_PL(round(src.basepl*6.4,1))
+				src.vis_contents+=new/obj/personalelectricity
 				src.Create_Aura("SSJ2")
 			..()
 		Revert()
@@ -893,8 +917,11 @@ mob
 				src.icon_state=""
 				src.Set_PL(src.basepl)
 				src.icon='gohan.dmi'
+				if(form=="SSJ2")
+					for(var/obj/personalelectricity/E in src.vis_contents)src.vis_contents-=E
 				src.form=null
 				src.Create_Aura("White")
+
 			..()
 
 	tien
@@ -1055,8 +1082,31 @@ mob
 		pl=9000
 		special=/Beam/Doublesunday
 		behaviors=list(10,40,20,10,20) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		unlocked=alist("ssj"=1)
+		Transform()
+			if(src.unlocked["ssj"])
+				if(!form)
+					src.icon_state="transform"
+					sleep(6)
+					src.icon='raditz_ssj.dmi'
+					src.form="SSJ"
+					src.icon_state=""
+					src.Set_PL(round(src.basepl*4.2,1))
+					src.Create_Aura("Yellow")
+				else return
+			..()
 
 
+		Revert()
+			if(form)
+				src.icon_state="revert"
+				sleep(5)
+				src.icon_state=""
+				src.Set_PL(src.basepl)
+				src.icon='raditz.dmi'
+				src.form=null
+				src.Create_Aura("Purple")
+			..()
 
 		New()
 			..()
@@ -1074,12 +1124,53 @@ mob
 		portrait_offset=-15
 		pl=9000
 		special=/Beam/Mouthblast
+		unlocked=new/alist("lightningarmor"=1)
 		behaviors=list(10,25,30,5,30) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		New()
 			..()
 			src.Create_Aura("Lightyellow")
 			src.skills=list(new/Skill/Explosivewave,new/Skill/Mouthblast,new/Skill/Energyblast,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
+		Transform()
+			if(src.unlocked["lightningarmor"])
+				if(!form)
+					src.icon_state="transform"
+					src.Create_Aura("Lightningarmor")
+					src.vis_contents|=src.aura
+					src.vis_contents|=src.auraover
+					src.aura.icon_state="start"
+					src.auraover.icon_state="start"
+
+					sleep(2)
+					src.aura.icon_state="aura"
+					src.auraover.icon_state="aura"
+					sleep(4)
+					src.form="lightningarmor"
+					src.icon_state=""
+					src.Set_PL(round(src.basepl*4.2,1))
+
+					src.vis_contents+=new/obj/lightningarmor
+					src.filters+=filter(type="outline",size=1,color=rgb(230,230,100))
+					src.icon='nappa_lightning.dmi'
+					src.aura.icon_state=""
+					src.auraover.icon_state=""
+					sleep(10)
+					src.vis_contents-=src.aura
+					src.vis_contents-=src.auraover
+				else return
+			..()
+
+
+		Revert()
+			if(form)
+				src.Set_PL(src.basepl)
+				src.form=null
+				src.Create_Aura("Lightyellow")
+				for(var/obj/lightningarmor/E in src.vis_contents)src.vis_contents-=E
+				src.icon='nappa.dmi'
+				src.filters=null
+				sleep(5)
+			..()
 
 	saibamen
 		name="Saibamen"

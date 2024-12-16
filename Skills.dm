@@ -89,7 +89,7 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset,icon/customki)
 		src.RotateMob(stepvector,100)
 	var/matrix/m=new/matrix()
 	if(K.rotate)
-		m.TurnWithPivot(angle,K.bound_width/2,0,K.axisflip)
+		m.TurnandScaleWithPivot(angle,K.scale,K.scale,K.bound_width/2,0,K.axisflip)
 		K.transform=m
 	K.pixloc=bound_pixloc(src,0)+stepvector+offset+vector(K.xoffset,K.yoffset)
 	K.stepv=stepvector
@@ -149,7 +149,7 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset,icon/customki)
 						stepvector.Turn(10)
 				m=new/matrix()
 				if(K.rotate)
-					m.TurnWithPivot(vector2angle(stepvector),K.bound_width/2,0,K.axisflip)
+					m.TurnandScaleWithPivot(vector2angle(stepvector),K.scale,K.scale,K.bound_width/2,0,K.axisflip)
 					K.transform=m
 
 
@@ -191,9 +191,9 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset,icon/customki)
 			angle=vector2angle(stepvector)
 			m=new/matrix()
 			if(K.rotate)
-				m.TurnWithPivot(angle,K.bound_width/2,0,K.axisflip)
+				m.TurnandScaleWithPivot(angle,K.scale,K.scale,K.bound_width/2,0,K.axisflip)
 				K.transform=m
-	K.Explode()
+	if(!K.persist)K.Explode()
 	var/list/hits=K.hitmobs
 	for(var/mob/Hit in hits)
 		if(Hit.invulnerable || Hit==src||(Hit in hitlist))continue
@@ -205,9 +205,71 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset,icon/customki)
 				Hit.icon_state=""
 		spawn()Hit.Damage(K.power*PLcompare(src,Hit),K.impact,0,src)
 	sleep(world.tick_lag)
-	if(K)K.loc=null
+	if(!K.persist)
+		if(K)K.loc=null
 
+mob/proc/Shootto(obj/Kiblast/K,pixloc/P)
+	K.owner=src
 
+	if(!P || !K.pixloc)return
+	var/vector/stepvector=P-K.pixloc
+	var/distremaining=stepvector.size
+	stepvector.size=K.speed
+	K.stepv=stepvector
+	for(var/mob/Hit in bounds(K))
+		if(Hit!=src)K.hitmobs|=Hit
+	var/list/hitlist=new/list
+	K.step_size=K.speed
+	if(K.rotate)
+		var/matrix/m=matrix()
+		m.TurnandScaleWithPivot(vector2angle(stepvector),K.scale,K.scale,K.bound_width/2,0,K.axisflip)
+		K.transform=m
+	while(distremaining>0)
+
+		distremaining-=K.speed
+
+		if(K.push)
+			for(var/mob/M in K.hitmobs)
+				M.Move(M.pixloc+stepvector)
+				M.icon_state="hurt1"
+		else
+			if(K.hitmobs.len && !K.pierce)
+				distremaining=0
+				break
+		K.Move(K.pixloc+stepvector)
+
+		for(var/mob/Hit in K?.hitmobs)
+			if(Hit.invulnerable || Hit==src||(Hit in hitlist))
+				continue
+			Hit.CheckCanMove()
+			hitlist|=Hit
+			Hit.icon_state=""
+			if(K.explode)
+				K.explode=0
+				K.Explode()
+			spawn()
+				if(Hit.block)
+					Hit.Damage(K.power*PLcompare(src,Hit)*(1-K.blockreduce/100),K.impact,0,src)
+				else
+					Hit.Damage(K.power*PLcompare(src,Hit),K.impact,0,src)
+					Hit.icon_state="hurt1"
+					spawn(5)
+						if(Hit&&Hit.icon_state=="hurt1")Hit.icon_state=""
+
+		sleep(world.tick_lag)
+	if(K&&!K.persist)K.Explode()
+	var/list/hits=K.hitmobs
+	for(var/mob/Hit in hits)
+		if(Hit.invulnerable || Hit==src||(Hit in hitlist))continue
+		Hit.CheckCanMove()
+		hitlist|=Hit
+		Hit.icon_state="hurt1"
+		spawn(5)
+			if(Hit.icon_state=="hurt1")
+				Hit.icon_state=""
+		spawn()Hit.Damage(K.power*PLcompare(src,Hit),K.impact,0,src)
+	sleep(world.tick_lag)
+	if(K&&!K.persist)K.loc=null
 
 obj/Kiblast
 	proc/Explode()
@@ -273,6 +335,7 @@ obj/Kiblast
 		blockreduce=50
 		xoffset=0
 		yoffset=0
+		persist=0
 
 
 	Spiritbomb
@@ -330,6 +393,40 @@ obj/Kiblast
 			src.icon=null
 			src.loc=null
 			..()
+	HellzoneGrenade
+		icon='spiritball.dmi'
+		layer=MOB_LAYER
+		bound_width=16
+		bound_height=10
+		bound_x=0
+		density=1
+		spread=0
+		distance=500
+		speed=8
+		power=5
+		impact=0
+		push=0
+		pierce=1
+		homing=0
+		repeathit=0
+		spread=0
+		explode=0
+		persist=1
+		scale=0.5
+		New()
+			..()
+			src.scale=pick(0.6,0.40,0.5,0.55,0.35)
+			src.transform=matrix().Scale(src.scale)
+
+		Bump(atom/A)
+			if(istype(A,/obj)&&A:destructible)
+				A:Destroy_Landscape()
+			..()
+		Explode()
+			src.icon=null
+			Explosion(/obj/FX/Explosion,bound_pixloc(src,0),0,0.5,0.5)
+			src.loc=null
+			..()
 	Spiritball
 		icon='spiritball.dmi'
 		layer=MOB_LAYER
@@ -373,10 +470,9 @@ obj/Kiblast
 		alpha=150
 		layer=MOB_LAYER+1
 		bound_width=283
-		bound_height=101
-		bound_x=50
-		//bound_y=65
-		pixel_z=-65
+		bound_height=171
+		pixel_z=-70
+		pixel_w=-40
 		distance=500
 		speed=12
 		power=65
@@ -734,6 +830,7 @@ Skill
 		kicost=50
 		icon_state="spiritball"
 		Use(mob/user,time)
+
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
 			else
@@ -746,6 +843,58 @@ Skill
 			user.Energy_Blast(time,S,vector(0,0))
 			sleep(5)
 			if(user.icon_state=="blast2")user.icon_state=""
+
+	HellzoneGrenade
+		ctime=3
+		kicost=50
+		icon_state="hellzonegrenade"
+		Use(mob/user,time)
+
+			var/mob/target=user.Target()
+			if(!target)return
+			src.channel=0
+			var/c=12
+			var/list/L=new/list()
+			user.usingskill=1
+			while(c>0)
+				user.icon_state="blast2"
+				sleep(0.5)
+				var/obj/Kiblast/HellzoneGrenade/S=new/obj/Kiblast/HellzoneGrenade
+				spawn(5)
+					S.pierce=0
+					S.push=1
+				var/vector/spread=vector(96,0)
+				if(c%2)
+					spread.Turn(90+(c-12)*360/12)
+				else
+					spread.Turn(90-(c-12)*360/12)
+				var/pixloc/dest=bound_pixloc(target,0)+spread
+				S.pixloc=bound_pixloc(user,0)
+				spawn()user.Shootto(S,dest)
+				L+=S
+				user.icon_state="blast1"
+				sleep(1)
+
+				c--
+
+			sleep(10)
+			user.usingskill=0
+			user.CheckCanMove()
+			for(var/obj/Kiblast/O in L)
+				if(!O.loc)continue
+				O.persist=0
+				O.speed=16
+				O.explode=1
+				O.push=0
+				O.pierce=1
+				O.distance=96
+				O.spread=0
+				spawn()user.Shootto(O,bound_pixloc(target,0))
+
+
+
+			if(user.icon_state=="blast2")user.icon_state=""
+
 
 	Wolffangfist
 		ctime=3
