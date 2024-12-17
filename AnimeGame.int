@@ -2,7 +2,7 @@
 /*
 MAP_PLANE_MASTERS: 
 MAP_ZOOM: 1.500
-LAST_COMPILE_TIME: 1734334037
+LAST_COMPILE_TIME: 1734407459
 PACKAGE_RSC_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\AnimeGame_rsc.zip
 DIR: gui tileset Lib 
 AUTO_FILE_DIR: ON
@@ -12,9 +12,9 @@ PACKAGE_DME_NAME: C:\Users\Danva\OneDrive\Desktop\AnimeGame_src.zip
 LAST_COMPILE_VERSION: 516.1647
 PACKAGE_TYPE: 0
 PACKAGE_DME_START: 
-WINDOW: Base.dm;AI.dm;raditz.dmi;raditz_ssj.dmi;FX.dm;elec3.dmi;Procs.dm;nappa.dmi;nappa_lightning.dmi;Skills.dm;spiritball.dmi;skills.dmi;Beams.dm;explosivedemonwave.dmi;piccolo.dmi;piccolo_orange.dmi
+WINDOW: Base.dm;AI.dm;raditz.dmi;raditz_ssj.dmi;FX.dm;elec3.dmi;Procs.dm;nappa.dmi;nappa_lightning.dmi;Skills.dm;spiritball.dmi;skills.dmi;Beams.dm;explosivedemonwave.dmi;piccolo.dmi;piccolo_orange.dmi;gohan.dmi;sliceblast.dmi;trunks_ssj.dmi;trunks.dmi
 PACKAGE_DME_INFO: 
-FILE: Base.dm
+FILE: trunks_ssj.dmi
 MAP_INSTANCE_MODE: copy
 PACKAGE_DMB_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\DragonBrawlOnlineDec32024.zip
 PACKAGE_DME_DEMO: 

@@ -609,6 +609,35 @@ obj/Kiblast
 					sleep(1)
 			spawn(5)src.loc=null
 			..()
+	Sliceblast
+		icon='sliceblast.dmi'
+		bound_width=32
+		bound_height=64
+		bound_y=0
+		density=1
+		spread=0
+		distance=250
+		yoffset=-28
+		xoffset=6
+		speed=12
+		power=5
+		pierce=1
+		New()
+			..()
+			animate(src,alpha=150,time=1.5)
+
+		Bump(atom/A)
+			if(istype(A,/obj))
+				if(A:destructible)
+					A:Destroy_Landscape()
+				src.Explode()
+				src.loc=null
+			..()
+		Explode()
+
+			src.icon=null
+			src.loc=null
+			..()
 	Fingerlaser
 		icon='fingerlaser.dmi'
 		bound_width=32
@@ -725,6 +754,8 @@ Skill
 		ctime=4
 		kicost=50
 		icon_state="masenko"
+		state1="masenko1"
+		state2="masenko2"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -867,7 +898,8 @@ Skill
 				sleep(0.5)
 				user.icon_state="blast2"
 				var/obj/Kiblast/HellzoneGrenade/S=new/obj/Kiblast/HellzoneGrenade
-				spawn(5)
+				spawn(10)
+				//	S.color= "#ff0000" for testing only
 					S.pierce=0
 					S.push=1
 				var/vector/spread=vector(96,0)
@@ -958,13 +990,20 @@ Skill
 			var/matrix/m=matrix()
 			var/ang=-vector2angle(aimvector)
 			user.AngleRotateMob(-ang)
-			m.TurnandScaleWithPivot(-ang,W.scale,W.scale,W.bound_width/2,0)
+			m.TurnandScaleWithPivot(-ang,W.scale/4,W.scale,W.bound_width/2,0)
 			W.transform=m
+			var/matrix/m2=matrix().TurnandScaleWithPivot(-ang,W.scale*1.25,W.scale*1.25,W.bound_width/2,0)
+
+			W.alpha=100
+			animate(W,transform=m2,alpha=255,easing=CUBIC_EASING,time=1.5)
+
 			W.pixloc=bound_pixloc(user,0)+aimvector
-			for(var/mob/M in bounds(W.pixloc,90))
+			for(var/mob/M in bounds(W.pixloc,120))
 				if(M.invulnerable||M==user)continue
 				spawn()M.Damage(15*PLcompare(user,M),45,PLcompare(user,M)*50,user)
-			sleep(5)
+			sleep(1.5)
+			animate(W,transform=m2,alpha=0,time=1.5)
+			sleep(3.5)
 			user.usingskill=0
 			user.CheckCanMove()
 			W.loc=null

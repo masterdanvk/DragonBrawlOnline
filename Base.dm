@@ -404,6 +404,7 @@ var/alist/playerselection=new/alist(
 	Krillin=/mob/krillin,
 	Yamcha=/mob/yamcha,
 	Chaiotzu=/mob/chaotzu,
+	Trunks=/mob/trunks,
 	Raditz=/mob/raditz,
 	Nappa=/mob/nappa,
 	Saibamen=/mob/saibamen,
@@ -883,14 +884,16 @@ mob
 			src.equippedskill=src.skills[1]
 		Transform()
 			if(src.unlocked["orange"] && !src.form)
-				src.icon_state="transform"
-				//sleep(6)
+
 				src.icon='piccolo_orange.dmi'
 				src.bound_width=32
 				src.bound_height=46
 				src.bound_x=15
 				src.pixel_z=-14
 				src.form="Orange"
+				src.icon_state="transform"
+				sleep(9)
+
 				src.icon_state=""
 				src.Set_PL(round(src.basepl*4.2,1))
 				src.Create_Aura("Orange")
@@ -902,7 +905,7 @@ mob
 				src.bound_height=38
 				src.bound_x=20
 				src.pixel_z=0
-				sleep(5)
+				sleep(4)
 				src.icon_state=""
 				src.Set_PL(src.basepl)
 				src.icon='piccolo.dmi'
@@ -1052,6 +1055,44 @@ mob
 			src.Create_Aura("Lightgreen")
 			src.skills=list(new/Skill/Dondonpa,new/Skill/Spiritball,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
+	trunks
+		name="Trunks"
+		icon='trunks.dmi'
+		bound_x=12
+		bound_y=5
+		bound_width=24
+		bound_height=28
+		pl=9000
+		special=/Beam/Masenko
+		kiblast=/obj/Kiblast/Sliceblast
+		unlocked=alist("ssj"=1)
+		behaviors=list(20,10,20,25,25) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		New()
+			..()
+			src.Create_Aura("White")
+			src.skills=list(new/Skill/Masenko,new/Skill/Kiblast)
+			src.equippedskill=src.skills[1]
+		Transform()
+			if(src.unlocked["ssj"] && !src.form)
+				src.icon_state="transform"
+				sleep(6)
+				src.icon='trunks_ssj.dmi'
+				src.form="SSJ"
+				src.icon_state=""
+				src.Set_PL(round(src.basepl*4.2,1))
+				src.Create_Aura("Yellow")
+			..()
+		Revert()
+			if(form)
+				src.icon_state="revert"
+				sleep(5)
+				src.icon_state=""
+				src.Set_PL(src.basepl)
+				src.icon='trunks.dmi'
+				src.form=null
+				src.Create_Aura("White")
+
+			..()
 	cell
 		name="Perfect Cell"
 		icon='cell.dmi'
