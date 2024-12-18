@@ -535,6 +535,20 @@ client/New()
 	src.mob=new/mob/picking
 	winset(src,"output1","is-visible=0")
 	winset(src,"input1","is-visible=0")
+
+	world.log<<"[src] is at [src.address] while world is [world.internet_address]"
+	if(src.address==world.internet_address||!world.internet_address||!src.address)
+		src.verbs+=/mob/admin/verb/MakeShiny
+		src.verbs+=/mob/admin/verb/ChangeHue
+		winset(src, "menu_spawnai", list(parent = "menu.admin", name = "SpawnAI", command = "SpawnAI"))
+		winset(src, "menu_raditz", list(parent = "menu.admin", name = "Raditz Fight", command = "RaditzFight"))
+		winset(src, "menu_tournament", list(parent = "menu.admin", name = "Tournament", command = "Tournament"))
+		winset(src, "menu_saibamen", list(parent = "menu.admin", name = "Saibamen Spawn", command = "SaibamenSeeding"))
+		winset(src, "menu_restoreearth", list(parent = "menu.admin", name = "Restore Earth", command = "RestoreEarth"))
+		winset(src, "menu_addskill", list(parent = "menu.admin", name = "Add Skill", command = "ChangeSkill"))
+		winset(src, "menu_setpowerlevel", list(parent = "menu.admin", name = "Set Powerlevel", command = "change_powerlevel"))
+	else
+		winset(src,"menu.admin","is-visible=0")
 	..()
 
 
@@ -551,7 +565,7 @@ mob/verb/spawnmob()
 	M-=/mob/picking
 	var/pick=input(usr,"Select a mob to spawn","Spawn") in M
 	new pick (usr.pixloc)
-
+/*
 mob/verb/firebeams()
 	sleep(10)
 	world<<"ready"
@@ -569,21 +583,12 @@ mob/verb/firebeams()
 					M.aim=m.pixloc-M.pixloc
 
 			spawn()M.FireBeam(50,500,new M.special)
-
-mob/verb/startpunchin()
-	if(!punchin)
-		punchin=1
-		while(punchin)
-			for(var/mob/M in world)
-				if(!M.client)
-					spawn()M.Punch()
-			sleep(5)
-	else
-		punchin=0
+*/
 var/punchin=0
 
-mob/verb/change_powerlevel(var/p=src.pl as num)
-	set hidden = 1
+
+mob/admin/verb/change_powerlevel(var/p=src.pl as num)
+
 	src.Set_PL(p)
 
 
@@ -823,7 +828,7 @@ mob
 	vegeta
 		name="Vegeta"
 		icon='vegeta.dmi'
-		portrait_offset=5
+		portrait_yoffset=5
 		bound_x=20
 		bound_y=2
 		bound_width=24
@@ -921,7 +926,8 @@ mob
 		bound_y=2
 		bound_width=24
 		bound_height=28
-		pl=9000
+		pl=6500
+		basepl=6500
 		special=/Beam/Masenko
 		unlocked=alist("ssj"=1,"ssj2"=1)
 		behaviors=list(25,25,10,10,30) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
@@ -1062,6 +1068,7 @@ mob
 		bound_y=5
 		bound_width=24
 		bound_height=28
+		portrait_xoffset=-10
 		pl=9000
 		special=/Beam/Masenko
 		kiblast=/obj/Kiblast/Sliceblast
@@ -1070,7 +1077,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("White")
-			src.skills=list(new/Skill/Masenko,new/Skill/Kiblast)
+			src.skills=list(new/Skill/Masenko,new/Skill/Burningattack,new/Skill/Kiblast/Slicing)
 			src.equippedskill=src.skills[1]
 		Transform()
 			if(src.unlocked["ssj"] && !src.form)
@@ -1109,7 +1116,7 @@ mob
 			..()
 			src.Create_Aura("Yellow")
 
-			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon,new/Skill/Kiblast)
+			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon,new/Skill/Kiblast/Fingerlaser)
 			src.equippedskill=src.skills[1]
 		Transform()
 			if(src.unlocked["celljr"])
@@ -1138,7 +1145,7 @@ mob
 		icon='celljr.dmi'
 		bound_x=20
 		bound_y=2
-		portrait_offset=10
+		portrait_yoffset=10
 		bound_width=24
 		bound_height=28
 		pl=9000
@@ -1198,7 +1205,7 @@ mob
 		bound_y=0
 		bound_width=30
 		bound_height=40
-		portrait_offset=-15
+		portrait_yoffset=-15
 		pl=9000
 		special=/Beam/Mouthblast
 		unlocked=new/alist("lightningarmor"=1)
@@ -1251,7 +1258,7 @@ mob
 
 	saibamen
 		name="Saibamen"
-		portrait_offset=10
+		portrait_yoffset=10
 		NPC
 			team="Enemy"
 			wanderrange=3
@@ -1580,7 +1587,8 @@ mob/proc/Damage(damage,impact,critchance,mob/damager)
 		src.Die(damager)
 mob/proc
 	Die(mob/damager)
-
+		if(src.dead)return
+		src.Standstraight()
 		if(src.spawnings.len)
 			for(var/mob/S in src.spawnings)
 				spawn()S.Die()
@@ -1591,26 +1599,30 @@ mob/proc
 		src.client?.edge_limit=null
 		src.canmove=0
 		src.Clear_target()
-		sleep(10)
-		if("dead" in icon_states(src.icon)) src.icon_state="dead"
+		var/state
+		if("dead" in icon_states(src.icon))
+			src.icon_state="dead"
+			state="dead"
 		else
 			src.icon_state="hurt1"
+			state="hurt1"
 
 		if(damager)
 			world<<"[src] has been killed by [damager]"
 
 		if(damager)damager.Clear_target()
 		var/matrix/M=src.transform
-		M.Turn(-60)
+		if(state=="hurt1")M.Turn(-60)
 
 
-		animate(src,transform=M,time=10)
+		animate(src,transform=M,time=3)
 		if(src.holdskill)
 			src.holdskill:loc=null
 			src.holdskill=null
 		if(src.client)src.client.keydown=new/alist()
 
 		sleep(20)
+		src.icon_state=state
 		animate(src,alpha=0,time=30)
 		sleep(100)
 		if(!src.client)
@@ -1706,8 +1718,8 @@ mob/proc/Punch(mob/hit)
 		sleep(2)
 		src.attacking=0
 		src.CheckCanMove()
-		if(src.client?.movekeydown) src.icon_state="dash2"
-		else src.icon_state=""
+		if(src.client?.movekeydown&&!src.dead) src.icon_state="dash2"
+		else if(!src.dead) src.icon_state=""
 
 mob/proc/Kick(mob/hit)
 	set waitfor = 0
@@ -1792,8 +1804,8 @@ mob/proc/Kick(mob/hit)
 		sleep(2)
 		src.attacking=0
 		src.CheckCanMove()
-		if(src.client?.movekeydown) src.icon_state="dash2"
-		else src.icon_state=""
+		if(src.client?.movekeydown&&!src.dead) src.icon_state="dash2"
+		else if(!src.dead)src.icon_state=""
 
 
 proc/PLcompare(mob/atk,mob/def)
@@ -1826,6 +1838,7 @@ mob/proc/Block()
 	animate(src,icon_state="block",time=4)
 	src.movevector=vector(0,0)
 	sleep(4)
+	if(src.dead)return
 	if(src.client?.movekeydown) src.icon_state="dash2"
 	else src.icon_state=""
 
@@ -1985,7 +1998,7 @@ client/verb/keydownverb(button as text)
 
 	src.lasttapped[1]=button
 	src.lasttapped[2]=world.time
-	if(src.keydown["D"]&&src.keydown["South"]&&M.form)
+	if(src.keydown["D"]&&src.keydown["South"]&&M.form&&!src.movekeydown)
 		M.Revert()
 	if((src.keydown["F"]||(src.keydown["D"]&&src.keydown["North"]))&&world.time>M.chargecd) //charge
 		if(!M.charging&&!M.aiming)
@@ -2023,7 +2036,7 @@ client/verb/keydownverb(button as text)
 
 
 	else
-		if(button=="D")
+		if(button=="D"&&!M.dead)
 			M.icon_state="block"
 			M.block=1
 			M.canmove=0
@@ -2119,8 +2132,8 @@ client/verb/keyupverb(button as text)
 		sleep(1)
 
 
-	if(button=="W")M.Next_Skill()
-	else if(button=="Q")M.Prev_Skill()
+	if(button=="W"&&!src.keydown["S"])M.Next_Skill()
+	else if(button=="Q"&&!src.keydown["S"])M.Prev_Skill()
 	if(button=="A")
 		var/duration=world.time-src.keydown[button]
 		if(duration>5)M.Kick()
@@ -2164,7 +2177,7 @@ client/verb/keyupverb(button as text)
 		src.screen-=M.gui_charge
 		M.usingskill=0
 		M.canmove=1
-		M.icon_state=""
+		if(!M.dead)M.icon_state=""
 
 	src.keydown?.Remove(button)
 
@@ -2413,7 +2426,7 @@ client/proc/UpdateMoveVector()
 		src.mob.RotateMob(V,2)
 	else
 		src.mob.RotateMob(V,0)
-	if(!oldmove||oldmove.size==0)
+	if(!oldmove||oldmove.size==0&&!src.mob.dead)
 		if(src.mob.icon_state=="block")return
 	//	src.mob.icon_state="dash2"
 		src.mob.icon_state="dash1"
@@ -2466,14 +2479,19 @@ world/Tick()
 
 var/clients[0]
 
-
+mob/proc/Standstraight()
+	if(src.bdir==EAST)
+		src.transform=matrix()
+		src.rotation=0
+	else
+		src.transform=matrix().Scale(-1,1)
+		src.rotation=0
 
 
 //bumping code
 mob
 	Bump(atom/o)
 		..()
-		if(src.client)src.client<<"Bump [o]"
 		if(istype(o,/mob))
 			var/mob/M=o
 
@@ -2564,7 +2582,7 @@ mob/proc/sendflying(vector/V,distance,rate)
 	src.autoblocks=src.maxautoblocks
 	src.tossed=0
 	src.CheckCanMove()
-	src.icon_state=""
+	if(!src.dead)src.icon_state=""
 
 atom/var/bouncy=1
 atom/movable/proc/bounce(atom/T)

@@ -2,20 +2,9 @@
 mob/var
 	mob/threat
 mob/proc/AutoAim(vector/aim)
-	var/ex=src.x
-	if(src.bdir==EAST)ex+=16
-	else ex-=16
-	var/list/targets=new/list
 	var/mob/target
-	for(var/mob/M in obounds(src,500))
-		targets+=M
-	if(src.lastattacked in targets)
-		target=src.lastattacked
-	else if(src.lastattackedby in targets)
-		target=src.lastattackedby
-	else
-		if(targets.len)
-			target=pick(targets)
+	target=src.Target()
+
 
 	if(target && target!=src)
 		return (target.pixloc-src.pixloc)
@@ -24,12 +13,15 @@ mob/proc/AutoAim(vector/aim)
 
 	return aim
 
+mob/var/tmp/mob/target
 mob/proc/Target()
 	var/list/targets=new/list
 	var/mob/target
+
 	for(var/mob/M in obounds(src,500))
 		if(!M.dead)targets+=M
-
+	if(src.target && !src.target.dead && src.target in targets)
+		target=src.target
 	if(src.lastattacked in targets)
 		target=src.lastattacked
 
@@ -37,11 +29,25 @@ mob/proc/Target()
 		target=src.lastattackedby
 	else
 		if(targets.len)
-			src.lastattacked=targets[1]
-			target=targets[1]
-
+		//	vector2angle(vector/v)
+		//	angle2vector(angle,dist)
+			var/fitscore
+			for(var/mob/m in targets)
+				if(m.team!=src.team && m!=src)
+					var/vector/diff=m.pixloc-src.pixloc
+					var/dist=diff.size
+					var/angle=vector2angle(diff)
+					if(angle<0)angle+=360
+					var/uaim=Dir2Angle(src.dir)
+					var/distscore=(500-dist)/5
+					var/aimscore=(360-abs(angle-uaim))/3.6
+					var/score=(aimscore)*0.70+(distscore)*0.30
+					if(score>fitscore)
+						target=m
+						fitscore=score
 
 	if(target && target!=src)
+		src.target=target
 		return (target)
 
 mob/proc/FireBeam(charge,maxdistance,Beam/B)

@@ -15,7 +15,8 @@ mob
 
 		obj/maskbar/gui_charge
 		mob/targetmob
-		portrait_offset=0
+		portrait_xoffset=0
+		portrait_yoffset=0
 	New()
 		..()
 		if(istype(src,/mob/picking))return
@@ -35,7 +36,8 @@ mob
 		gui_portrait=new/obj/gui/picture()
 		gui_portrait.appearance=src.appearance
 		person.vis_contents+=gui_portrait
-		person.pixel_z+=src.portrait_offset
+		person.pixel_z+=src.portrait_yoffset
+		person.pixel_w+=src.portrait_xoffset
 		background.vis_contents+=person
 		gui_picture= new/obj/gui/mask()
 		gui_picture.vis_contents+=background

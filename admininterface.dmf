@@ -1,15 +1,19 @@
 macro "macro"
 	elem 
 		name = "CTRL+A"
+		command = "SpawnAI"
 	elem 
 		name = "CTRL+B"
+		command = "firebeams"
 	elem 
 		name = "CTRL+F"
 		command = "FullScreen"
 	elem 
 		name = "CTRL+M"
+		command = "spawnmob"
 	elem 
 		name = "CTRL+T"
+		command = "Tournament"
 	elem 
 		name = "GamepadUp"
 		map-to = "None"
@@ -19,9 +23,39 @@ macro "macro"
 
 
 menu "menu"
-	elem "file"
+	elem 
 		name = "&File"
 		command = ""
+		saved-params = "is-checked"
+	elem 
+		name = "SpawnAI"
+		command = "SpawnAI"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
+		name = "Raditz Fight"
+		command = "RaditzFight"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
+		name = "Join Tournament"
+		command = "Tournament"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
+		name = "Saibamen Seeding"
+		command = "SaibamenSeeding"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
+		name = "Saibamen Invasion"
+		command = "SaibamenInvasion"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
+		name = "&Restore Earth"
+		command = "RestoreEarth"
+		category = "&File"
 		saved-params = "is-checked"
 	elem 
 		name = "Toggle Chat"
@@ -31,6 +65,16 @@ menu "menu"
 	elem 
 		name = "Change Character"
 		command = "ChangePlayer"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
+		name = "Change Skill"
+		command = "ChangeSkill"
+		category = "&File"
+		saved-params = "is-checked"
+	elem 
+		name = "Change View"
+		command = "changeview"
 		category = "&File"
 		saved-params = "is-checked"
 	elem 
@@ -44,10 +88,8 @@ menu "menu"
 		command = ".quit"
 		category = "&File"
 		saved-params = "is-checked"
-	elem "admin"
-		name = "Admin"
-		command = ""
-		saved-params = "is-checked"
+
+menu "menu1"
 
 
 window "mainwindow"
@@ -65,6 +107,11 @@ window "mainwindow"
 		can-minimize = false
 		macro = "macro"
 		menu = "menu"
+		outer-size = 1296x779
+		outer-pos = 291,0
+		inner-size = 1280x720
+		inner-pos = 8,51
+		screen-size = 1920x1032
 	elem "map1"
 		type = MAP
 		pos = 0,0

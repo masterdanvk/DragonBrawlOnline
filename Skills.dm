@@ -515,6 +515,38 @@ obj/Kiblast
 					sleep(1)
 			spawn(5)src.loc=null
 			..()
+
+	Burningattack
+		icon='burningattack.dmi'
+		layer=MOB_LAYER+1
+		bound_width=124
+		bound_height=135
+		bound_x=-62
+		bound_y=-67
+		pixel_z=-67
+		density=1
+		spread=0
+		distance=500
+		speed=12
+		power=34
+		impact=30
+		explode=1
+		push=0
+		Bump(atom/A)
+			if(istype(A,/mob) && !A:invulnerable)
+				src.hitmobs|=A
+
+		Explode()
+			src.icon=null
+			spawn()
+				Explosion(/obj/FX/Explosion,bound_pixloc(src,0))
+				destroy_turfs(bound_pixloc(src,0),40)
+				for(var/mob/M in bound_pixloc(src,0),40)
+					if(M!=src.owner)src.hitmobs|=M
+
+					sleep(1)
+			spawn(5)src.loc=null
+			..()
 	Bigbangattack
 		icon='bigbangattack.dmi'
 		layer=MOB_LAYER+1
@@ -620,7 +652,7 @@ obj/Kiblast
 		yoffset=-28
 		xoffset=6
 		speed=12
-		power=5
+		power=4
 		pierce=1
 		New()
 			..()
@@ -649,7 +681,7 @@ obj/Kiblast
 		yoffset=-27
 		xoffset=-10
 		speed=12
-		power=3
+		power=4
 		impact=1
 		explode=1
 
@@ -1031,6 +1063,22 @@ Skill
 			del(S)
 			user.icon_state=""
 
+	Burningattack
+		ctime=9
+		kicost=35
+		icon_state="burningattack"
+		state1="burning1"
+		state2="burning2"
+		Use(mob/user,time)
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state="blast2"
+			src.channel=0
+			var/obj/Kiblast/Burningattack/S=new/obj/Kiblast/Burningattack
+			user.Energy_Blast(time,S,vector(0,0))
+			sleep(5)
+			if(user.icon_state=="blast2")user.icon_state=""
 	Bigbangattack
 		ctime=10
 		kicost=60
@@ -1112,6 +1160,10 @@ Skill
 			sleep(5)
 			if(user.icon_state=="blast2")user.icon_state=""
 	Kiblast
+		Slicing
+			icon_state="sliceblast"
+		Fingerlaser
+			icon_state="fingerlaser"
 		kicost=5
 		ctime=0
 		icon_state="kiblast"

@@ -315,13 +315,14 @@ mob/Click()
 	src.Check_Vars()
 
 
-mob/verb/MakeShiny(mob/M in view(10))
+mob/admin/verb/MakeShiny(mob/M in view(10))
+
 	if(M.shiny)
 		M.shiny=0
 		M.color=null
 	else M.shiny()
 
-mob/verb/ChangeHue(mob/M in view(10))
+mob/admin/verb/ChangeHue(mob/M in view(10))
 	var/hueshift=input(usr,"Set a hue shift from 0 to 360","Hue") as num
 	M.hue=hueshift
 	M.filters=null
