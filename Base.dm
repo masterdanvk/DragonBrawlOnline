@@ -419,10 +419,11 @@ var/list/unusedmobs[0]
 mob/var/tmp/selecting=0
 mob/var/tmp/vector/displayvector
 mob/var/tmp/spawncount=0
+var/obj/controls
 client/var/tmp/mob/select
 client/var/tmp/mobselect[]
 client/proc/Character_Select()
-
+	src.screen|=controls
 	if(src.mob&&!src.mob.selecting)
 		var/mob/M=src.mob
 		src.mob=new/mob/picking
@@ -479,6 +480,7 @@ client/proc/Pick_Mob()
 		unusedmobs|=M
 		src.mobselect-=M
 	src.mobselect=null
+	src.screen-=controls
 	if(!src.chatactive)Togglechat()
 
 client/var/busy=0

@@ -2,21 +2,21 @@
 /*
 MAP_PLANE_MASTERS: 
 MAP_ZOOM: 1.500
-LAST_COMPILE_TIME: 1734500571
-PACKAGE_RSC_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\AnimeGame_rsc.zip
+LAST_COMPILE_TIME: 1734582315
 DIR: gui tileset Lib 
+PACKAGE_RSC_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\AnimeGame_rsc.zip
 AUTO_FILE_DIR: ON
 PACKAGE_DMB_INFO: 
 MAP_ICON_TYPE: 0
 PACKAGE_DME_NAME: C:\Users\Danva\OneDrive\Desktop\AnimeGame_src.zip
 LAST_COMPILE_VERSION: 516.1647
-PACKAGE_TYPE: 0
 PACKAGE_DME_START: 
-WINDOW: Base.dm;AI.dm;raditz.dmi;raditz_ssj.dmi;FX.dm;elec3.dmi;Procs.dm;nappa.dmi;nappa_lightning.dmi;Skills.dm;spiritball.dmi;skills.dmi;Beams.dm;explosivedemonwave.dmi;piccolo.dmi;piccolo_orange.dmi;gohan.dmi;sliceblast.dmi;trunks_ssj.dmi;trunks.dmi;test.dmi;temporary.dmi;burningattack.dmi;fingerlaser.dmi;Mapping.dm;gui.dm;map.dmm
+PACKAGE_TYPE: 0
 PACKAGE_DME_INFO: 
-FILE: Base.dm
+WINDOW: Base.dm;AI.dm;raditz.dmi;raditz_ssj.dmi;FX.dm;elec3.dmi;Procs.dm;nappa.dmi;nappa_lightning.dmi;Skills.dm;spiritball.dmi;skills.dmi;Beams.dm;explosivedemonwave.dmi;piccolo.dmi;piccolo_orange.dmi;gohan.dmi;sliceblast.dmi;trunks_ssj.dmi;trunks.dmi;Turfs.dm;gui.dm
+FILE: Turfs.dm
 MAP_INSTANCE_MODE: copy
-PACKAGE_DMB_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\DragonBrawlOnlineDec32024.zip
 PACKAGE_DME_DEMO: 
+PACKAGE_DMB_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\DragonBrawlOnlineDec32024.zip
 */
 // END_INTERNALS
