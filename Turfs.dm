@@ -47,7 +47,7 @@ world/New()
 	controls.icon='controls.png'
 	controls.layer=FLOAT_LAYER
 	controls.plane = FLOAT_PLANE
-	controls.screen_loc="CENTER-6:+16,BOTTOM+1"
+	controls.screen_loc="CENTER-6:+32,BOTTOM+1"
 	InitiateChunks()
 	spawn(-1)
 		autotile_block()

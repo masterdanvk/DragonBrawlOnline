@@ -423,7 +423,7 @@ var/obj/controls
 client/var/tmp/mob/select
 client/var/tmp/mobselect[]
 client/proc/Character_Select()
-	src.screen|=controls
+
 	if(src.mob&&!src.mob.selecting)
 		var/mob/M=src.mob
 		src.mob=new/mob/picking
@@ -445,6 +445,7 @@ client/proc/Character_Select()
 
 var/ovalness=1
 client/proc/RingDisplay()
+	src.screen|=controls
 	for(var/mob/m in src.screen)
 		src.screen-=m
 	var/picknum=mobselect.len
@@ -1937,6 +1938,8 @@ client/proc/GamePad2Key(button, keydown)
 
 		if("GamepadL1","Gamepad2L1")b="Q"
 		if("GamepadR1","Gamepad2R1")b="W"
+		if("GamepadL2","Gamepad2L1")b="-"
+		if("GamepadR2","Gamepad2R1")b="="
 		if("GamepadLeft","Gamepad2Left")b="West"
 		if("GamepadRight","Gamepad2Right")b="East"
 		if("GamepadUp","Gamepad2Up")b="North"
@@ -1982,7 +1985,7 @@ client/verb/keydownverb(button as text)
 	if(!src.keydown)src.keydown=new/alist()
 	if(src.keydown["P"])
 		src.SpawnAI()
-	if(src.keydown["D"]&&button=="S")
+	if((src.keydown["D"]&&button=="S")||button=="=")
 		M.Transform()
 		return
 	var/tapbetween
@@ -2000,7 +2003,7 @@ client/verb/keydownverb(button as text)
 
 	src.lasttapped[1]=button
 	src.lasttapped[2]=world.time
-	if(src.keydown["D"]&&src.keydown["South"]&&M.form&&!src.movekeydown)
+	if((src.keydown["D"]&&src.keydown["South"]&&M.form&&!src.movekeydown)||button=="-")
 		M.Revert()
 	if((src.keydown["F"]||(src.keydown["D"]&&src.keydown["North"]))&&world.time>M.chargecd) //charge
 		if(!M.charging&&!M.aiming)
