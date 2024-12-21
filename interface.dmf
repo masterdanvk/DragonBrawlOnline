@@ -6,6 +6,9 @@ macro "macro"
 		name = "CTRL+M"
 		command = "ChangeMoveMode"
 	elem 
+		name = "CTRL+T"
+		command = "Togglechat"
+	elem 
 		name = "GamepadUp"
 		map-to = "None"
 	elem 
@@ -94,7 +97,8 @@ window "mainwindow"
 		anchor1 = 69,97
 		anchor2 = 98,99
 		text-color = #f8f8f8
-		background-color = #3c4b69
+		background-color = #262a33
+		is-visible = false
 		saved-params = ""
 		command = "say"
 

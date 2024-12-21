@@ -1047,6 +1047,9 @@ Skill
 		state2="tayo"
 		icon_state="solarflare"
 		Use(mob/user,time)
+			spawn(2)
+				user.usingskill=0
+				user.CheckCanMove()
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
 			else
@@ -1101,6 +1104,8 @@ Skill
 		state1="block"
 		state2="ewave"
 		Use(mob/user,time)
+			spawn(4)
+				user.usingskill=0
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
 			else
@@ -1128,7 +1133,7 @@ Skill
 				Hit.stunned=max(Hit.stunned,world.time+10)
 				Hit.icon_state="hurt1"
 				spawn(5)Hit.icon_state=""
-			user.usingskill=0
+
 			user.CheckCanMove()
 
 			sleep(2)

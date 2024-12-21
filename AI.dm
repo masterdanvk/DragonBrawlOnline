@@ -397,6 +397,7 @@ mob/proc/AICharge()
 		if(src.ki<src.maxki)
 			src.Get_Ki(min((src.maxki-src.ki),10))
 		sleep(5)
+		if(src.targetmob)src.FaceAI(src.targetmob)
 	src.charging=0
 	src.vis_contents-=src.aura
 	src.vis_contents-=src.auraover

@@ -35,12 +35,16 @@ client/verb/changeview(var/i as text)
 client/verb/Togglechat()
 	if(chatactive)
 		chatactive=0
-		winset(src,"output1","is-visible=0")
-		winset(src,"input1","is-visible=0")
+		for(var/chatbox_gui/G in usr.client.screen)
+			G.alpha=0
+		for(var/chatbox/C in usr.client.screen)
+			C.alpha=0
 	else
 		chatactive=1
-		winset(src,"output1","is-visible=1")
-		winset(src,"input1","is-visible=1")
+		for(var/chatbox_gui/G in usr.client.screen)
+			G.alpha=70
+		for(var/chatbox/C in usr.client.screen)
+			C.alpha=120
 
 client/verb/SaibamenSeeding(var/n as num)
 	set background = 1
@@ -547,8 +551,6 @@ mob/verb/say(i as text)
 client/New()
 	clients+=src
 	src.mob=new/mob/picking
-	winset(src,"output1","is-visible=0")
-	winset(src,"input1","is-visible=0")
 
 	world.log<<"[src] is at [src.address] while world is [world.internet_address]"
 	if(findtextEx(src.address,"192,168")||findtextEx(src.address,"10,0,0")||src.address==world.internet_address||!world.internet_address||!src.address)
@@ -2450,8 +2452,10 @@ mob/proc/Standstraight()
 mob
 	Bump(atom/o)
 		..()
+		if(src.dashing)src.Chargestop()
 		if(istype(o,/mob))
 			var/mob/M=o
+			if(M.dashing)M.Chargestop()
 
 			var/vector/kbvector
 			if(src.movevector)kbvector=vector(src.movevector)
