@@ -42,6 +42,9 @@
 
 world/New()
 	..()
+	spawn()
+		for(var/mob/M in world)
+			if(M.z==1 && !M.client)M.npcrespawn=1
 	FX=new/alist
 	controls=new/obj
 	controls.icon='controls.png'
@@ -367,6 +370,16 @@ proc/save_turf(turf/T)
 
 
 client/verb/RestoreEarth()
+	for(var/turf/T in altered_turfs)
+		place_tile(T,altered_turfs[T])
+	altered_turfs=new/list()
+	for(var/obj/o in altered_objects)
+		if(o.old_loc)
+			o.loc=o.old_loc
+			o.density=1
+			o.alpha=255
+			altered_objects-=o
+proc/Restore()
 	for(var/turf/T in altered_turfs)
 		place_tile(T,altered_turfs[T])
 	altered_turfs=new/list()

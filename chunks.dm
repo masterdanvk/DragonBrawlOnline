@@ -191,7 +191,7 @@ turf
 		chunk/chunk
 
 mob
-	var
+	var/tmp
 		chunk/chunk
 		chunksdetecting[0]
 		chunksaggroing[0]

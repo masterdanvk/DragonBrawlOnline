@@ -15,7 +15,7 @@ mob/var/tmp
 	aggrotag=0
 	stucksince
 var/AItick=0
-mob/var/skillcooldown
+mob/var/tmp/skillcooldown
 proc/AI_Loop()
 	AItick++
 	if(AItick>=5)
@@ -290,6 +290,7 @@ mob/proc/AIBlock()
 
 mob/var/tmp/hue=0
 mob/var/tmp/shiny=0
+mob/var/tmp/turf/initloc
 mob/proc/shiny()
 	if(shiny)return
 	shiny=1
@@ -305,6 +306,7 @@ mob/proc/shiny()
 
 mob/New()
 	..()
+	if(src.npcrespawn)src.initloc=src.loc
 	if(src.hue)
 		src.filters += filter(
 			type = "color",

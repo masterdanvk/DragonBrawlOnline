@@ -375,6 +375,15 @@ mob
 		src.team=src.ckey
 		if(!istype(src,/mob/picking))
 			src.client?.initskillbar()
+			if(src.client && !src.client.chatinit)
+				spawn(2)
+					src.client.chatinit=1
+					client.chatbox_build() // build the chatbox
+					client.chatlog = "outputwindow.output" // set chatlog
+					_message(world, "[name] has logged in.", "yellow") // notify world
+	Logout()
+		_message(world, "[name] has logged out.", "yellow") // notify world
+		..()
 
 mob/picking
 	icon=null
@@ -483,6 +492,7 @@ client/proc/Pick_Mob()
 	src.mobselect=null
 	src.screen-=controls
 	if(!src.chatactive)Togglechat()
+	src.chatbox_showscreen()
 
 client/var/busy=0
 client/proc/Pick_Next()
@@ -528,10 +538,11 @@ client/proc/Pick_Previous()
 	src.select=src.mobselect[src.mob.selecting]
 	busy=0
 
-
+client/var/tmp/chatinit=0
 
 mob/verb/say(i as text)
 	world<<"[usr.client.name]: [i]"
+	chat_say(_ftext(i,"lightgrey"))
 
 client/New()
 	clients+=src
@@ -540,7 +551,7 @@ client/New()
 	winset(src,"input1","is-visible=0")
 
 	world.log<<"[src] is at [src.address] while world is [world.internet_address]"
-	if(src.address==world.internet_address||!world.internet_address||!src.address)
+	if(findtextEx(src.address,"192,168")||findtextEx(src.address,"10,0,0")||src.address==world.internet_address||!world.internet_address||!src.address)
 		src.verbs+=/mob/admin/verb/MakeShiny
 		src.verbs+=/mob/admin/verb/ChangeHue
 		winset(src, "menu_spawnai", list(parent = "menu.admin", name = "SpawnAI", command = "SpawnAI"))
@@ -556,6 +567,7 @@ client/New()
 
 
 client/Del()
+
 	clients-=src
 	var/mob/M=src.mob
 	M.loc=null
@@ -726,7 +738,7 @@ obj/dustup
 
 mob/var/skills[]
 mob/var/alist/unlocked[]
-mob/var/spawnings[0]
+mob/var/tmp/spawnings[0]
 
 mob/proc
 	Kaioken()
@@ -1351,7 +1363,7 @@ mob
 		special
 		ap
 		maxspeed=16
-		minspeed=4
+		minspeed=6
 		rotation=0
 		bdir=EAST
 		autoblocks=0
@@ -1379,6 +1391,7 @@ mob
 		maxblocks=21
 		hpregen=5
 		maxautoblocks=2
+		npcrespawn=0
 
 	step_size = 8
 
@@ -1612,6 +1625,7 @@ mob/proc
 
 		if(damager)
 			world<<"[src] has been killed by [damager]"
+			_message(world, "[src] has been killed by [damager]", rgb(200,100,100))
 
 		if(damager)damager.Clear_target()
 		var/matrix/M=src.transform
@@ -1630,6 +1644,18 @@ mob/proc
 		sleep(100)
 		if(!src.client)
 			src.loc=null
+			if(src.npcrespawn)
+				sleep(1000)
+				src.hp=src.maxhp
+				src.alpha=255
+				src.icon_state=""
+				src.ki=src.maxki
+				src.pl=src.basepl
+				src.density=1
+				src.dead=0
+				src.invulnerable=0
+				src.canmove=1
+				src.loc=src.initloc
 		else
 			src.client.Character_Select()
 
@@ -1972,6 +1998,9 @@ client/verb/keydownverb(button as text)
 	//	world.log<<button
 		return
 //	world.log<<button
+	if(button=="GamepadL3")
+		src.ChangeMoveMode()
+		return
 	if(button=="GamepadSelect"||button=="Gamepad2Select"||button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadL2"||button=="GamepadR2"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight"||button=="Gamepad2Face1"||button=="Gamepad2Face2"||button=="Gamepad2Face3"||button=="Gamepad2Face4"||button=="Gamepad2L1"||button=="Gamepad2R1"||button=="Gamepad2L2"||button=="Gamepad2R2"||button=="Gamepad2Left"||button=="Gamepad2Right"||button=="Gamepad2Up"||button=="Gamepad2Down"||button=="Gamepad2UpLeft"||button=="Gamepad2DownLeft"||button=="Gamepad2UpRight"||button=="Gamepad2DownRight")
 	//	world<<"[button] passed to GamePad2Key"
 		src.GamePad2Key(button,1)
@@ -2141,8 +2170,9 @@ client/verb/keyupverb(button as text)
 	else if(button=="Q"&&!src.keydown["S"])M.Prev_Skill()
 	if(button=="A")
 		var/duration=world.time-src.keydown[button]
-		if(duration>5)M.Kick()
-		else M.Punch()
+		M.Melee(duration)
+	//	if(duration>5)M.Kick()
+	//	else M.Punch()
 	if((button=="D"&& M.charging)||(button=="North"&& M.charging)||(button=="F" && M.charging))
 		M.charging=0
 		M.aura.icon_state="end"
@@ -2346,109 +2376,28 @@ client/proc/HideAim()
 
 client/var/autoaim=1
 
-
-client/proc/UpdateMoveVector()
-
-	if(!movekeydown && (!src.mob.movevector || !src.mob.movevector.size))return
-	if(src.mob.usingskill)return
-	var/vx=0
-	var/vy=0
-	var/vector/oldmove=src.mob.movevector
-	if(!(("North" in keydown)&&("South" in keydown)))
-		if("North" in keydown)vy=1
-		else
-			if("South" in keydown)vy=-1
-	if(!(("East" in keydown)&&("West" in keydown)))
-		if("East" in keydown)vx=1
-		else
-			if("West" in keydown)vx=-1
-	if("Northeast" in keydown)
-		vx=1
-		vy=1
-	else if("Northwest" in keydown)
-		vx=-1
-		vy=1
-	else if("Southwest" in keydown)
-		vx=-1
-		vy=-1
-	else if("Southeast" in keydown)
-		vx=1
-		vy=-1
-	var/vector/V=vector(vx,vy)
-	src.mob.facing=V
-	var/d=0
-	if(vx==1)d|=EAST
-	if(vx==-1)d|=WEST
-	if(vy==1)d|=NORTH
-	if(vy==-1)d|=SOUTH
-
-	if(d)src.mob.dir=d
-	if(src.mob.aiming&&V.size)
-
-		var/anglediff=vector2angle(V)
-		if(src.mob.aim&&src.mob.aim.size)
-			anglediff-=vector2angle(src.mob.aim)
-		else
-			src.mob.aim=V
-			src.mob.aim.size=16
-		if(abs(anglediff)<=20)
-			src.mob.aim=V
-			src.mob.aim.size=16
-		else
-			var/vector/adjust=vector(V)
-			adjust.size=16
-			src.mob.aim+=adjust
-			src.mob.aim.size=16
-		src.autoaim=0
-		src.ShowAim()
-		return
-	if(src.autoaim==0)src.autoaim=1
-	if(!(V.x==0&&V.y==0))
-		V.size=max(src.mob.minspeed,src.mob.movevector?.size/2)
+client/var/movemode="tight"
+client/verb/ChangeMoveMode()
+	if(movemode=="tight")
+		src<<"movement mode: loose"
+		movemode="loose"
 	else
-		src.mob.movevector.size=src.mob.movevector.size-1
-		if(src.mob.movevector.size<=3)
-			src.mob.movevector=V
-			if(src.mob.icon_state=="dash2")src.mob.icon_state=""
-			if(src.mob.bdir==EAST)
-				src.mob.transform=matrix()
-				src.mob.rotation=0
-			else
-				src.mob.transform=matrix().Scale(-1,1)
-				src.mob.rotation=0
-		src.mob.step_size=max(src.mob.minspeed,src.mob.movevector.size)
-//		world<<"UpdateMoveVector [V], [V.size]"
-		return
+		src<<"movement mode: tight"
+		movemode="tight"
 
-	if(oldmove)V+=oldmove
-	if(V.size>src.mob.step_size)
-		src.mob.step_size=min(src.mob.maxspeed,src.mob.step_size+0.25)
-	V.size=src.mob.step_size
-	src.mob.movevector=V
-	if(V.size>=8)
-		if(src.mob.icon_state=="")
-			src.mob.icon_state="dash2"
-		src.mob.RotateMob(V,2)
-	else
-		src.mob.RotateMob(V,0)
-	if(!oldmove||oldmove.size==0&&!src.mob.dead)
-		if(src.mob.icon_state=="block")return
-	//	src.mob.icon_state="dash2"
-		src.mob.icon_state="dash1"
-		spawn(5)
-			if(src.mob.movevector.size>=3 && src.mob.canmove)
-				src.mob.icon_state="dash2"
-			else
-				if(src.mob.icon_state=="dash1")src.mob.icon_state=""
 
 
 //	world<<"UpdateMoveVector [V], [V.size]"
 
 var/regentick=0
-
+var/regenworldtick=0
 world/Tick()
 	var/regen=0
 	regentick++
+	regenworldtick++
+	if(regenworldtick>5000)
+		regenworldtick=0
+		spawn()Restore()
 	if(regentick==50)
 		regen=1
 		regentick=0
@@ -2457,11 +2406,15 @@ world/Tick()
 		winset(C, "mainwindow", "title=[title]")
 		var/mob/M = C:mob
 		if(M)
-			if(M.canmove && !M.tossed&&(!M.stunned||M.stunned<=world.time))
+			if(!M.attacking&&M.canmove && !M.tossed&&(!M.stunned||M.stunned<=world.time))
 				M.client?.UpdateMoveVector()
 				try
-					if(!(M.Move(M.pixloc+M.movevector)))
-						M.movevector=vector(0,0)
+					if(M.client?.movemode=="tight")
+						if(!(M.PixelMove(M.movevector)))
+							M.movevector=vector(0,0)
+					else
+						if(!(M.Move(M.pixloc+M.movevector)))
+							M.movevector=vector(0,0)
 
 				catch
 				if(regen && (world.time-M.lasthostile)>60)
@@ -2509,8 +2462,9 @@ mob
 					spawn()
 						if(!src.attacking)
 							var/duration=world.time-src.client?.keydown["A"]
-							if(duration>5)src.Kick()
-							else src.Punch()
+							src.Melee(duration)
+						//	if(duration>5)src.Kick()
+						//	else src.Punch()
 							src.client?.keydown["A"]=world.time
 
 
@@ -2523,8 +2477,9 @@ mob
 			else
 				if(src.posture)
 					var/duration=world.time-src.posturetime
-					if(duration>5)src.Kick()
-					else src.Punch()
+					src.Melee(duration)
+				//	if(duration>5)src.Kick()
+				//	else src.Punch()
 					src.posturetime=world.time
 
 		if(src.bouncing && src.canmove)src.bouncing=0
@@ -2541,13 +2496,12 @@ mob/proc/knockback(vector/V,distance,rate)
 	S.size=rate
 	src.canmove=0
 	var/oldglide=src.glide_size
-	src.glide_size=rate
 
 	while(distance>0)
 		if(distance<rate)
 			rate=distance
 			S.size=rate
-		src.step_size=rate
+		src.step_size=src.glide_size=rate
 		src.Move(src.pixloc+S)
 		distance-=rate
 

@@ -1,15 +1,10 @@
 macro "macro"
 	elem 
-		name = "CTRL+A"
-	elem 
-		name = "CTRL+B"
-	elem 
 		name = "CTRL+F"
 		command = "FullScreen"
 	elem 
 		name = "CTRL+M"
-	elem 
-		name = "CTRL+T"
+		command = "ChangeMoveMode"
 	elem 
 		name = "GamepadUp"
 		map-to = "None"
@@ -65,6 +60,11 @@ window "mainwindow"
 		can-minimize = false
 		macro = "macro"
 		menu = "menu"
+		outer-size = 1296x779
+		outer-pos = 291,0
+		inner-size = 1280x720
+		inner-pos = 8,51
+		screen-size = 1920x1032
 	elem "map1"
 		type = MAP
 		pos = 0,0
@@ -74,9 +74,9 @@ window "mainwindow"
 		is-default = true
 		saved-params = ""
 		on-size = "map-resized"
-	elem "output1"
+	elem "oldoutput1"
 		type = OUTPUT
-		pos = 1084,635
+		pos = 420,632
 		size = 196x68
 		anchor1 = 84,88
 		anchor2 = 100,97
@@ -84,16 +84,17 @@ window "mainwindow"
 		font-size = 10
 		text-color = #dddddd
 		background-color = #4d4d4d
+		is-visible = false
 		is-default = true
 		saved-params = "max-lines"
 	elem "input1"
 		type = INPUT
-		pos = 1084,703
-		size = 196x17
-		anchor1 = 84,97
-		anchor2 = 100,100
+		pos = 896,696
+		size = 352x20
+		anchor1 = 69,97
+		anchor2 = 98,99
 		text-color = #f8f8f8
-		background-color = #5f5f5f
+		background-color = #3c4b69
 		saved-params = ""
 		command = "say"
 

@@ -129,6 +129,12 @@ proc/angle2vector(angle,dist)
 	var/vy=round(sin(angle)*dist,1)
 	return vector(vx,vy)
 
+proc/anglebetweenvectors(vector/V1,vector/V2)
+	if(V1&&V1.size&&V2&&V2.size)
+		return arccos(V1.Dot(V2)/(V1.size*V2.size))
+	else
+		return 0
+
 proc/calculate_bounce(vector/incident_vector, vector/normal_vector)
 	// Ensure the normal vector is normalized
 	normal_vector.Normalize()
@@ -199,3 +205,16 @@ proc/color_matrix_rotate_hue(angle)
 
 
 
+atom/movable
+	proc/PixelMove(vector/motion)
+		step_size = glide_size = max(abs(motion.x), abs(motion.y))
+		return Move(motion)
+
+	proc/PixelMoves(vector/motion,speed=src.step_size)
+		var/remaining=motion.size
+		while(remaining>0)
+			motion.size=min(speed,remaining)
+			remaining-=motion.size
+			if(!Move(motion)) return 0
+			sleep(world.tick_lag)
+		return 1

@@ -1128,7 +1128,11 @@ Skill
 				Hit.stunned=max(Hit.stunned,world.time+10)
 				Hit.icon_state="hurt1"
 				spawn(5)Hit.icon_state=""
+			user.usingskill=0
+			user.CheckCanMove()
+
 			sleep(2)
+
 			E.loc=null
 
 	Energyblast
