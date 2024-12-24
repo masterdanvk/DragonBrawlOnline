@@ -33,18 +33,22 @@ client/perspective=EDGE_PERSPECTIVE
 client/verb/changeview(var/i as text)
 	src.view=i
 client/verb/Togglechat()
+	if(!usr)usr=src
 	if(chatactive)
 		chatactive=0
-		for(var/chatbox_gui/G in usr.client.screen)
+		for(var/chatbox_gui/G in usr.client?.screen)
 			G.alpha=0
-		for(var/chatbox/C in usr.client.screen)
+		for(var/chatbox/C in usr.client?.screen)
 			C.alpha=0
 	else
 		chatactive=1
-		for(var/chatbox_gui/G in usr.client.screen)
+		for(var/chatbox_gui/G in usr.client?.screen)
 			G.alpha=70
-		for(var/chatbox/C in usr.client.screen)
+		for(var/chatbox/C in usr.client?.screen)
 			C.alpha=120
+
+
+
 
 client/verb/SaibamenSeeding(var/n as num)
 	set background = 1
@@ -329,7 +333,7 @@ proc/Awaken(mob/m,mob/opponent)
 	m.movevector=vector(0,0)
 	m.rotation=0
 	m.RotateMob(vector(0,0),100)
-	m.autoblocks=m.maxautoblocks
+//	m.autoblocks=m.maxautoblocks
 	m.tossed=0
 	m.icon_state=""
 
@@ -385,9 +389,7 @@ mob
 					client.chatbox_build() // build the chatbox
 					client.chatlog = "outputwindow.output" // set chatlog
 					_message(world, "[name] has logged in.", "yellow") // notify world
-	Logout()
-		_message(world, "[name] has logged out.", "yellow") // notify world
-		..()
+
 
 mob/picking
 	icon=null
@@ -569,7 +571,7 @@ client/New()
 
 
 client/Del()
-
+	_message(world, "[name] has logged out.", "yellow") // notify world
 	clients-=src
 	var/mob/M=src.mob
 	M.loc=null
@@ -839,7 +841,7 @@ mob
 		New()
 			..()
 			src.Create_Aura("White")
-			src.skills=list(new/Skill/Kamehameha,new/Skill/Spiritbomb,new/Skill/Kiblast)
+			src.skills=list(new/Skill/Kamehameha,new/Skill/Spiritbomb,new/Skill/Spiritshot,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 
 	vegeta
@@ -1392,7 +1394,7 @@ mob
 		blocks=21
 		maxblocks=21
 		hpregen=5
-		maxautoblocks=2
+		maxautoblocks=0
 		npcrespawn=0
 
 	step_size = 8
@@ -1586,6 +1588,7 @@ mob/proc/Damage(damage,impact,critchance,mob/damager)
 	damager.lasthostile=world.time
 	src.Show_target(damager)
 	storeddamage++
+	if(src.block)src.storedblock++
 	if(crit)
 		src.Flash(1.5,100)
 		v.size=impact*10
@@ -2196,6 +2199,9 @@ client/verb/keyupverb(button as text)
 			else
 				M.icon_state=""
 		M.CheckCanMove()
+		if(M.storedblock>=3)M.Repulse(min(160,M.storedblock*16))
+		M.storedblock=0
+
 	if(button=="S" && !M.usingskill &&src.keydown["S"])
 		M.aiming=0
 		src.HideAim()
@@ -2542,7 +2548,7 @@ mob/proc/sendflying(vector/V,distance,rate)
 	src.movevector=vector(0,0)
 	src.rotation=0
 	src.RotateMob(vector(S.x,0),100)
-	src.autoblocks=src.maxautoblocks
+	//src.autoblocks=src.maxautoblocks
 	src.tossed=0
 	src.CheckCanMove()
 	if(!src.dead)src.icon_state=""

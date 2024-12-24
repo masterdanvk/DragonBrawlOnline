@@ -51,6 +51,16 @@ obj
 			bound_width=144 //144,96
 			bound_height=96
 			density=0
+		Forcewave
+			icon='fx_push.dmi'
+			duration=9
+			bound_width=96
+			bound_height=96
+			density=0
+			pixel_z=-48
+		//	pixel_w=-48
+			alpha=200
+
 		Explosivewave
 			icon='explosivewave.dmi'
 			duration=6
@@ -104,9 +114,10 @@ proc/Explosion(P,pixloc/L,rotation,scalex,scaley)
 
 	if(FX["[P]"]&&FX["[P]"].len)
 		for(var/obj/FX/o in FX["[P]"])
-			O=o
-			FX["[P]"]-=o
-			break
+			if(istype(o,P))
+				O=o
+				FX["[P]"]-=o
+				break
 	if(!O)O=new P
 	O.pixloc=L
 	if(rotation||scalex||scaley)
@@ -119,7 +130,8 @@ proc/Explosion(P,pixloc/L,rotation,scalex,scaley)
 	O.icon_state="explode"
 	sleep(O.duration)
 	O.icon_state=""
-	O.loc=null
 	O.transform=null
 	if(!FX["[P]"])FX["[P]"]=new/list
 	FX["[P]"]|=O
+	O.loc=null
+

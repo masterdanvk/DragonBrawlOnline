@@ -55,6 +55,8 @@ proc/AI_Loop()
 				M.posturetime=world.time
 			M.Face(M.targetmob)
 			if(M.block && M.icon_state!="block")M.block=0
+			if(!M.targetmob || !M || !M.pixloc)continue
+
 			switch(M.posture)
 				if(1)
 					if((world.time-M.posturetime)>=100 &&M.posture==1)
@@ -73,7 +75,7 @@ proc/AI_Loop()
 								AI_Active|=M
 								spawn()M.Chargestop()
 								var/vector/dist
-								if(M.targetmob)dist=M.targetmob.pixloc-M.pixloc
+								if(M.targetmob&&M.targetmob.pixloc&&M&&M.pixloc)dist=M.targetmob.pixloc-M.pixloc
 								if(dist&&dist.size<=32)
 									M.posture=3
 								else
@@ -168,6 +170,7 @@ proc/AI_Loop()
 						M.activeai=0
 						if(prob(15))M.posture=0
 				if(4)
+
 					var/vector/dist=M.targetmob.pixloc-M.pixloc
 					if((world.time-M.posturetime)>=100 &&M.posture==4)
 						M.posture=0
@@ -195,6 +198,7 @@ proc/AI_Loop()
 							M.posture=2
 						M.activeai=0
 				if(5)
+					if(!M.targetmob || !M || !M.pixloc)continue
 					var/vector/dist=M.targetmob.pixloc-M.pixloc
 					if((world.time-M.posturetime)>=100 &&M.posture==5)
 						M.posture=0
@@ -408,6 +412,7 @@ mob/proc/AICharge()
 
 
 mob/proc/FaceAI(mob/T)
+	if(!T||!T.pixloc||!src||!src.pixloc)return
 	src.RotateMob((T.pixloc-src.pixloc),20)
 
 client/var/fullscreen=0
@@ -434,7 +439,7 @@ client/verb/SpawnAI()
 	m.movevector=vector(0,0)
 	m.rotation=0
 	m.RotateMob(vector(0,0),100)
-	m.autoblocks=m.maxautoblocks
+//	m.autoblocks=m.maxautoblocks
 	m.tossed=0
 	m.icon_state=""
 

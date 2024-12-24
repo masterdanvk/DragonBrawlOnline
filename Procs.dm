@@ -64,6 +64,7 @@ mob/proc/Backstab(mob/M)
 
 
 mob/proc/Face(mob/M)
+	if(!M||!src||!M.pixloc||!src.pixloc)return
 	var/vector/V=M.pixloc-src.pixloc
 	src.dir=Vector2Dir(V)
 	src.RotateMob(V,100)

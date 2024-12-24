@@ -2,7 +2,7 @@
 /*
 MAP_PLANE_MASTERS: 
 MAP_ZOOM: 1.500
-LAST_COMPILE_TIME: 1734812264
+LAST_COMPILE_TIME: 1735002015
 DIR: Chatbox Chatbox\code Chatbox\demo gui tileset Lib 
 PACKAGE_RSC_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\AnimeGame_rsc.zip
 AUTO_FILE_DIR: ON
@@ -13,10 +13,10 @@ LAST_COMPILE_VERSION: 516.1648
 PACKAGE_DME_START: 
 PACKAGE_TYPE: 0
 PACKAGE_DME_INFO: 
-WINDOW: Base.dm;Procs.dm;Melee.dm;chunks.dm;AI.dm;map.dmm;Turfs.dm;gui.dm;kaio_lib_mapresize.dm;Skills.dm;Chatbox\readme.dm;Chatbox\demo\demo.dm;interface.dmf;Chatbox\code\chatbox.dm;Chatbox\code\chatbox_msg.dm;AnimeGame.dme;Chatbox\code\chatbox_gui.dm;gui\gui_menu.dm;gui\gui_name_entry.dm
-FILE: gui.dm
+WINDOW: Base.dm;Procs.dm;Melee.dm;chunks.dm;AI.dm;map.dmm;Turfs.dm;gui.dm;kaio_lib_mapresize.dm;Skills.dm;Chatbox\readme.dm;Chatbox\demo\demo.dm;interface.dmf;Chatbox\code\chatbox.dm;Chatbox\code\chatbox_msg.dm;AnimeGame.dme;Chatbox\code\chatbox_gui.dm;gui\gui_menu.dm;gui\gui_name_entry.dm;goku.dmi;fx_explosion.dmi;fx_smack.dmi;fx_smash.dmi;FX.dm;Beams.dm;fx_push.dmi;forcepush.dmi;skills.dmi
+FILE: Base.dm
 MAP_INSTANCE_MODE: copy
 PACKAGE_DME_DEMO: 
-PACKAGE_DMB_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\DragonBrawlOnlineDec202024r2.zip
+PACKAGE_DMB_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\DragonBrawlOnlineDec232024r1.zip
 */
 // END_INTERNALS

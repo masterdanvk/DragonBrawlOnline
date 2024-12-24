@@ -1097,6 +1097,29 @@ Skill
 			sleep(5)
 			if(user.icon_state=="blast2")user.icon_state=""
 
+
+	Spiritshot
+		ctime=10
+		kicost=30
+		icon_state="spiritshot"
+		state1="block"
+		state2="explode"
+		Use(mob/user,time)
+			spawn(4)
+				user.usingskill=0
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state=""
+			for(var/mob/Hit in bounds(bound_pixloc(user,0),64))
+				if(Hit==user)continue
+				if(Hit.block)
+					Hit.Damage(30*PLcompare(user,Hit)*(0.40),20,0,user)
+				else
+					Hit.Damage(30*PLcompare(user,Hit),80,0,user)
+			user.Repulse(128)
+			user.CheckCanMove()
+
 	Explosivewave
 		ctime=10
 		kicost=30
