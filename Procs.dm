@@ -213,9 +213,19 @@ atom/movable
 
 	proc/PixelMoves(vector/motion,speed=src.step_size)
 		var/remaining=motion.size
+		var/ostep_size=src.step_size
+		var/oglide_size=src.glide_size
+
 		while(remaining>0)
 			motion.size=min(speed,remaining)
+			step_size = glide_size = motion.size//max(abs(motion.x), abs(motion.y))
 			remaining-=motion.size
-			if(!Move(motion)) return 0
+
+			if(!Move(motion))
+				src.step_size=ostep_size
+				src.glide_size=oglide_size
+				return 0
 			sleep(world.tick_lag)
+		src.step_size=ostep_size
+		src.glide_size=oglide_size
 		return 1

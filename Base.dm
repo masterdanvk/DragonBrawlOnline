@@ -565,6 +565,7 @@ client/New()
 		winset(src, "menu_restoreearth", list(parent = "menu.admin", name = "Restore Earth", command = "RestoreEarth"))
 		winset(src, "menu_addskill", list(parent = "menu.admin", name = "Add Skill", command = "ChangeSkill"))
 		winset(src, "menu_setpowerlevel", list(parent = "menu.admin", name = "Set Powerlevel", command = "change_powerlevel"))
+		winset(src, "menu_playcustomlevel", list(parent = "menu.admin", name = "Play Custom Level", command = "PlayLevel"))
 	else
 		winset(src,"menu.admin","is-visible=0")
 	..()
@@ -1540,6 +1541,7 @@ turf_overlays
 turf
 	icon='turf.dmi'
 	bouncy=2
+	var/ground=1
 	grass
 		icon_state="grass"
 		tile_id = "grass"
@@ -1552,22 +1554,65 @@ turf
 		density=1
 		indestructible=1
 
-	budokai
+	blank
 		indestructible=1
-		icon='tournament.png'
-		density=0
+		sky
+			ground=0
+
+		ground
+
 	dark
 		density=1
 		opacity=1
 		indestructible=1
+
+	stages
+		indestructible=1
+		density=0
+		layer=TURF_LAYER+0.1
+		budokai
+			icon='tournament.png'
+
+obj
+	stages
+		density=0
+		layer=TURF_LAYER+0.1
+		budokai
+			icon='backgrounds/budokai.dmi'
+		city
+			icon='backgrounds/city.jpg'
+		desert
+			icon='backgrounds/desert.jpg'
+		plains
+			icon='backgrounds/plains.jpg'
+		raditz
+			icon='backgrounds/raditz.jpg'
+		roadside
+			icon='backgrounds/highway.png'
+		rockydesert
+			icon='backgrounds/rockydesert.jpg'
+		vegeta
+			icon='backgrounds/vegeta.jpg'
+		namek
+			icon='backgrounds/Namek.png'
+		lookout
+			icon='backgrounds/lookout.png'
+		mountains
+			icon='backgrounds/mountains.jpg'
+		kamehouse
+			icon='backgrounds/kamehouse.png'
+		cellgames
+			icon='backgrounds/cellgames.png'
+
+
+world/turf=/turf/blank
+
 area/arena
 	var/x1,x2,y1,y2
-	New()
-		..()
 
-	Entered(mob/M)
-		if(ismob(M) && M.client)
-			M.client.edge_limit = "[x1],[y1] to [x2],[y2]"
+//	Entered(mob/M)
+//		if(ismob(M) && M.client)
+//			M.client.edge_limit = "[x1],[y1] to [x2],[y2]"
 
 mob/proc/Heal(heal)
 	src.hp+=heal
@@ -1638,6 +1683,10 @@ mob/proc
 
 
 		animate(src,transform=M,time=3)
+		while(src.loc?:ground==0)
+			src.Move(vector(0,-16))
+			sleep(world.tick_lag)
+
 		if(src.holdskill)
 			src.holdskill:loc=null
 			src.holdskill=null

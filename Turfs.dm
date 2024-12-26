@@ -39,9 +39,21 @@
 #endif
 
 #ifndef AUTOTILE_INITIALIZE
-
+var/levels[0]
 world/New()
 	..()
+	stagezs=new/alist()
+	stageobjs=new/list
+	stageobjs.len=world.maxz
+	var/list/Lvls=typesof(/obj/gui/levelselect)
+	for(var/L in Lvls)
+		levels+=new L
+
+	spawn(30)
+		for(var/obj/stagetag/O in world)
+			world.log<<"stage [O] with name [O.name] at [O.z]"
+			stagezs[O.name]=O.z
+			stageobjs[O.z]=O
 	spawn()
 		for(var/mob/M in world)
 			if(M.z==1 && !M.client)M.npcrespawn=1

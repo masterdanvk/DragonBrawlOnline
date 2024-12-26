@@ -54,6 +54,8 @@
 #define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets/Platform - grass to water/platform -grass2 to water - sprites"
 #define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets/Platform - grass to water/water full tile - sprites"
 #define FILE_DIR "ERW - Grass Land 2.0 v1.7.1/Tilesets/Platform - grass to water/water to grass - river orientation - sprites"
+#define FILE_DIR "backgrounds"
+#define FILE_DIR "backgrounds/tournament"
 #define FILE_DIR "Chatbox"
 #define FILE_DIR "Chatbox/demo"
 #define FILE_DIR "gui"
@@ -79,6 +81,7 @@
 #include "Movement.dm"
 #include "Procs.dm"
 #include "Skills.dm"
+#include "Stages.dm"
 #include "Turfs.dm"
 #include "interface.dmf"
 #include "map.dmm"
@@ -89,6 +92,7 @@
 #include "Chatbox\code\client.dm"
 #include "gui\gui_menu.dm"
 #include "gui\gui_name_entry.dm"
+#include "Libraries\mapinstancing.dm"
 #include "ter gui bar demo\UIbars.dm"
 // END_INCLUDE
 
