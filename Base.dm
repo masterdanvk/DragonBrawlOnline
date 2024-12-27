@@ -389,6 +389,7 @@ mob
 					client.chatbox_build() // build the chatbox
 					client.chatlog = "outputwindow.output" // set chatlog
 					_message(world, "[name] has logged in.", "yellow") // notify world
+				spawn(10)src.client?.VisitOverworld()
 
 
 mob/picking
@@ -2284,6 +2285,10 @@ client/verb/keyupverb(button as text)
 			for(var/obj/overworld/O in view(2,T))
 				O.Activate(M)
 				return
+			for(var/mob/O in view(2,T))
+				if(O!=src.mob)
+					src.PVP(O)
+					return
 	src.keydown?.Remove(button)
 
 
@@ -2529,7 +2534,9 @@ mob
 			if(src.movevector)kbvector=vector(src.movevector)
 			else kbvector=vector(0,0)
 			kbvector+=(M.pixloc-src.pixloc)
+
 			if(src.client)
+				if(src.client.overworld)return
 				if(src.client.keydown["A"])
 					spawn()
 						if(!src.attacking)

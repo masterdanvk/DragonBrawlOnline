@@ -51,7 +51,7 @@ obj
 			dimensions = "1,1 to 24,22"
 			guistate="namek"
 		Cellgames
-			name="Cell Games"
+			name="Cellgames"
 			dimensions ="1,1 to 37,22"
 			guistate="cellgames"
 
@@ -174,6 +174,42 @@ client/verb/PlayLevel()
 				E.client?.edge_limit=null
 		else
 			E.loc=null
+	map.free()
+
+client/verb/PVP(mob/E)
+	src.LeaveOverworld()
+	E.client?.LeaveOverworld()
+	var/mob/P=src.mob
+	var/pixloc/Po=P.pixloc
+	var/pixloc/Eo
+	src.levelpick=null
+	Eo=E.pixloc
+	var/list/S=new/list
+	for(var/s in stagezs)
+		S+=s
+	src.screen|=levels
+	while(!src.levelpick)
+		sleep(20)
+
+	var/Map/map = maps.copy(src.levelpick)
+	var/obj/stagetag/T=stageobjs[src.levelpick]
+	src.mob.loc=locate(T.Start.x,T.Start.y,map.z)
+	src.edge_limit = T.dimensions
+	src.mob.team="Good"
+	E.loc=locate(T.Start.x+4,T.Start.y,map.z)
+	E.client?.edge_limit = T.dimensions
+	E.team="Evil"
+
+	while(E&&!E.dead&&P&&!P.dead)
+		sleep(50)
+	if(!E||E.dead)
+		P.pixloc=Po
+		src.edge_limit=null
+	else
+
+		if(E&&!E.dead&&Eo)
+			E.pixloc=Eo
+			E.client?.edge_limit=null
 	map.free()
 
 proc/Fight(mob/P1,mob/P2,Level,oworld)

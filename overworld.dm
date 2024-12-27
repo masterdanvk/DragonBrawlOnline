@@ -1,4 +1,6 @@
 client/verb/VisitOverworld()
+	if(src.overworld)return
+	src.mob.resetactions()
 	src.edge_limit = null
 	src.mob.oicon=src.mob.icon
 	src.mob.omaxspeed=src.mob.maxspeed
@@ -29,6 +31,17 @@ client/verb/VisitOverworld()
 	for(var/obj/nameplate/N in src.mob.vis_contents)
 		N.maptext_x=-16
 
+mob/proc/resetactions()
+	if(src.charging)
+		src.charging=0
+		src.aura.icon_state="none"
+		src.auraover.icon_state="none"
+		src.vis_contents-=src.aura
+		src.vis_contents-=src.auraover
+	if(src.block)
+		src.block=0
+		src.storedblock=0
+	src.CheckCanMove()
 
 client/proc/LeaveOverworld()
 	src.overworld=0
@@ -63,6 +76,98 @@ obj
 				M.client?.LeaveOverworld()
 				Fight(M,new/mob/krillin,stagezs["Kamehouse"],1)
 
+		cell_training
+			icon='rpg/rpg.dmi'
+			icon_state="cell"
+			bound_width=8
+			bound_height=12
+			bound_x=32
+			bound_y=16
+			density=1
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				Fight(M,new/mob/cell,stagezs["Cellgames"],1)
+
+		tien_training
+			icon='rpg/rpg.dmi'
+			icon_state="tien"
+			bound_width=8
+			bound_height=12
+			bound_x=32
+			bound_y=16
+			density=1
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				Fight(M,new/mob/tien,stagezs["Mountain"],1)
+		yamcha_training
+			icon='rpg/rpg.dmi'
+			icon_state="yamcha"
+			bound_width=8
+			bound_height=12
+			bound_x=32
+			bound_y=16
+			density=1
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				Fight(M,new/mob/yamcha,stagezs["Rockydesert"],1)
+		piccolo_training
+			icon='rpg/rpg.dmi'
+			icon_state="piccolo"
+			bound_width=8
+			bound_height=12
+			bound_x=32
+			bound_y=16
+			density=1
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				Fight(M,new/mob/piccolo,stagezs["Plains"],1)
+
+		vegeta_training
+			icon='rpg/rpg.dmi'
+			icon_state="vegeta"
+			bound_width=8
+			bound_height=12
+			bound_x=32
+			bound_y=16
+			density=1
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				Fight(M,new/mob/vegeta,stagezs["Plateaus"],1)
+		nappa_training
+			icon='rpg/rpg.dmi'
+			icon_state="nappa"
+			bound_width=8
+			bound_height=12
+			bound_x=32
+			bound_y=16
+			density=1
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				Fight(M,new/mob/nappa,stagezs["Rockydesert"],1)
+		raditz_training
+			icon='rpg/rpg.dmi'
+			icon_state="raditz"
+			bound_width=8
+			bound_height=12
+			bound_x=32
+			bound_y=16
+			density=1
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				Fight(M,new/mob/raditz,stagezs["Raditz"],1)
+		trunks_training
+			icon='rpg/rpg.dmi'
+			icon_state="trunks"
+			bound_width=8
+			bound_height=12
+			bound_x=32
+			bound_y=16
+			density=1
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				Fight(M,new/mob/trunks,stagezs["Roadside"],1)
+
+
 		kamehouse
 			icon='rpg/overworldlocs.dmi'
 			icon_state="kamehouse"
@@ -74,4 +179,65 @@ obj
 				M.client?.LeaveOverworld()
 				var/obj/stagetag/stage=stageobjs[stagezs["Kamehouse"]]
 				M.loc=locate(stage.Start.x,stage.Start.y,stagezs["Kamehouse"])
+				M.client?.edge_limit = stage.dimensions
+		pod
+			icon='rpg/overworldlocs.dmi'
+			icon_state="pod"
+			density=1
+			bound_width=41
+			bound_height=62
+			bound_x=16
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				var/obj/stagetag/stage=stageobjs[stagezs["Raditz"]]
+				M.loc=locate(stage.Start.x,stage.Start.y,stagezs["Raditz"])
+				M.client?.edge_limit = stage.dimensions
+		cellgames
+			icon='rpg/overworldlocs.dmi'
+			icon_state="cellgames"
+			density=1
+			bound_width=41
+			bound_height=62
+			bound_x=16
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				var/obj/stagetag/stage=stageobjs[stagezs["Cellgames"]]
+				M.loc=locate(stage.Start.x,stage.Start.y,stagezs["Cellgames"])
+				M.client?.edge_limit = stage.dimensions
+		budokai
+			icon='rpg/overworldlocs.dmi'
+			icon_state="budokai"
+			density=1
+			bound_width=41
+			bound_height=62
+			bound_x=16
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				var/obj/stagetag/stage=stageobjs[stagezs["Budokai"]]
+				M.loc=locate(stage.Start.x,stage.Start.y,stagezs["Budokai"])
+				M.client?.edge_limit = stage.dimensions
+		city
+			icon='rpg/overworldlocs.dmi'
+			icon_state="city"
+			density=1
+			bound_width=41
+			bound_height=62
+			bound_x=16
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				var/obj/stagetag/stage=stageobjs[stagezs["City"]]
+				M.loc=locate(stage.Start.x,stage.Start.y,stagezs["City"])
+				M.client?.edge_limit = stage.dimensions
+
+		ccpod
+			icon='rpg/overworldlocs.dmi'
+			icon_state="ccpod"
+			density=1
+			bound_width=41
+			bound_height=62
+			bound_x=16
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				var/obj/stagetag/stage=stageobjs[stagezs["Namek"]]
+				M.loc=locate(stage.Start.x,stage.Start.y,stagezs["Namek"])
 				M.client?.edge_limit = stage.dimensions
