@@ -1577,6 +1577,7 @@ obj
 	stages
 		density=0
 		layer=TURF_LAYER+0.1
+
 		budokai
 			icon='backgrounds/budokai.dmi'
 		city
@@ -2066,9 +2067,8 @@ client/verb/keydownverb(button as text)
 		return
 	if(M.dead||M.icon_state=="transform")return
 	if(!src.keydown)src.keydown=new/alist()
-	if(src.keydown["P"])
-		src.SpawnAI()
-	if((src.keydown["D"]&&button=="S")||button=="=")
+
+	if((src.keydown["D"]&&button=="S")||button=="="&&!src.overworld)
 		M.Transform()
 		return
 	var/tapbetween
@@ -2086,9 +2086,9 @@ client/verb/keydownverb(button as text)
 
 	src.lasttapped[1]=button
 	src.lasttapped[2]=world.time
-	if((src.keydown["D"]&&src.keydown["South"]&&M.form&&!src.movekeydown)||button=="-")
+	if((src.keydown["D"]&&src.keydown["South"]&&M.form&&!src.movekeydown)||button=="-"&&!src.overworld)
 		M.Revert()
-	if((src.keydown["F"]||(src.keydown["D"]&&src.keydown["North"]))&&world.time>M.chargecd) //charge
+	if((src.keydown["F"]||(src.keydown["D"]&&src.keydown["North"]))&&world.time>M.chargecd&&!src.overworld) //charge
 		if(!M.charging&&!M.aiming)
 			if(M.block)
 				M.block=0
@@ -2124,13 +2124,13 @@ client/verb/keydownverb(button as text)
 
 
 	else
-		if(button=="D"&&!M.dead)
+		if(button=="D"&&!M.dead&&!src.overworld)
 			M.icon_state="block"
 			M.block=1
 			M.canmove=0
 			M.blocktime=world.time
 
-	if(button=="S"&&M.canmove&&!M.block&&!M.usingskill&&!M.charging)
+	if(button=="S"&&M.canmove&&!M.block&&!M.usingskill&&!M.charging&&!src.overworld)
 		var/chargestate=M.equippedskill?.state1
 		if((chargestate in icon_states(M.icon)))
 			M.icon_state=chargestate
@@ -2210,7 +2210,8 @@ client/verb/keyupverb(button as text)
 	if(M.selecting)
 		return
 	if(button=="Escape")
-		M.ChangePlayer()
+		if(src.oworldpixloc)src.VisitOverworld()
+		else M.ChangePlayer()
 		return
 	if(M.dead)
 		return
@@ -2222,55 +2223,67 @@ client/verb/keyupverb(button as text)
 
 	if(button=="W"&&!src.keydown["S"])M.Next_Skill()
 	else if(button=="Q"&&!src.keydown["S"])M.Prev_Skill()
-	if(button=="A")
-		var/duration=world.time-src.keydown[button]
-		M.Melee(duration)
-	//	if(duration>5)M.Kick()
-	//	else M.Punch()
-	if((button=="D"&& M.charging)||(button=="North"&& M.charging)||(button=="F" && M.charging))
-		M.charging=0
-		M.aura.icon_state="end"
-		M.auraover.icon_state="end"
-		M.CheckCanMove()
-		spawn(3)
-			if(!M.charging)
-				M.aura.icon_state="none"
-				M.auraover.icon_state="none"
+	if(!src.overworld)
+		if(button=="A")
+			var/duration=world.time-src.keydown[button]
+			M.Melee(duration)
+		//	if(duration>5)M.Kick()
+		//	else M.Punch()
+		if((button=="D"&& M.charging)||(button=="North"&& M.charging)||(button=="F" && M.charging))
+			M.charging=0
+			M.aura.icon_state="end"
+			M.auraover.icon_state="end"
+			M.CheckCanMove()
+			spawn(3)
+				if(!M.charging)
+					M.aura.icon_state="none"
+					M.auraover.icon_state="none"
 
-				M.vis_contents-=M.aura
-				M.vis_contents-=M.auraover
+					M.vis_contents-=M.aura
+					M.vis_contents-=M.auraover
 
-	else if(button=="D")
-		M.block=0
-		if(M.icon_state=="block")
-			if(src.movekeydown && !M.charging)
-				M.icon_state="dash2"
+		else if(button=="D")
+			M.block=0
+			if(M.icon_state=="block")
+				if(src.movekeydown && !M.charging)
+					M.icon_state="dash2"
+				else
+					M.icon_state=""
+			M.CheckCanMove()
+			if(M.storedblock>=3)M.Repulse(min(160,M.storedblock*16))
+			M.storedblock=0
+
+		if(button=="S" && !M.usingskill &&src.keydown["S"])
+			M.aiming=0
+			src.HideAim()
+			var/skilltime=world.time-src.keydown[button]
+			src.screen-=M.gui_charge
+			if(!M.equippedskill)M.equippedskill=M.skills[1]
+			if(skilltime>=M.equippedskill.ctime)
+				M.UseSkill(world.time-src.keydown[button])
 			else
-				M.icon_state=""
-		M.CheckCanMove()
-		if(M.storedblock>=3)M.Repulse(min(160,M.storedblock*16))
-		M.storedblock=0
+				src.keydown[button]=null
+				M.UseKiBlast()
 
-	if(button=="S" && !M.usingskill &&src.keydown["S"])
-		M.aiming=0
-		src.HideAim()
-		var/skilltime=world.time-src.keydown[button]
-		src.screen-=M.gui_charge
-		if(!M.equippedskill)M.equippedskill=M.skills[1]
-		if(skilltime>=M.equippedskill.ctime)
-			M.UseSkill(world.time-src.keydown[button])
-		else
-			src.keydown[button]=null
-			M.UseKiBlast()
-
-	else if(button=="S" && !M.usingskill)
-		M.aiming=0
-		src.HideAim()
-		src.screen-=M.gui_charge
-		M.usingskill=0
-		M.canmove=1
-		if(!M.dead)M.icon_state=""
-
+		else if(button=="S" && !M.usingskill)
+			M.aiming=0
+			src.HideAim()
+			src.screen-=M.gui_charge
+			M.usingskill=0
+			M.canmove=1
+			if(!M.dead)M.icon_state=""
+	else
+		if(button=="A")
+			var/turf/T=get_step(src.mob,src.mob.dir)
+			for(var/obj/overworld/O in T)
+				O.Activate(M)
+				return
+			for(var/obj/overworld/O in view(1,T))
+				O.Activate(M)
+				return
+			for(var/obj/overworld/O in view(2,T))
+				O.Activate(M)
+				return
 	src.keydown?.Remove(button)
 
 

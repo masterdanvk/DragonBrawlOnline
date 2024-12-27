@@ -4,6 +4,7 @@ obj
 			vector/Start=vector(16,4)
 			dimensions = "1,1 to 65,24"
 			guistate
+
 		Budokai
 			name="Budokai"
 			dimensions = "1,1 to 33,22"
@@ -40,6 +41,7 @@ obj
 			name="Kamehouse"
 			dimensions = "1,1 to 25,22"
 			guistate="kamehouse"
+			Start=vector(13,2)
 		Lookout
 			name="The Lookout"
 			dimensions = "1,1 to 24,22"
@@ -115,6 +117,8 @@ Instance
 	Nappa
 		Initiate()
 
+
+
 client/verb/PlayLevel()
 	var/mob/P=src.mob
 	var/pixloc/Po=P.pixloc
@@ -172,6 +176,45 @@ client/verb/PlayLevel()
 			E.loc=null
 	map.free()
 
+proc/Fight(mob/P1,mob/P2,Level,oworld)
+	var/pixloc/Po=P1.pixloc
+	var/pixloc/Eo
+
+	var/Map/map = maps.copy(Level)
+	var/obj/stagetag/T=stageobjs[Level]
+	P1.loc=locate(T.Start.x,T.Start.y,map.z)
+	P1.client?.edge_limit = T.dimensions
+	P1.team="Good"
+	if(!P2.client)
+		P2.loc= locate(T.Start.x+4,T.Start.y,map.z)
+		spawn(20)Awaken(P2,P1)
+	else
+		P2.loc=locate(T.Start.x+4,T.Start.y,map.z)
+		P2.client?.edge_limit = T.dimensions
+	P2.team="Evil"
+
+	while(P2&&!P2.dead&&P1&&!P1.dead)
+		sleep(50)
+
+	sleep(30)
+	if(!P2||P2.dead)
+
+		if(oworld)
+			P1.client?.VisitOverworld()
+		else
+			P1.pixloc=Po
+		P1.client?.edge_limit=null
+	else
+		if(P2.client)
+			if(P2&&!P2.dead&&Eo)
+				if(oworld)
+					P2.client?.VisitOverworld()
+				else P2.pixloc=Eo
+				P2.client?.edge_limit=null
+		else
+			P2.loc=null
+
+	map.free()
 
 
 

@@ -4,7 +4,9 @@ client/proc/UpdateMoveVector()
 	if(movemode=="loose")
 		src.oldUpdateMoveVector()
 		return
-
+	if(overworld)
+		src.overworldmove()
+		return
 	if(!movekeydown && (!src.mob.movevector || !src.mob.movevector.size))return
 	if(src.mob.usingskill)return
 	var/vx=0
@@ -37,7 +39,7 @@ client/proc/UpdateMoveVector()
 	if(vx==-1)d|=WEST
 	if(vy==1)d|=NORTH
 	if(vy==-1)d|=SOUTH
-	if(d)src.mob.dir=d
+	if(d&&src.mob.dir!=d)src.mob.dir=d
 	if(src.mob.aiming&&V.size)
 
 		var/anglediff=vector2angle(V)
@@ -85,6 +87,7 @@ client/proc/UpdateMoveVector()
 	src.mob.runningspeed=V.size
 	src.mob.step_size=V.size
 	src.mob.movevector=V
+
 	if(V.size>=8)
 		if(src.mob.icon_state=="")
 			src.mob.icon_state="dash2"
@@ -102,6 +105,41 @@ client/proc/UpdateMoveVector()
 				if(src.mob.icon_state=="dash1")src.mob.icon_state=""
 
 mob/var/tmp/runningspeed=0
+
+client/proc/overworldmove()
+
+	if(!movekeydown && (!src.mob.movevector || !src.mob.movevector.size))return
+	var/vx=0
+	var/vy=0
+
+	if(!(("North" in keydown)&&("South" in keydown)))
+		if("North" in keydown)vy=1
+		else
+			if("South" in keydown)vy=-1
+	if(!(("East" in keydown)&&("West" in keydown)))
+		if("East" in keydown)vx=1
+		else
+			if("West" in keydown)vx=-1
+	if("Northeast" in keydown)
+		vx=1
+		vy=1
+	else if("Northwest" in keydown)
+		vx=-1
+		vy=1
+	else if("Southwest" in keydown)
+		vx=-1
+		vy=-1
+	else if("Southeast" in keydown)
+		vx=1
+		vy=-1
+	var/vector/V=vector(vx,vy)
+	src.mob.facing=V
+	var/d=0
+	if(vx==1)d|=EAST
+	if(vx==-1)d|=WEST
+	if(vy==1)d|=NORTH
+	if(vy==-1)d|=SOUTH
+	step(src.mob,d,4)
 
 client/proc/oldUpdateMoveVector()
 
@@ -137,6 +175,7 @@ client/proc/oldUpdateMoveVector()
 	if(vx==-1)d|=WEST
 	if(vy==1)d|=NORTH
 	if(vy==-1)d|=SOUTH
+
 
 	if(d)src.mob.dir=d
 	if(src.mob.aiming&&V.size)

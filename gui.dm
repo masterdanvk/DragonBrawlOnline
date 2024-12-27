@@ -54,7 +54,7 @@ mob
 
 	Login()
 		if(!src.selecting)
-			var/obj/O=new/obj
+			var/obj/O=new/obj/nameplate
 			O.layer=MOB_LAYER-0.5
 			O.appearance_flags=RESET_TRANSFORM|RESET_COLOR
 			O.maptext="<span style=\"font-family:UberBit7; font-size:8px; color:#fff; -dm-text-outline:1px black; text-align:center;\">[src.client.name]</span>"
@@ -65,6 +65,8 @@ mob
 			src.vis_contents+=O
 			client.screen.Add(gui_frame,gui_hpbar,gui_kibar,gui_blockbar,gui_counterbar,gui_picture,gui_target,gui_target2,gui_targetpl,gui_pl)
 		..()
+
+obj/nameplate
 
 obj/gui
 	layer = FLOAT_LAYER

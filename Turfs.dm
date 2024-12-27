@@ -365,6 +365,24 @@ turf
 		autotile = @{"["water","beach","world"]"}
 		tile_id = "water"
 		autotile_type=AT_47
+		Entered(mob/A)
+			if(istype(A,/mob)&&A.icon=='rpg/rpg.dmi'&&!A.flying)
+				A.flying=1
+				A.ostate=A.icon_state
+				A.icon_state="[A.ostate]F"
+				world.log<<"[A.icon_state] and [A.ostate]"
+				return 1
+			..()
+		Exited(mob/A)
+
+			if(istype(A,/mob)&&A.icon=='rpg/rpg.dmi'&&A.flying &&!istype(A.loc,/turf/water))
+				world.log<<"stopped flying [A.loc]"
+				A.flying=0
+				A.icon_state=A.ostate
+				return 1
+
+			..()
+
 	beach
 		icon = 'sandwater.dmi'
 		icon_state="0"
