@@ -407,7 +407,7 @@ obj/Kiblast
 		spread=0
 		distance=500
 		speed=8
-		power=2
+		power=1
 		impact=0
 		push=0
 		pierce=1

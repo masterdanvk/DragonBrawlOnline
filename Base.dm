@@ -389,7 +389,7 @@ mob
 					client.chatbox_build() // build the chatbox
 					client.chatlog = "outputwindow.output" // set chatlog
 					_message(world, "[name] has logged in.", "yellow") // notify world
-				spawn(10)src.client?.VisitOverworld()
+				//spawn()src.client?.VisitOverworld()
 
 
 mob/picking
@@ -487,8 +487,9 @@ client/proc/SelectingInput(button)
 client/proc/Pick_Mob()
 	if(!src.select||src.busy)return
 	src.mob=src.select
+	src.VisitOverworld()
 	src.mob.selecting=0
-	src.mob.loc=locate(rand(10,90),rand(10,90),1)
+
 	unusedmobs-=src.mob
 	src.mob.screen_loc=null
 	src.screen-=src.mobselect
@@ -498,7 +499,6 @@ client/proc/Pick_Mob()
 		src.mobselect-=M
 	src.mobselect=null
 	src.screen-=controls
-	if(!src.chatactive)Togglechat()
 	src.chatbox_showscreen()
 
 client/var/busy=0
@@ -1586,7 +1586,7 @@ obj
 		desert
 			icon='backgrounds/desert.jpg'
 		plains
-			icon='backgrounds/plains.jpg'
+			icon='backgrounds/field.png'
 		raditz
 			icon='backgrounds/raditz.jpg'
 		roadside
@@ -1713,6 +1713,8 @@ mob/proc
 				src.canmove=1
 				src.loc=src.initloc
 		else
+			src.client.overworld=0
+			src.client.oworldpixloc=null
 			src.client.Character_Select()
 
 

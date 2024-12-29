@@ -369,14 +369,14 @@ turf
 			if(istype(A,/mob)&&A.icon=='rpg/rpg.dmi'&&!A.flying)
 				A.flying=1
 				A.ostate=A.icon_state
-				A.icon_state="[A.ostate]F"
-				world.log<<"[A.icon_state] and [A.ostate]"
+				if("[A.ostate]F" in icon_states(A.icon))A.icon_state="[A.ostate]F"
+
 				return 1
 			..()
 		Exited(mob/A)
 
 			if(istype(A,/mob)&&A.icon=='rpg/rpg.dmi'&&A.flying &&!istype(A.loc,/turf/water))
-				world.log<<"stopped flying [A.loc]"
+
 				A.flying=0
 				A.icon_state=A.ostate
 				return 1

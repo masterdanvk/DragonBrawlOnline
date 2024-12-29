@@ -15,7 +15,7 @@ obj
 			guistate="raditz"
 		Plains
 			name="Plains"
-			dimensions = "1,1 to 33,23"
+			dimensions = "1,1 to 29,22"
 			guistate="plains"
 		Rockydesert
 			name="Rockydesert"
@@ -43,7 +43,7 @@ obj
 			guistate="kamehouse"
 			Start=vector(13,2)
 		Lookout
-			name="The Lookout"
+			name="Lookout"
 			dimensions = "1,1 to 24,22"
 			guistate="lookout"
 		Namek
@@ -101,6 +101,7 @@ obj/gui/levelselect
 		screen_loc="CENTER+3:+4,CENTER-4:+12"
 	Click()
 		var/obj/stagetag/S
+		if(usr.client?.levelselect>world.time)return
 		for(var/obj/stagetag/O in stageobjs)
 			if(O.guistate==src.icon_state)
 				S=O
@@ -108,6 +109,7 @@ obj/gui/levelselect
 		for(var/obj/gui/levelselect/L in usr.client?.screen)
 			usr.client.screen-=L
 
+client/var/levelselect
 Instance
 	var/list/TeamA
 	var/list/TeamB
@@ -120,6 +122,7 @@ Instance
 
 
 client/verb/PlayLevel()
+
 	var/mob/P=src.mob
 	var/pixloc/Po=P.pixloc
 	var/pixloc/Eo
@@ -146,8 +149,10 @@ client/verb/PlayLevel()
 	for(var/s in stagezs)
 		S+=s
 	src.screen|=levels
+	src.levelselect=world.time+20
 	while(!src.levelpick)
 		sleep(20)
+
 
 	var/Map/map = maps.copy(src.levelpick)
 	var/obj/stagetag/T=stageobjs[src.levelpick]
@@ -161,7 +166,8 @@ client/verb/PlayLevel()
 		E.loc=locate(T.Start.x+4,T.Start.y,map.z)
 		E.client?.edge_limit = T.dimensions
 	E.team="Evil"
-
+	if(src.overworld)src.LeaveOverworld()
+	if(E.client?.overworld)E.client.LeaveOverworld()
 	while(E&&!E.dead&&P&&!P.dead)
 		sleep(50)
 	if(!E||E.dead)
@@ -188,6 +194,7 @@ client/verb/PVP(mob/E)
 	for(var/s in stagezs)
 		S+=s
 	src.screen|=levels
+	src.levelselect=world.time+20
 	while(!src.levelpick)
 		sleep(20)
 

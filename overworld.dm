@@ -76,6 +76,17 @@ obj
 				M.client?.LeaveOverworld()
 				Fight(M,new/mob/krillin,stagezs["Kamehouse"],1)
 
+		chaiotzu_training
+			icon='rpg/rpg.dmi'
+			icon_state="chaiotzu"
+			bound_width=8
+			bound_height=12
+			bound_x=32
+			bound_y=16
+			density=1
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				Fight(M,new/mob/chaotzu,stagezs["Mountain"],1)
 		cell_training
 			icon='rpg/rpg.dmi'
 			icon_state="cell"
@@ -110,6 +121,30 @@ obj
 			Activate(mob/M)
 				M.client?.LeaveOverworld()
 				Fight(M,new/mob/yamcha,stagezs["Rockydesert"],1)
+		goku_training
+			icon='rpg/rpg.dmi'
+			icon_state="goku"
+			bound_width=8
+			bound_height=12
+			bound_x=32
+			bound_y=16
+			density=1
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				Fight(M,new/mob/goku,stagezs["Plains"],1)
+		gohan_training
+			icon='rpg/rpg.dmi'
+			icon_state="gohan"
+			bound_width=8
+			bound_height=12
+			bound_x=32
+			bound_y=16
+			density=1
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				Fight(M,new/mob/gohan,stagezs["Plains"],1)
+
+
 		piccolo_training
 			icon='rpg/rpg.dmi'
 			icon_state="piccolo"
@@ -241,3 +276,68 @@ obj
 				var/obj/stagetag/stage=stageobjs[stagezs["Namek"]]
 				M.loc=locate(stage.Start.x,stage.Start.y,stagezs["Namek"])
 				M.client?.edge_limit = stage.dimensions
+		yamchahideout
+			icon='rpg/overworldlocs.dmi'
+			icon_state="yamcha"
+			density=1
+			bound_width=41
+			bound_height=62
+			bound_x=16
+		baba
+			icon='rpg/overworldlocs.dmi'
+			icon_state="baba"
+			density=1
+			bound_width=41
+			bound_height=62
+			bound_x=16
+		lookout
+			icon='rpg/overworldlocs.dmi'
+			icon_state="lookout"
+			density=1
+			bound_width=41
+			bound_height=62
+			bound_x=16
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				var/obj/stagetag/stage=stageobjs[stagezs["Lookout"]]
+				M.loc=locate(stage.Start.x,stage.Start.y,stagezs["Lookout"])
+				M.client?.edge_limit = stage.dimensions
+		capsulecorp
+			icon='rpg/overworldlocs.dmi'
+			icon_state="capsulecorp"
+			density=1
+			bound_width=41
+			bound_height=62
+			bound_x=16
+		gokushouse
+			icon='rpg/overworldlocs.dmi'
+			icon_state="gokushouse"
+			density=1
+			bound_width=41
+			bound_height=62
+			bound_x=16
+		pilafscastle
+			icon='rpg/overworldlocs.dmi'
+			icon_state="pilafscastle"
+			density=1
+			bound_width=41
+			bound_height=62
+			bound_x=16
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				M.loc=locate(rand(10,90),rand(10,90),1)
+				M.client?.edge_limit = null
+		redribbonbase
+			icon='rpg/overworldlocs.dmi'
+			icon_state="rr1"
+			density=1
+			bound_width=41
+			bound_height=62
+			bound_x=16
+		grandpagohans
+			icon='rpg/overworldlocs.dmi'
+			icon_state="grandpagohans"
+			density=1
+			bound_width=41
+			bound_height=62
+			bound_x=16
