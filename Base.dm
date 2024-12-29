@@ -420,12 +420,14 @@ var/alist/playerselection=new/alist(
 	Krillin=/mob/krillin,
 	Yamcha=/mob/yamcha,
 	Chaiotzu=/mob/chaotzu,
+	Roshi=/mob/roshi,
 	Trunks=/mob/trunks,
 	Raditz=/mob/raditz,
 	Nappa=/mob/nappa,
 	Saibamen=/mob/saibamen,
 	Cell = /mob/cell,
-	CellJr = /mob/celljr)
+	CellJr = /mob/celljr,
+	MrSatan = /mob/mrsatan)
 
 mob/verb/ChangePlayer()
 	src.Die()
@@ -795,6 +797,8 @@ mob
 	proc/Revert()
 		src.Reset_Portrait()
 	dir=EAST
+
+
 	goku
 		name="Goku"
 		icon='goku.dmi'
@@ -1015,7 +1019,21 @@ mob
 			src.Create_Aura("White")
 			src.skills=list(new/Skill/Tribeam,new/Skill/Dondonpa,new/Skill/Solarflare,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
-
+	chaotzu
+		name="Chaiotzu"
+		icon='chaotzu.dmi'
+		bound_x=25
+		bound_y=10
+		bound_width=18
+		bound_height=20
+		pl=9000
+		special=/Beam/Dondonpa
+		behaviors=list(10,10,3,27,50) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		New()
+			..()
+			src.Create_Aura("Lightgreen")
+			src.skills=list(new/Skill/Dondonpa,new/Skill/Spiritball,new/Skill/Kiblast)
+			src.equippedskill=src.skills[1]
 	krillin
 		name="Krillin"
 		icon='krillin.dmi'
@@ -1067,20 +1085,21 @@ mob
 			if(form)
 				src.Kaioken_end()
 			..()
-	chaotzu
-		name="Chaiotzu"
-		icon='chaotzu.dmi'
-		bound_x=25
-		bound_y=10
-		bound_width=18
-		bound_height=20
+
+	roshi
+		name="Roshi"
+		icon='roshi.dmi'
+		bound_x=20
+		bound_y=2
+		bound_width=24
+		bound_height=38
 		pl=9000
-		special=/Beam/Dondonpa
-		behaviors=list(10,10,3,27,50) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		special=/Beam/Kamehameha
+		behaviors=list(10,10,20,10,50) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		New()
 			..()
-			src.Create_Aura("Lightgreen")
-			src.skills=list(new/Skill/Dondonpa,new/Skill/Spiritball,new/Skill/Kiblast)
+			src.Create_Aura("White")
+			src.skills=list(new/Skill/Kamehameha,new/Skill/Spiritshot,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 	trunks
 		name="Trunks"
@@ -1121,61 +1140,25 @@ mob
 				src.Create_Aura("White")
 
 			..()
-	cell
-		name="Perfect Cell"
-		icon='cell.dmi'
-		bound_x=20
-		bound_y=2
-		bound_width=24
-		bound_height=38
-		pl=38000
-		special=/Beam/Kamehameha
-		unlocked=alist("celljr"=1)
-		kiblast=/obj/Kiblast/Fingerlaser
-		behaviors=list(5,35,25,10,25) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
-		New()
-			..()
-			src.Create_Aura("Yellow")
 
-			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon,new/Skill/Kiblast/Fingerlaser)
-			src.equippedskill=src.skills[1]
-		Transform()
-			if(src.unlocked["celljr"])
-				if(src.spawncount<6)
-					src.spawncount++
-					var/spl=round(src.pl/5,1)
-					src.Set_PL(round(src.pl*4/5,1))
-					src.icon_state="transform"
-					src.canmove=0
-					sleep(8)
-					src.canmove=1
-					var/mob/cjr=new/mob/celljr(bound_pixloc(src,0))
-					cjr.team=src.team
-					cjr.wanderrange=4
-					cjr.aggrorange=1
-					cjr.Set_PL(spl)
-					src.spawnings+=cjr
-					sleep(3)
-					RefreshChunks|=cjr
-					src.icon_state=""
-
-
-
-	celljr
-		name="Cell Jr."
-		icon='celljr.dmi'
-		bound_x=20
-		bound_y=2
-		portrait_yoffset=10
+	mrsatan
+		name="Mr. Satan"
+		icon='mrsatan.dmi'
+		bound_x=12
+		bound_y=5
 		bound_width=24
 		bound_height=28
-		pl=9000
-		special=/Beam/Kamehameha
-		behaviors=list(5,25,30,20,20) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		portrait_xoffset=-10
+		pl=45
+		maxhp=1000
+		hp=1000
+		special=/Beam/Dondonpa
+		kiblast=/obj/Kiblast/Gun
+		behaviors=list(0,10,50,40,0) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		New()
 			..()
-			src.Create_Aura("Yellow")
-			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon,new/Skill/Kiblast)
+			src.Create_Aura("White")
+			src.skills=list(new/Skill/Kiblast/Gun)
 			src.equippedskill=src.skills[1]
 	raditz
 		name="Raditz"
@@ -1276,7 +1259,62 @@ mob
 				src.filters=null
 				sleep(5)
 			..()
+	cell
+		name="Perfect Cell"
+		icon='cell.dmi'
+		bound_x=20
+		bound_y=2
+		bound_width=24
+		bound_height=38
+		pl=38000
+		special=/Beam/Kamehameha
+		unlocked=alist("celljr"=1)
+		kiblast=/obj/Kiblast/Fingerlaser
+		behaviors=list(5,35,25,10,25) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		New()
+			..()
+			src.Create_Aura("Yellow")
 
+			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon,new/Skill/Kiblast/Fingerlaser)
+			src.equippedskill=src.skills[1]
+		Transform()
+			if(src.unlocked["celljr"])
+				if(src.spawncount<6)
+					src.spawncount++
+					var/spl=round(src.pl/5,1)
+					src.Set_PL(round(src.pl*4/5,1))
+					src.icon_state="transform"
+					src.canmove=0
+					sleep(8)
+					src.canmove=1
+					var/mob/cjr=new/mob/celljr(bound_pixloc(src,0))
+					cjr.team=src.team
+					cjr.wanderrange=4
+					cjr.aggrorange=1
+					cjr.Set_PL(spl)
+					src.spawnings+=cjr
+					sleep(3)
+					RefreshChunks|=cjr
+					src.icon_state=""
+
+
+
+	celljr
+		name="Cell Jr."
+		icon='celljr.dmi'
+		bound_x=20
+		bound_y=2
+		portrait_yoffset=10
+		bound_width=24
+		bound_height=28
+		pl=9000
+		special=/Beam/Kamehameha
+		behaviors=list(5,25,30,20,20) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		New()
+			..()
+			src.Create_Aura("Yellow")
+			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon,new/Skill/Kiblast)
+			src.equippedskill=src.skills[1]
 	saibamen
 		name="Saibamen"
 		portrait_yoffset=10
@@ -1559,6 +1597,11 @@ turf
 		indestructible=1
 		sky
 			ground=0
+			Enter(mob/A)
+				if(istype(A,/mob/mrsatan))
+					return 0
+				else
+					return 1
 
 		ground
 

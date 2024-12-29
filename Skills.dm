@@ -697,6 +697,29 @@ obj/Kiblast
 			Explosion(/obj/FX/Explosion,bound_pixloc(src,0),0,0.25,0.25)
 			src.loc=null
 			..()
+	Gun
+		icon='bullet.dmi'
+		bound_width=32
+		bound_height=17
+		bound_y=27
+		density=1
+		spread=0
+		distance=400
+		yoffset=-27
+		xoffset=-10
+		speed=16
+		power=0.1
+		impact=0
+		explode=1
+
+		Bump(atom/A)
+			if(istype(A,/obj))
+				src.Explode()
+				src.loc=null
+			..()
+		Explode()
+			src.loc=null
+			..()
 	Basic
 		icon='kiblast.dmi'
 		bound_width=19
@@ -1196,6 +1219,8 @@ Skill
 			icon_state="sliceblast"
 		Fingerlaser
 			icon_state="fingerlaser"
+		Gun
+			icon_state="gun"
 		kicost=5
 		ctime=0
 		icon_state="kiblast"

@@ -20,6 +20,8 @@ client/verb/VisitOverworld()
 		if(/mob/cell)src.mob.icon_state="cell"
 		if(/mob/celljr)src.mob.icon_state="celljr"
 		if(/mob/chaotzu)src.mob.icon_state="chaiotzu"
+		if(/mob/roshi)src.mob.icon_state="roshi"
+		if(/mob/mrsatan)src.mob.icon_state="mrsatan"
 
 	//src.mob.icon_state=input(src,"Who do you want to be","Character") in list("goku","vegeta","trunks","nappa","raditz","yamcha","tien","piccolo","gohan","saibamen","cell","celljr")
 	src.mob.transform=null
@@ -64,6 +66,17 @@ mob/var
 obj
 	overworld
 		proc/Activate(mob/M)
+		roshi_training
+			icon='rpg/rpg.dmi'
+			icon_state="roshi"
+			bound_width=8
+			bound_height=12
+			bound_x=32
+			bound_y=16
+			density=1
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				Fight(M,new/mob/roshi,stagezs["Kamehouse"],1)
 		krillin_training
 			icon='rpg/rpg.dmi'
 			icon_state="krillin"
