@@ -2,21 +2,21 @@
 /*
 MAP_PLANE_MASTERS: 
 MAP_ZOOM: 2.000
-LAST_COMPILE_TIME: 1735462300
-DIR: backgrounds Chatbox Chatbox\code Chatbox\demo gui Libraries rpg tileset Lib 
+LAST_COMPILE_TIME: 1735585901
 PACKAGE_RSC_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\AnimeGame_rsc.zip
+DIR: backgrounds Chatbox Chatbox\code Chatbox\demo gui Libraries rpg tileset Lib 
 AUTO_FILE_DIR: ON
 PACKAGE_DMB_INFO: 
 MAP_ICON_TYPE: 0
 PACKAGE_DME_NAME: C:\Users\Danva\OneDrive\Desktop\AnimeGame_src.zip
 LAST_COMPILE_VERSION: 516.1648
-PACKAGE_DME_START: 
 PACKAGE_TYPE: 0
+PACKAGE_DME_START: 
+WINDOW: gui.dm;kaio_lib_mapresize.dm;Skills.dm;Chatbox\readme.dm;Chatbox\demo\demo.dm;interface.dmf;Chatbox\code\chatbox.dm;Stages.dm;Libraries\mapinstancing.dm;backgrounds\roadside.dmi;Base.dm;turf.dmi;dirt.dmi;stages.dmi;gui\gui_name_entry.dm;rpg\rpg.dmi;overworld.dm;Turfs.dm;Procs.dm;Beams.dm;Movement.dm;Melee.dm;AI.dm;overworld.dmm;gui\gui_menu.dm
 PACKAGE_DME_INFO: 
-WINDOW: gui.dm;kaio_lib_mapresize.dm;Skills.dm;Chatbox\readme.dm;Chatbox\demo\demo.dm;interface.dmf;Chatbox\code\chatbox.dm;Stages.dm;Libraries\mapinstancing.dm;backgrounds\roadside.dmi;Base.dm;turf.dmi;dirt.dmi;stages.dmi;gui\gui_name_entry.dm;rpg\rpg.dmi;raditz.dmi;overworld.dm;Movement.dm;overworld.dmm;rpg\overworldlocs.dmi;AI.dm;pod.dmi;props2x2.dmi;props1x2.dmi;chunks.dm;roshi.dmi;mrsatan.dmi;bullet.dmi;skills.dmi
-FILE: overworld.dm
+FILE: gui\gui_name_entry.dm
 MAP_INSTANCE_MODE: copy
-PACKAGE_DME_DEMO: 
 PACKAGE_DMB_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\DragonBrawlOnlineDec282024.zip
+PACKAGE_DME_DEMO: 
 */
 // END_INTERNALS

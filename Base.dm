@@ -391,6 +391,13 @@ mob
 					_message(world, "[name] has logged in.", "yellow") // notify world
 				//spawn()src.client?.VisitOverworld()
 
+client/verb/SayGamepad()
+	var/obj/gui/menu/name_entry/picker = new()
+	var/n = picker.Input(src,"What do you want to say?")
+
+	src.mob.chat_say(_ftext(n,"lightgrey"))
+	var/obj/gui/chatbox_msg/C=new("[n]","lightgrey",'face.dmi')
+
 
 mob/picking
 	icon=null
@@ -561,6 +568,7 @@ client/New()
 	if(findtextEx(src.address,"192,168")||findtextEx(src.address,"10,0,0")||src.address==world.internet_address||!world.internet_address||!src.address)
 		src.verbs+=/mob/admin/verb/MakeShiny
 		src.verbs+=/mob/admin/verb/ChangeHue
+		src.verbs+=/mob/admin/verb/Levelupflying
 		winset(src, "menu_spawnai", list(parent = "menu.admin", name = "SpawnAI", command = "SpawnAI"))
 		winset(src, "menu_raditz", list(parent = "menu.admin", name = "Raditz Fight", command = "RaditzFight"))
 		winset(src, "menu_tournament", list(parent = "menu.admin", name = "Tournament", command = "Tournament"))
@@ -1094,6 +1102,7 @@ mob
 		bound_width=24
 		bound_height=38
 		pl=9000
+		flyinglevel=2
 		special=/Beam/Kamehameha
 		behaviors=list(10,10,20,10,50) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
 		New()
@@ -1152,6 +1161,7 @@ mob
 		pl=45
 		maxhp=1000
 		hp=1000
+		flyinglevel=0
 		special=/Beam/Dondonpa
 		kiblast=/obj/Kiblast/Gun
 		behaviors=list(0,10,50,40,0) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
@@ -1577,6 +1587,25 @@ turf_overlays
 		bramble3
 			icon_state="bramble3"
 
+mob/proc/Gravity()
+	set waitfor = 0
+	if(src.falling)return
+	sleep(2+src.flyinglevel*3)
+	if(src.falling)return
+	src.falling=1
+	var/pace=-16+(src.flyinglevel*4)
+	while(istype(src.loc,/turf/blank/sky))
+		step(src,vector(0,pace))
+		sleep(1)
+	src.falling=0
+
+mob/admin/verb/Levelupflying()
+	var/mob/M=usr
+	M.flyinglevel++
+	if(M.flyinglevel>3)M.flyinglevel=0
+	world.log<<"flying level is now [M.flyinglevel]"
+mob/var/tmp/flyinglevel=3
+mob/var/tmp/falling=0
 turf
 	icon='turf.dmi'
 	bouncy=2
@@ -1597,11 +1626,13 @@ turf
 		indestructible=1
 		sky
 			ground=0
-			Enter(mob/A)
-				if(istype(A,/mob/mrsatan))
-					return 0
-				else
-					return 1
+			Entered(mob/A)
+				.=..()
+				if(istype(A,/mob)&&A.flyinglevel<3)
+					A.Gravity()
+
+
+
 
 		ground
 
@@ -2101,6 +2132,9 @@ client/verb/keydownverb(button as text)
 //	world.log<<button
 	if(button=="GamepadL3")
 		src.ChangeMoveMode()
+		return
+	if(button=="GamepadR3")
+		src.SayGamepad()
 		return
 	if(button=="GamepadSelect"||button=="Gamepad2Select"||button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadL2"||button=="GamepadR2"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight"||button=="Gamepad2Face1"||button=="Gamepad2Face2"||button=="Gamepad2Face3"||button=="Gamepad2Face4"||button=="Gamepad2L1"||button=="Gamepad2R1"||button=="Gamepad2L2"||button=="Gamepad2R2"||button=="Gamepad2Left"||button=="Gamepad2Right"||button=="Gamepad2Up"||button=="Gamepad2Down"||button=="Gamepad2UpLeft"||button=="Gamepad2DownLeft"||button=="Gamepad2UpRight"||button=="Gamepad2DownRight")
 	//	world<<"[button] passed to GamePad2Key"

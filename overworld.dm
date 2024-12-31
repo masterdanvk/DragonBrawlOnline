@@ -134,6 +134,17 @@ obj
 			Activate(mob/M)
 				M.client?.LeaveOverworld()
 				Fight(M,new/mob/yamcha,stagezs["Rockydesert"],1)
+		satan_training
+			icon='rpg/rpg.dmi'
+			icon_state="mrsatan"
+			bound_width=8
+			bound_height=12
+			bound_x=32
+			bound_y=16
+			density=1
+			Activate(mob/M)
+				M.client?.LeaveOverworld()
+				Fight(M,new/mob/mrsatan,stagezs["Budokai"],1)
 		goku_training
 			icon='rpg/rpg.dmi'
 			icon_state="goku"

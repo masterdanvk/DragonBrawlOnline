@@ -86,6 +86,8 @@ client/proc/UpdateMoveVector()
 	V.size=clamp(src.mob.runningspeed,6,src.mob.maxspeed)
 	src.mob.runningspeed=V.size
 	src.mob.step_size=V.size
+	if(src.mob.falling&&V.y>0&&src.mob.flyinglevel<3)
+		V.y=0
 	src.mob.movevector=V
 
 	if(V.size>=8)
