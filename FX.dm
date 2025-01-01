@@ -96,7 +96,7 @@ obj
 			alpha=200
 
 
-mob/proc/Flash(t=1.5,intensity)
+atom/proc/Flash(t=1.5,intensity)
 	var/white_flash = list(intensity/100,intensity/100,intensity/100,intensity/100,intensity/100,intensity/100,intensity/100,intensity/100,intensity/100,intensity/100,intensity/100,intensity/100)
 	animate(src, color = white_flash, time = t)
 	sleep(t)

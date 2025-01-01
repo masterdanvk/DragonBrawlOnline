@@ -75,8 +75,12 @@ obj
 			bound_y=16
 			density=1
 			Activate(mob/M)
-				M.client?.LeaveOverworld()
-				Fight(M,new/mob/roshi,stagezs["Kamehouse"],1)
+				if(M.client)
+					var/choice=M.client.ShowDialogue("Master Roshi","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					switch(choice)
+						if("Train with me")
+							M.client?.LeaveOverworld()
+							Fight(M,new/mob/roshi,stagezs["Kamehouse"],1)
 		krillin_training
 			icon='rpg/rpg.dmi'
 			icon_state="krillin"
@@ -86,8 +90,12 @@ obj
 			bound_y=16
 			density=1
 			Activate(mob/M)
-				M.client?.LeaveOverworld()
-				Fight(M,new/mob/krillin,stagezs["Kamehouse"],1)
+				if(M.client)
+					var/choice=M.client.ShowDialogue("Krillin","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					switch(choice)
+						if("Train with me")
+							M.client?.LeaveOverworld()
+							Fight(M,new/mob/krillin,stagezs["Kamehouse"],1)
 
 		chaiotzu_training
 			icon='rpg/rpg.dmi'
@@ -98,8 +106,12 @@ obj
 			bound_y=16
 			density=1
 			Activate(mob/M)
-				M.client?.LeaveOverworld()
-				Fight(M,new/mob/chaotzu,stagezs["Mountain"],1)
+				if(M.client)
+					var/choice=M.client.ShowDialogue("Chaiotzu","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					switch(choice)
+						if("Train with me")
+							M.client?.LeaveOverworld()
+							Fight(M,new/mob/chaotzu,stagezs["Mountain"],1)
 		cell_training
 			icon='rpg/rpg.dmi'
 			icon_state="cell"
@@ -121,8 +133,12 @@ obj
 			bound_y=16
 			density=1
 			Activate(mob/M)
-				M.client?.LeaveOverworld()
-				Fight(M,new/mob/tien,stagezs["Mountain"],1)
+				if(M.client)
+					var/choice=M.client.ShowDialogue("Tien","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					switch(choice)
+						if("Train with me")
+							M.client?.LeaveOverworld()
+							Fight(M,new/mob/tien,stagezs["Mountain"],1)
 		yamcha_training
 			icon='rpg/rpg.dmi'
 			icon_state="yamcha"
@@ -132,8 +148,12 @@ obj
 			bound_y=16
 			density=1
 			Activate(mob/M)
-				M.client?.LeaveOverworld()
-				Fight(M,new/mob/yamcha,stagezs["Rockydesert"],1)
+				if(M.client)
+					var/choice=M.client.ShowDialogue("Yamcha","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					switch(choice)
+						if("Train with me")
+							M.client?.LeaveOverworld()
+							Fight(M,new/mob/yamcha,stagezs["Rockydesert"],1)
 		satan_training
 			icon='rpg/rpg.dmi'
 			icon_state="mrsatan"
@@ -143,8 +163,12 @@ obj
 			bound_y=16
 			density=1
 			Activate(mob/M)
-				M.client?.LeaveOverworld()
-				Fight(M,new/mob/mrsatan,stagezs["Budokai"],1)
+				if(M.client)
+					var/choice=M.client.ShowDialogue("Mr. Satan","What? Do you want an autograph or are you looking to challenge the champ?!.",list("Challenge","Autograph","Leave"))
+					switch(choice)
+						if("Challenge")
+							M.client?.LeaveOverworld()
+							Fight(M,new/mob/mrsatan,stagezs["Budokai"],1)
 		goku_training
 			icon='rpg/rpg.dmi'
 			icon_state="goku"
@@ -154,8 +178,13 @@ obj
 			bound_y=16
 			density=1
 			Activate(mob/M)
-				M.client?.LeaveOverworld()
-				Fight(M,new/mob/goku,stagezs["Plains"],1)
+				if(M.client)
+					var/choice=M.client.ShowDialogue("Goku","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					switch(choice)
+						if("Train with me")
+							M.client?.LeaveOverworld()
+							Fight(M,new/mob/goku,stagezs["Plains"],1)
+
 		gohan_training
 			icon='rpg/rpg.dmi'
 			icon_state="gohan"
@@ -165,8 +194,12 @@ obj
 			bound_y=16
 			density=1
 			Activate(mob/M)
-				M.client?.LeaveOverworld()
-				Fight(M,new/mob/gohan,stagezs["Plains"],1)
+				if(M.client)
+					var/choice=M.client.ShowDialogue("Gohan","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					switch(choice)
+						if("Train with me")
+							M.client?.LeaveOverworld()
+							Fight(M,new/mob/gohan,stagezs["Plains"],1)
 
 
 		piccolo_training
@@ -178,8 +211,12 @@ obj
 			bound_y=16
 			density=1
 			Activate(mob/M)
-				M.client?.LeaveOverworld()
-				Fight(M,new/mob/piccolo,stagezs["Plains"],1)
+				if(M.client)
+					var/choice=M.client.ShowDialogue("Piccolo","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					switch(choice)
+						if("Train with me")
+							M.client?.LeaveOverworld()
+							Fight(M,new/mob/piccolo,stagezs["Plains"],1)
 
 		vegeta_training
 			icon='rpg/rpg.dmi'
@@ -190,8 +227,12 @@ obj
 			bound_y=16
 			density=1
 			Activate(mob/M)
-				M.client?.LeaveOverworld()
-				Fight(M,new/mob/vegeta,stagezs["Plateaus"],1)
+				if(M.client)
+					var/choice=M.client.ShowDialogue("Vegeta","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					switch(choice)
+						if("Train with me")
+							M.client?.LeaveOverworld()
+							Fight(M,new/mob/vegeta,stagezs["Plateaus"],1)
 		nappa_training
 			icon='rpg/rpg.dmi'
 			icon_state="nappa"
@@ -201,8 +242,12 @@ obj
 			bound_y=16
 			density=1
 			Activate(mob/M)
-				M.client?.LeaveOverworld()
-				Fight(M,new/mob/nappa,stagezs["Rockydesert"],1)
+				if(M.client)
+					var/choice=M.client.ShowDialogue("Nappa","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					switch(choice)
+						if("Train with me")
+							M.client?.LeaveOverworld()
+							Fight(M,new/mob/nappa,stagezs["Rockydesert"],1)
 		raditz_training
 			icon='rpg/rpg.dmi'
 			icon_state="raditz"
@@ -212,8 +257,12 @@ obj
 			bound_y=16
 			density=1
 			Activate(mob/M)
-				M.client?.LeaveOverworld()
-				Fight(M,new/mob/raditz,stagezs["Raditz"],1)
+				if(M.client)
+					var/choice=M.client.ShowDialogue("Raditz","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					switch(choice)
+						if("Train with me")
+							M.client?.LeaveOverworld()
+							Fight(M,new/mob/raditz,stagezs["Raditz"],1)
 		trunks_training
 			icon='rpg/rpg.dmi'
 			icon_state="trunks"
@@ -223,8 +272,12 @@ obj
 			bound_y=16
 			density=1
 			Activate(mob/M)
-				M.client?.LeaveOverworld()
-				Fight(M,new/mob/trunks,stagezs["Roadside"],1)
+				if(M.client)
+					var/choice=M.client.ShowDialogue("Trunks","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					switch(choice)
+						if("Train with me")
+							M.client?.LeaveOverworld()
+							Fight(M,new/mob/trunks,stagezs["Roadside"],1)
 
 
 		kamehouse
@@ -365,3 +418,10 @@ obj
 			bound_width=41
 			bound_height=62
 			bound_x=16
+			Activate(mob/M)
+				if(M.client)
+					var/choice=M.client.ShowDialogue("Grandpa Gohan's House","You visit Grandpa Gohan's house. It hasnt been lived in for some time.",list("Rest","Leave"))
+					switch(choice)
+						if("Rest")
+							M.Heal(100)
+							M.Get_Ki(100)

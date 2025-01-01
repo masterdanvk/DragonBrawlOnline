@@ -396,7 +396,7 @@ client/verb/SayGamepad()
 	var/n = picker.Input(src,"What do you want to say?")
 
 	src.mob.chat_say(_ftext(n,"lightgrey"))
-	var/obj/gui/chatbox_msg/C=new("[n]","lightgrey",'face.dmi')
+
 
 
 mob/picking
@@ -2125,7 +2125,12 @@ client/verb/keydownverb(button as text)
 	//if the user has a focus target, call onKeyDown() on the focus target.
 	//if the object returns null or 0 (or doesn't return anything), stop this input from propagating further.
 	//the focus target can return a true value with some or no keys to allow this input to propagate.
-
+	if(src.indialogue)
+		if(button=="South"||button=="East"||button=="GamepadRight"||button=="GamepadDown")
+			src.NextChoice()
+		else if(button=="North"||button=="West"||button=="GamepadLeft"||button=="GamepadUp")
+			src.PrevChoice()
+		return
 	if(focus_target && !focus_target.onKeyDown(button))
 	//	world.log<<button
 		return
@@ -2269,7 +2274,11 @@ client/verb/keyupverb(button as text)
 	//if the user has a focus target, call onKeyUp() on the focus target.
 	//if the object returns null or 0 (or doesn't return anything), stop this input from propagating further.
 	//the focus target can return a true value with some or no keys to allow this input to propagate.
+	if(src.indialogue)
 
+		if(button=="A"||button=="GamepadFace2"||button=="Enter"||button=="Space")
+			src.MakeChoice()
+		return
 	if(focus_target && !focus_target.onKeyUp(button))
 		return
 	if(button=="GamepadSelect"||button=="Gamepad2Select"||button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight"||button=="Gamepad2Face1"||button=="Gamepad2Face2"||button=="Gamepad2Face3"||button=="Gamepad2Face4"||button=="Gamepad2L1"||button=="Gamepad2R1"||button=="Gamepad2Left"||button=="Gamepad2Right"||button=="Gamepad2Up"||button=="Gamepad2Down"||button=="Gamepad2UpLeft"||button=="Gamepad2DownLeft"||button=="Gamepad2UpRight"||button=="Gamepad2DownRight")
