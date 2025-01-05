@@ -93,6 +93,7 @@
 #include "Chatbox\code\chatbox_gui.dm"
 #include "Chatbox\code\chatbox_msg.dm"
 #include "Chatbox\code\client.dm"
+#include "gui\battlegui.dm"
 #include "gui\DialogueGUI.dm"
 #include "gui\gui_menu.dm"
 #include "gui\gui_name_entry.dm"

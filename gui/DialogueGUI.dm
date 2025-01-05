@@ -63,6 +63,7 @@ client/proc/ShowDialogue(title,body,list/options)
 
 
 
+
 client/var/choice=null
 client/var/pendingchoice=null
 client/var/choices[0]

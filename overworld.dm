@@ -1,29 +1,15 @@
+mob/var
+	oicon='rpg/rpg.dmi'
+	oicon_state
 client/verb/VisitOverworld()
 	if(src.overworld)return
 	src.mob.resetactions()
 	src.edge_limit = null
-	src.mob.oicon=src.mob.icon
+	src.mob.bicon=src.mob.icon
 	src.mob.omaxspeed=src.mob.maxspeed
-	src.mob.icon='rpg/rpg.dmi'
+	src.mob.icon=src.mob.oicon
+	src.mob.icon_state=src.mob.oicon_state
 	src.mob.movevector=vector(0,0)
-	switch(src.mob.type)
-		if(/mob/goku)src.mob.icon_state="goku"
-		if(/mob/vegeta)src.mob.icon_state="vegeta2"
-		if(/mob/trunks)src.mob.icon_state="trunks"
-		if(/mob/nappa)src.mob.icon_state="nappa"
-		if(/mob/raditz)src.mob.icon_state="raditz"
-		if(/mob/yamcha)src.mob.icon_state="yamcha"
-		if(/mob/tien)src.mob.icon_state="tien"
-		if(/mob/piccolo)src.mob.icon_state="piccolo"
-		if(/mob/gohan)src.mob.icon_state="gohan"
-		if(/mob/saibamen)src.mob.icon_state="saibamen"
-		if(/mob/cell)src.mob.icon_state="cell"
-		if(/mob/celljr)src.mob.icon_state="celljr"
-		if(/mob/chaotzu)src.mob.icon_state="chaiotzu"
-		if(/mob/roshi)src.mob.icon_state="roshi"
-		if(/mob/mrsatan)src.mob.icon_state="mrsatan"
-
-	//src.mob.icon_state=input(src,"Who do you want to be","Character") in list("goku","vegeta","trunks","nappa","raditz","yamcha","tien","piccolo","gohan","saibamen","cell","celljr")
 	src.mob.transform=null
 	if(!src.oworldpixloc)src.mob.loc=locate(/obj/overworldstart)
 	else
@@ -48,7 +34,7 @@ mob/proc/resetactions()
 client/proc/LeaveOverworld()
 	src.overworld=0
 	src.oworldpixloc=src.mob.pixloc
-	src.mob.icon=src.mob.oicon
+	src.mob.icon=src.mob.bicon
 	src.mob.maxspeed=src.mob.omaxspeed
 	src.mob.icon_state=""
 	for(var/obj/nameplate/N in src.mob.vis_contents)
@@ -60,7 +46,7 @@ client/var/pixloc/oworldpixloc
 mob/var
 	flying=0
 	ostate=""
-	oicon
+	bicon
 	omaxspeed
 
 obj
@@ -179,11 +165,14 @@ obj
 			density=1
 			Activate(mob/M)
 				if(M.client)
-					var/choice=M.client.ShowDialogue("Goku","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					var/choice=M.client.ShowDialogue("Goku","Hello, are you looking for a training partner?.",list("Train with me","Train with me somewhere else","Leave"))
 					switch(choice)
 						if("Train with me")
 							M.client?.LeaveOverworld()
 							Fight(M,new/mob/goku,stagezs["Plains"],1)
+						if("Train with me somewhere else")
+
+							M.client?.PVP(new/mob/goku)
 
 		gohan_training
 			icon='rpg/rpg.dmi'

@@ -398,10 +398,13 @@ obj/Beam
 	Cross(atom/A)
 		if(istype(A,/mob)&&src.owner==A) return 1
 		if(istype(A,/obj))
+			if(!A.density)
+				return 1
 			if(A:owner&&A:owner==src.owner)
 				return 1
-			if(istype(A,/obj/Kiblast)&&!istype(A,/obj/Kiblast/Spiritbomb))
+			if(istype(A,/obj/Kiblast))
 				return 1
+
 		if(istype(A,/mob) && src.BeamParent.pierce)
 			if(istype(A,/mob) && !A:invulnerable)
 				src.BeamParent.hitmobs|=A

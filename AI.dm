@@ -308,15 +308,7 @@ mob/proc/shiny()
 		 	color = list(1,0,0, 0,1,0, 0,0,1, src.hue/360,0,0)
 		 	)
 
-mob/New()
-	..()
-	if(src.npcrespawn)src.initloc=src.loc
-	if(src.hue)
-		src.filters += filter(
-			type = "color",
-			space = FILTER_COLOR_HSV,
-		 	color = list(1,0,0, 0,1,0, 0,0,1, src.hue/360,0,0)
-		 	)
+
 mob/Click()
 	src.Check_Vars()
 

@@ -810,6 +810,7 @@ mob
 	goku
 		name="Goku"
 		icon='goku.dmi'
+		oicon_state="goku"
 		bound_x=20
 		bound_y=2
 		bound_width=24
@@ -861,6 +862,7 @@ mob
 	vegeta
 		name="Vegeta"
 		icon='vegeta.dmi'
+		oicon_state="vegeta2"
 		portrait_yoffset=5
 		bound_x=20
 		bound_y=2
@@ -904,6 +906,7 @@ mob
 	piccolo
 		name="Piccolo"
 		icon='piccolo.dmi'
+		oicon_state="piccolo"
 		bound_x=20
 		bound_y=2
 		bound_width=24
@@ -955,6 +958,7 @@ mob
 	gohan
 		name="Gohan"
 		icon='gohan.dmi'
+		oicon_state="gohan"
 		bound_x=20
 		bound_y=2
 		bound_width=24
@@ -1005,6 +1009,7 @@ mob
 	tien
 		name="Tienshinhan"
 		icon='tien.dmi'
+		oicon_state="tien"
 		bound_x=20
 		bound_y=2
 		bound_width=24
@@ -1030,6 +1035,7 @@ mob
 	chaotzu
 		name="Chaiotzu"
 		icon='chaotzu.dmi'
+		oicon_state="chaiotzu"
 		bound_x=25
 		bound_y=10
 		bound_width=18
@@ -1045,6 +1051,7 @@ mob
 	krillin
 		name="Krillin"
 		icon='krillin.dmi'
+		oicon_state="krillin"
 		bound_x=20
 		bound_y=2
 		bound_width=20
@@ -1070,6 +1077,7 @@ mob
 	yamcha
 		name="Yamcha"
 		icon='yamcha.dmi'
+		oicon_state="yamcha"
 		bound_x=20
 		bound_y=2
 		bound_width=24
@@ -1097,6 +1105,7 @@ mob
 	roshi
 		name="Roshi"
 		icon='roshi.dmi'
+		oicon_state="roshi"
 		bound_x=20
 		bound_y=2
 		bound_width=24
@@ -1113,6 +1122,7 @@ mob
 	trunks
 		name="Trunks"
 		icon='trunks.dmi'
+		oicon_state="trunks"
 		bound_x=12
 		bound_y=5
 		bound_width=24
@@ -1153,6 +1163,7 @@ mob
 	mrsatan
 		name="Mr. Satan"
 		icon='mrsatan.dmi'
+		oicon_state="mrsatan"
 		bound_x=12
 		bound_y=5
 		bound_width=24
@@ -1173,6 +1184,7 @@ mob
 	raditz
 		name="Raditz"
 		icon='raditz.dmi'
+		oicon_state="raditz"
 		bound_x=20
 		bound_y=2
 		bound_width=24
@@ -1214,6 +1226,7 @@ mob
 	nappa
 		name="Nappa"
 		icon='nappa.dmi'
+		oicon_state="nappa"
 		pixel_w=-4
 		bound_x=18
 		bound_y=0
@@ -1272,6 +1285,7 @@ mob
 	cell
 		name="Perfect Cell"
 		icon='cell.dmi'
+		oicon_state="cell"
 		bound_x=20
 		bound_y=2
 		bound_width=24
@@ -1312,6 +1326,7 @@ mob
 	celljr
 		name="Cell Jr."
 		icon='celljr.dmi'
+		oicon_state="celljr"
 		bound_x=20
 		bound_y=2
 		portrait_yoffset=10
@@ -1327,6 +1342,7 @@ mob
 			src.equippedskill=src.skills[1]
 	saibamen
 		name="Saibamen"
+		oicon_state="saibamen"
 		portrait_yoffset=10
 		NPC
 			team="Enemy"
@@ -1683,12 +1699,6 @@ obj
 
 world/turf=/turf/blank
 
-area/arena
-	var/x1,x2,y1,y2
-
-//	Entered(mob/M)
-//		if(ismob(M) && M.client)
-//			M.client.edge_limit = "[x1],[y1] to [x2],[y2]"
 
 mob/proc/Heal(heal)
 	src.hp+=heal
@@ -1767,29 +1777,39 @@ mob/proc
 			src.holdskill:loc=null
 			src.holdskill=null
 		if(src.client)src.client.keydown=new/alist()
-
 		sleep(20)
 		src.icon_state=state
-		animate(src,alpha=0,time=30)
-		sleep(100)
-		if(!src.client)
+
+		if(src.client?.inbattle)
+			while(src.client && src.client.inbattle)
+				sleep(20)
+			animate(src,alpha=0,time=30)
 			src.loc=null
-			if(src.npcrespawn)
-				sleep(1000)
-				src.hp=src.maxhp
-				src.alpha=255
-				src.icon_state=""
-				src.ki=src.maxki
-				src.pl=src.basepl
-				src.density=1
-				src.dead=0
-				src.invulnerable=0
-				src.canmove=1
-				src.loc=src.initloc
+			if(src.client)
+				src.client.overworld=0
+				src.client.oworldpixloc=null
+				src.client.Character_Select()
 		else
-			src.client.overworld=0
-			src.client.oworldpixloc=null
-			src.client.Character_Select()
+			animate(src,alpha=0,time=30)
+			sleep(100)
+			if(!src.client)
+				src.loc=null
+				if(src.npcrespawn)
+					sleep(1000)
+					src.hp=src.maxhp
+					src.alpha=255
+					src.icon_state=""
+					src.ki=src.maxki
+					src.pl=src.basepl
+					src.density=1
+					src.dead=0
+					src.invulnerable=0
+					src.canmove=1
+					src.loc=src.initloc
+			else
+				src.client.overworld=0
+				src.client.oworldpixloc=null
+				src.client.Character_Select()
 
 
 
@@ -2131,6 +2151,18 @@ client/verb/keydownverb(button as text)
 		else if(button=="North"||button=="West"||button=="GamepadLeft"||button=="GamepadUp")
 			src.PrevChoice()
 		return
+	if(src.pickinglevel)
+		switch(button)
+			if("North","GamepadUp")src.Navigate(NORTH)
+			if("South","GamepadDown")src.Navigate(SOUTH)
+			if("East","GamepadRight")src.Navigate(EAST)
+			if("West","GamepadLeft")src.Navigate(WEST)
+			if("NorthEast","GamepadUpRight")src.Navigate(NORTHEAST)
+			if("SouthEast","GamepadDownRight")src.Navigate(SOUTHEAST)
+			if("NorthWest","GamepadRight")src.Navigate(NORTHWEST)
+			if("SouthWest","GamepadLeft")src.Navigate(SOUTHWEST)
+		return
+
 	if(focus_target && !focus_target.onKeyDown(button))
 	//	world.log<<button
 		return
@@ -2279,6 +2311,11 @@ client/verb/keyupverb(button as text)
 		if(button=="A"||button=="GamepadFace2"||button=="Enter"||button=="Space")
 			src.MakeChoice()
 		return
+	if(src.pickinglevel)
+		if(button=="A"||button=="GamepadFace2"||button=="Enter"||button=="Space")
+			src.Select()
+		return
+
 	if(focus_target && !focus_target.onKeyUp(button))
 		return
 	if(button=="GamepadSelect"||button=="Gamepad2Select"||button=="GamepadFace1"||button=="GamepadFace2"||button=="GamepadFace3"||button=="GamepadFace4"||button=="GamepadL1"||button=="GamepadR1"||button=="GamepadLeft"||button=="GamepadRight"||button=="GamepadUp"||button=="GamepadDown"||button=="GamepadUpLeft"||button=="GamepadDownLeft"||button=="GamepadUpRight"||button=="GamepadDownRight"||button=="Gamepad2Face1"||button=="Gamepad2Face2"||button=="Gamepad2Face3"||button=="Gamepad2Face4"||button=="Gamepad2L1"||button=="Gamepad2R1"||button=="Gamepad2Left"||button=="Gamepad2Right"||button=="Gamepad2Up"||button=="Gamepad2Down"||button=="Gamepad2UpLeft"||button=="Gamepad2DownLeft"||button=="Gamepad2UpRight"||button=="Gamepad2DownRight")

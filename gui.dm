@@ -17,8 +17,25 @@ mob
 		mob/targetmob
 		portrait_xoffset=0
 		portrait_yoffset=0
-	New()
+
+	New(turf/L,alist/P)
 		..()
+		if(P)
+			var/test=P["pl"]
+			world.log<<"P! [P] and [test]!"
+			if(P["hp"])src.hp=src.maxhp=P["hp"]
+			if(P["ki"])src.ki=src.ki=P["ki"]
+			if(P["pl"])src.basepl=src.pl=P["pl"]
+			if(P["flyinglevel"])src.flyinglevel=P["flyinglevel"]
+			if(P["skills"])src.skills=P["skills"]
+			if(P["unlocked"])src.unlocked=P["unlocked"]
+		if(src.npcrespawn)src.initloc=src.loc
+		if(src.hue)
+			src.filters += filter(
+				type = "color",
+				space = FILTER_COLOR_HSV,
+			 	color = list(1,0,0, 0,1,0, 0,0,1, src.hue/360,0,0)
+			 	)
 		if(istype(src,/mob/picking))return
 		gui_frame= new/obj/gui/scouterframe()
 		gui_frame.owner=src

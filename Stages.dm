@@ -1,7 +1,7 @@
 obj
 	stagetag
 		var
-			vector/Start=vector(16,4)
+			vector/Start=vector(16,2)
 			dimensions = "1,1 to 65,24"
 			guistate
 
@@ -56,68 +56,156 @@ obj
 			guistate="cellgames"
 
 client/var/tmp/levelpick
+client/var/tmp/pickinglevel=0
+obj/gui/var
+	gridX
+	gridY
+	image/overimage
+var
+	levelmaxX=0
+	levelmaxY=0
+
 obj/gui/levelselect
 	icon='stages.dmi'
 	background
 		icon='gui/levelselect.png'
 		screen_loc="CENTER-6:-17,CENTER-4:-8"
+		mouse_opacity=0
 		Click()
 			return
+
 	vegeta
+		gridX=1
+		gridY=3
 		icon_state="vegeta"
 		screen_loc="CENTER-6:-8,CENTER+2:-12"
 	raditz
+		gridX=2
+		gridY=3
 		icon_state="raditz"
 		screen_loc="CENTER-3:-4,CENTER+2:-12"
 	rockydesert
+		gridX=3
+		gridY=1
 		icon_state="rockydesert"
 		screen_loc="CENTER,CENTER-4:+12"
 	plains
+		gridX=4
+		gridY=3
 		icon_state="plains"
 		screen_loc="CENTER+3:+4,CENTER+2:-12"
 	namek
+		gridX=1
+		gridY=2
 		icon_state="namek"
 		screen_loc="CENTER-6:-8,CENTER-1"
 	mountains
+		gridX=2
+		gridY=2
 		icon_state="mountains"
 		screen_loc="CENTER-3:-4,CENTER-1"
 	lookout
+		gridX=3
+		gridY=2
 		icon_state="lookout"
 		screen_loc="CENTER,CENTER-1"
 	roadside
+		gridX=4
+		gridY=2
 		icon_state="roadside"
 		screen_loc="CENTER+3:+4,CENTER-1"
 	budokai
+		gridX=1
+		gridY=1
 		icon_state="budokai"
 		screen_loc="CENTER-6:-8,CENTER-4:+12"
 	city
+		gridX=2
+		gridY=1
 		icon_state="city"
 		screen_loc="CENTER-3:-4,CENTER-4:+12"
 	kamehouse
+		gridX=3
+		gridY=3
 		icon_state="kamehouse"
 		screen_loc="CENTER,CENTER+2:-12"
 	cellgames
+		gridX=4
+		gridY=1
 		icon_state="cellgames"
 		screen_loc="CENTER+3:+4,CENTER-4:+12"
+	New()
+		..()
+		var/image/I=new('stages.dmi',src,icon_state="selected")
+		I.plane=src.plane+1
+		I.layer=src.layer+1
+		src.overimage=I
+		if(src.gridX>levelmaxX)levelmaxX=src.gridX
+		if(src.gridY>levelmaxY)levelmaxY=src.gridY
+	MouseEntered()
+		for(var/obj/gui/levelselect/L in levels)
+			usr.client?.images-=L.overimage
+		usr.client?.levelselectcoord=vector(src.gridX,src.gridY)
+		usr.client?.stageprelim=src
+		usr.client?.images+=src.overimage
+	MouseExited()
+		usr.client?.images-=src.overimage
+
 	Click()
+		usr.client?.Select()
+client
+	proc/Select()
+
 		var/obj/stagetag/S
-		if(usr.client?.levelselect>world.time)return
+		if(src.levelselect>world.time)return
 		for(var/obj/stagetag/O in stageobjs)
-			if(O.guistate==src.icon_state)
+			if(src.stageprelim:icon_state==O.guistate)
 				S=O
-		usr.client?.levelpick=stagezs[S.name]
-		for(var/obj/gui/levelselect/L in usr.client?.screen)
-			usr.client.screen-=L
+		src.levelpick=stagezs[S.name]
+		for(var/obj/gui/levelselect/L in src.screen)
+			src.screen-=L
+		src.pickinglevel=0
+
+	proc/Navigate(direction)
+		var/X=0
+		var/Y=0
+		switch(direction)
+			if(NORTH)Y=1
+			if(SOUTH)Y=-1
+			if(EAST)X=1
+			if(WEST)X=-1
+			if(NORTHEAST)
+				Y=1
+				X=1
+			if(NORTHWEST)
+				Y=1
+				X=-1
+			if(SOUTHEAST)
+				Y=-1
+				X=1
+			if(SOUTHWEST)
+				Y=-1
+				X=-1
+		src.levelselectcoord+=vector(X,Y)
+		if(levelselectcoord.x>levelmaxX)levelselectcoord.x=1
+		if(levelselectcoord.y>levelmaxY)levelselectcoord.y=1
+		if(levelselectcoord.x<=0)levelselectcoord.x=levelmaxX
+		if(levelselectcoord.y<=0)levelselectcoord.y=levelmaxY
+		for(var/obj/gui/levelselect/L in levels)
+			if(L.gridX==src.levelselectcoord.x && L.gridY==src.levelselectcoord.y)
+				src.stageprelim=L
+				src.images+=L.overimage
+			else
+				src.images-=L.overimage
+
+
+
+
 
 client/var/levelselect
-Instance
-	var/list/TeamA
-	var/list/TeamB
-	var/stage
-	proc/Initiate()
+client/var/vector/levelselectcoord
+client/var/stageprelim
 
-	Nappa
-		Initiate()
 
 
 
@@ -149,7 +237,9 @@ client/verb/PlayLevel()
 	for(var/s in stagezs)
 		S+=s
 	src.screen|=levels
+	src.levelselectcoord=vector(1,3)
 	src.levelselect=world.time+20
+	src.pickinglevel=1
 	while(!src.levelpick)
 		sleep(20)
 
@@ -183,8 +273,8 @@ client/verb/PlayLevel()
 	map.free()
 
 client/verb/PVP(mob/E)
-	src.LeaveOverworld()
-	E.client?.LeaveOverworld()
+
+
 	var/mob/P=src.mob
 	var/pixloc/Po=P.pixloc
 	var/pixloc/Eo
@@ -195,8 +285,11 @@ client/verb/PVP(mob/E)
 		S+=s
 	src.screen|=levels
 	src.levelselect=world.time+20
+	src.pickinglevel=1
 	while(!src.levelpick)
 		sleep(20)
+	src.LeaveOverworld()
+	E.client?.LeaveOverworld()
 
 	var/Map/map = maps.copy(src.levelpick)
 	var/obj/stagetag/T=stageobjs[src.levelpick]
@@ -206,6 +299,7 @@ client/verb/PVP(mob/E)
 	E.loc=locate(T.Start.x+4,T.Start.y,map.z)
 	E.client?.edge_limit = T.dimensions
 	E.team="Evil"
+	spawn(20)Awaken(E,src.mob)
 
 	while(E&&!E.dead&&P&&!P.dead)
 		sleep(50)
@@ -217,7 +311,9 @@ client/verb/PVP(mob/E)
 		if(E&&!E.dead&&Eo)
 			E.pixloc=Eo
 			E.client?.edge_limit=null
+			E.client?.VisitOverworld()
 	map.free()
+	src.VisitOverworld()
 
 proc/Fight(mob/P1,mob/P2,Level,oworld)
 	var/pixloc/Po=P1.pixloc

@@ -38,3 +38,8 @@ chatbox_gui
 			if(client&&client._chatbox)
 				client._chatbox._pageend()
 
+area/arena
+	var/x1
+	var/x2
+	var/y1
+	var/y2
