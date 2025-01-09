@@ -1,12 +1,27 @@
 mob/var
 	oicon='rpg/rpg.dmi'
 	oicon_state
+	oicon_w
+	oicon_z
+	obound_width
+	obound_height
 client/verb/VisitOverworld()
 	if(src.overworld)return
+	src.overworld=1
+	src.mob.omaxspeed=src.mob.maxspeed
+	src.mob.maxspeed=4
+	src.mob.oicon_w=src.mob.icon_w
+	src.mob.oicon_z=src.mob.icon_z
+	src.mob.obound_width=src.mob.bound_width
+	src.mob.obound_height=src.mob.bound_height
+	src.mob.icon_w=-4
+	src.mob.icon_z=0
+	src.mob.bound_width=24
+	src.mob.bound_height=24
 	src.mob.resetactions()
 	src.edge_limit = null
 	src.mob.bicon=src.mob.icon
-	src.mob.omaxspeed=src.mob.maxspeed
+
 	src.mob.icon=src.mob.oicon
 	src.mob.icon_state=src.mob.oicon_state
 	src.mob.movevector=vector(0,0)
@@ -14,10 +29,9 @@ client/verb/VisitOverworld()
 	if(!src.oworldpixloc)src.mob.loc=locate(/obj/overworldstart)
 	else
 		src.mob.loc=src.oworldpixloc
-	src.overworld=1
-	src.mob.maxspeed=4
+
 	for(var/obj/nameplate/N in src.mob.vis_contents)
-		N.maptext_x=-16
+		N.pixel_w=-32
 
 mob/proc/resetactions()
 	if(src.charging)
@@ -32,13 +46,18 @@ mob/proc/resetactions()
 	src.CheckCanMove()
 
 client/proc/LeaveOverworld()
+	if(!src.overworld)return
 	src.overworld=0
+	src.mob.icon_w=src.mob.oicon_w
+	src.mob.icon_z=src.mob.oicon_z
+	src.mob.bound_width=src.mob.obound_width
+	src.mob.bound_height=src.mob.obound_height
 	src.oworldpixloc=src.mob.pixloc
 	src.mob.icon=src.mob.bicon
 	src.mob.maxspeed=src.mob.omaxspeed
 	src.mob.icon_state=""
 	for(var/obj/nameplate/N in src.mob.vis_contents)
-		N.maptext_x=4
+		N.pixel_w=-36
 
 obj/overworldstart
 client/var/overworld=0
@@ -55,10 +74,6 @@ obj
 		roshi_training
 			icon='rpg/rpg.dmi'
 			icon_state="roshi"
-			bound_width=8
-			bound_height=12
-			bound_x=32
-			bound_y=16
 			density=1
 			Activate(mob/M)
 				if(M.client)
@@ -70,10 +85,6 @@ obj
 		krillin_training
 			icon='rpg/rpg.dmi'
 			icon_state="krillin"
-			bound_width=8
-			bound_height=12
-			bound_x=32
-			bound_y=16
 			density=1
 			Activate(mob/M)
 				if(M.client)
@@ -86,10 +97,6 @@ obj
 		chaiotzu_training
 			icon='rpg/rpg.dmi'
 			icon_state="chaiotzu"
-			bound_width=8
-			bound_height=12
-			bound_x=32
-			bound_y=16
 			density=1
 			Activate(mob/M)
 				if(M.client)
@@ -101,10 +108,6 @@ obj
 		cell_training
 			icon='rpg/rpg.dmi'
 			icon_state="cell"
-			bound_width=8
-			bound_height=12
-			bound_x=32
-			bound_y=16
 			density=1
 			Activate(mob/M)
 				M.client?.LeaveOverworld()
@@ -113,10 +116,6 @@ obj
 		tien_training
 			icon='rpg/rpg.dmi'
 			icon_state="tien"
-			bound_width=8
-			bound_height=12
-			bound_x=32
-			bound_y=16
 			density=1
 			Activate(mob/M)
 				if(M.client)
@@ -128,10 +127,6 @@ obj
 		yamcha_training
 			icon='rpg/rpg.dmi'
 			icon_state="yamcha"
-			bound_width=8
-			bound_height=12
-			bound_x=32
-			bound_y=16
 			density=1
 			Activate(mob/M)
 				if(M.client)
@@ -143,10 +138,6 @@ obj
 		satan_training
 			icon='rpg/rpg.dmi'
 			icon_state="mrsatan"
-			bound_width=8
-			bound_height=12
-			bound_x=32
-			bound_y=16
 			density=1
 			Activate(mob/M)
 				if(M.client)
@@ -158,10 +149,6 @@ obj
 		goku_training
 			icon='rpg/rpg.dmi'
 			icon_state="goku"
-			bound_width=8
-			bound_height=12
-			bound_x=32
-			bound_y=16
 			density=1
 			Activate(mob/M)
 				if(M.client)
@@ -177,10 +164,6 @@ obj
 		gohan_training
 			icon='rpg/rpg.dmi'
 			icon_state="gohan"
-			bound_width=8
-			bound_height=12
-			bound_x=32
-			bound_y=16
 			density=1
 			Activate(mob/M)
 				if(M.client)
@@ -194,10 +177,6 @@ obj
 		piccolo_training
 			icon='rpg/rpg.dmi'
 			icon_state="piccolo"
-			bound_width=8
-			bound_height=12
-			bound_x=32
-			bound_y=16
 			density=1
 			Activate(mob/M)
 				if(M.client)
@@ -210,10 +189,6 @@ obj
 		vegeta_training
 			icon='rpg/rpg.dmi'
 			icon_state="vegeta"
-			bound_width=8
-			bound_height=12
-			bound_x=32
-			bound_y=16
 			density=1
 			Activate(mob/M)
 				if(M.client)
@@ -225,25 +200,20 @@ obj
 		nappa_training
 			icon='rpg/rpg.dmi'
 			icon_state="nappa"
-			bound_width=8
-			bound_height=12
-			bound_x=32
-			bound_y=16
 			density=1
 			Activate(mob/M)
 				if(M.client)
-					var/choice=M.client.ShowDialogue("Nappa","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					var/choice=M.client.ShowDialogue("Nappa","Hello, are you looking for a training partner?.",list("Historic Battle","Train with me","Leave"))
 					switch(choice)
+						if("Historic Battle")
+							M.client?.Battlegui()
+
 						if("Train with me")
 							M.client?.LeaveOverworld()
 							Fight(M,new/mob/nappa,stagezs["Rockydesert"],1)
 		raditz_training
 			icon='rpg/rpg.dmi'
 			icon_state="raditz"
-			bound_width=8
-			bound_height=12
-			bound_x=32
-			bound_y=16
 			density=1
 			Activate(mob/M)
 				if(M.client)
@@ -255,10 +225,6 @@ obj
 		trunks_training
 			icon='rpg/rpg.dmi'
 			icon_state="trunks"
-			bound_width=8
-			bound_height=12
-			bound_x=32
-			bound_y=16
 			density=1
 			Activate(mob/M)
 				if(M.client)
@@ -274,8 +240,8 @@ obj
 			icon_state="kamehouse"
 			density=1
 			bound_width=41
-			bound_height=62
-			bound_x=16
+			bound_height=32
+			bound_x=0
 			Activate(mob/M)
 				M.client?.LeaveOverworld()
 				var/obj/stagetag/stage=stageobjs[stagezs["Kamehouse"]]
@@ -286,8 +252,8 @@ obj
 			icon_state="pod"
 			density=1
 			bound_width=41
-			bound_height=62
-			bound_x=16
+			bound_height=32
+			bound_x=0
 			Activate(mob/M)
 				M.client?.LeaveOverworld()
 				var/obj/stagetag/stage=stageobjs[stagezs["Raditz"]]
@@ -298,8 +264,8 @@ obj
 			icon_state="cellgames"
 			density=1
 			bound_width=41
-			bound_height=62
-			bound_x=16
+			bound_height=32
+			bound_x=0
 			Activate(mob/M)
 				M.client?.LeaveOverworld()
 				var/obj/stagetag/stage=stageobjs[stagezs["Cellgames"]]
@@ -310,8 +276,8 @@ obj
 			icon_state="budokai"
 			density=1
 			bound_width=41
-			bound_height=62
-			bound_x=16
+			bound_height=32
+			bound_x=0
 			Activate(mob/M)
 				M.client?.LeaveOverworld()
 				var/obj/stagetag/stage=stageobjs[stagezs["Budokai"]]
@@ -323,7 +289,7 @@ obj
 			density=1
 			bound_width=41
 			bound_height=62
-			bound_x=16
+			bound_x=0
 			Activate(mob/M)
 				M.client?.LeaveOverworld()
 				var/obj/stagetag/stage=stageobjs[stagezs["City"]]
@@ -335,8 +301,8 @@ obj
 			icon_state="ccpod"
 			density=1
 			bound_width=41
-			bound_height=62
-			bound_x=16
+			bound_height=32
+
 			Activate(mob/M)
 				M.client?.LeaveOverworld()
 				var/obj/stagetag/stage=stageobjs[stagezs["Namek"]]
@@ -347,22 +313,22 @@ obj
 			icon_state="yamcha"
 			density=1
 			bound_width=41
-			bound_height=62
-			bound_x=16
+			bound_height=32
+			bound_x=0
 		baba
 			icon='rpg/overworldlocs.dmi'
 			icon_state="baba"
 			density=1
 			bound_width=41
-			bound_height=62
-			bound_x=16
+			bound_height=32
+			bound_x=0
 		lookout
 			icon='rpg/overworldlocs.dmi'
 			icon_state="lookout"
 			density=1
 			bound_width=41
-			bound_height=62
-			bound_x=16
+			bound_height=32
+			bound_x=0
 			Activate(mob/M)
 				M.client?.LeaveOverworld()
 				var/obj/stagetag/stage=stageobjs[stagezs["Lookout"]]
@@ -373,22 +339,24 @@ obj
 			icon_state="capsulecorp"
 			density=1
 			bound_width=41
-			bound_height=62
-			bound_x=16
+			bound_height=32
+			bound_x=0
+			Activate(mob/M)
+				usr.client?.Customfight()
 		gokushouse
 			icon='rpg/overworldlocs.dmi'
 			icon_state="gokushouse"
 			density=1
 			bound_width=41
-			bound_height=62
-			bound_x=16
+			bound_height=32
+			bound_x=0
 		pilafscastle
 			icon='rpg/overworldlocs.dmi'
 			icon_state="pilafscastle"
 			density=1
 			bound_width=41
-			bound_height=62
-			bound_x=16
+			bound_height=32
+			bound_x=0
 			Activate(mob/M)
 				M.client?.LeaveOverworld()
 				M.loc=locate(rand(10,90),rand(10,90),1)
@@ -398,15 +366,15 @@ obj
 			icon_state="rr1"
 			density=1
 			bound_width=41
-			bound_height=62
-			bound_x=16
+			bound_height=32
+			bound_x=0
 		grandpagohans
 			icon='rpg/overworldlocs.dmi'
 			icon_state="grandpagohans"
 			density=1
 			bound_width=41
-			bound_height=62
-			bound_x=16
+			bound_height=32
+			bound_x=0
 			Activate(mob/M)
 				if(M.client)
 					var/choice=M.client.ShowDialogue("Grandpa Gohan's House","You visit Grandpa Gohan's house. It hasnt been lived in for some time.",list("Rest","Leave"))

@@ -1,3 +1,10 @@
+// Issues
+//destructo disc is broken
+//solar flare self stuns
+//beams get snagged on nothing and on map boundaries
+//want beams used in defense to auto cast with no channel time
+
+
 
 
 
@@ -8,6 +15,9 @@ client
 		obj/gui/battlegui/battlegui
 
 
+mob/Click()
+	..()
+	world.log<<"src's team is [src.team] and max speed is [src.maxspeed]"
 
 obj/mobref
 	layer = FLOAT_LAYER
@@ -22,9 +32,11 @@ obj/mobref
 		src.ref=M
 	Click()
 		if(usr.client&&usr.client!=src.home:battlegui.Player[1])return
+
 		if(usr.client?.selectedmobref &&usr.client?.selectedmobref==src)
 			usr.client.selectedmobref.filters=null
 			usr.client.selectedmobref=null
+			return
 		if(usr.client?.selectedmobref && usr.client?.selectedmobref.home!=src.home)
 			usr.client.Swapref(usr.client.selectedmobref,src)
 			return
@@ -40,7 +52,33 @@ obj/mobref
 
 
 
+client/proc/Customfight(list/P)
+	var/list/choices=new/list
+	var/list/enemies=new/list
+	for(var/t in playerselection)
+		var/typ=playerselection[t]
+		choices+=new typ(,alist(hp=200))
+		enemies+=new typ(,alist(hp=200))
+	src.levelpick=null
+	var/list/S=new/list
+	for(var/s in stagezs)
+		S+=s
+	src.screen|=levels
+	src.levelselect=world.time+20
+	src.pickinglevel=1
+	while(!src.levelpick)
+		sleep(20)
+	var/Instance/C=new()
+	C.bench=enemies
+	C.stage=src.levelpick
+	C.players=P
+	src.levelpick=null
+	src.characters=choices
+	src.unlimitedreinforcements=1
+	src.Loadbattlegui(C)
 
+
+client/var/unlimitedreinforcements=0
 client/verb/Battlegui()
 	src.characters=list(
 		new/mob/yamcha(,alist(pl=1480,hp=200)),
@@ -50,7 +88,7 @@ client/verb/Battlegui()
 		new/mob/chaotzu(,alist(pl=610,hp=200)),
 		new/mob/piccolo(,alist(pl=3500,hp=200)),
 		new/mob/goku(,alist(pl=9001,hp=200)))
-
+	src.unlimitedreinforcements=0
 	src.Loadbattlegui(new/Instance/Nappa())
 client/proc/Loadbattlegui(Instance/I)
 
@@ -72,9 +110,14 @@ client/proc/Loadbattlegui(Instance/I)
 	B.Refreshbench(B.bench2)
 
 
+
 Instance
 	var/list/bench[]
 	var/stage
+	var/list/players[8]
+	Custom
+
+
 	Nappa
 		New()
 			..()
@@ -98,8 +141,9 @@ obj/gui
 				for(var/i in 1 to B.mobs.len)
 
 					var/obj/O=B.mobs[i]
-					O.pixel_x=-25+(i-floor(i/8)*7)*32
-					O.pixel_y=64-floor(i/8)*32
+					O.pixel_x = 7 + ((i - 1) % 7) * 32
+					O.pixel_y = 64 - floor((i - 1) / 7) * 32
+
 					B.vis_contents+=O
 			Refreshplayerslots()
 				for(var/obj/gui/playerslot/P in src.playerslots)
@@ -122,6 +166,7 @@ obj/gui
 			Instance/instance
 		New()
 			..()
+			sleep(3)
 			buttons[1]=new/obj/gui/start
 			buttons[1].battlegui=src
 			src.vis_contents+=buttons[1]
@@ -137,6 +182,14 @@ obj/gui
 				else if(i==1)
 					spawn(1)
 						playerslots[1].player=Player[1]
+						world.log<<"got to 1"
+						if(src.instance.players)
+							world.log<<"got to 2"
+							for(var/p in 2 to 8)
+								world.log<<"3 is [src.instance.players[p]]"
+								if(src.instance.players[p])
+									Player[p]=src.instance.players[p]
+									playerslots[p]?.Setplayer(src.instance.players[p])
 						src.Refreshplayerslots()
 				src.vis_contents+=playerslots[i]
 				for(var/I in 1 to charslots[i].len)
@@ -215,6 +268,11 @@ obj/gui
 				C.screen|=usr.client?.battlegui
 				usr.client?.battlegui:Player[src.Playernumber]=C
 				usr.client?.battlegui:Refreshplayerslots()
+		proc/Setplayer(client/C)
+			world.log<<"Successfully Setplayer [C]"
+			C.screen|=usr.client?.battlegui
+			src.battlegui:Player[src.Playernumber]=C
+			src.battlegui:Refreshplayerslots()
 
 	charbench
 		icon='gui/battlegui2.dmi'
@@ -233,6 +291,10 @@ obj/gui
 			if(H&&istype(H,/obj/gui/charslot))
 				H:mref=null
 				H.vis_contents=null
+				if(usr.client?.unlimitedreinforcements)
+					M.home=null
+					del(M)
+					return
 			M.home=src
 			src.mobs|=M
 			src.battlegui.Refreshbench(src)
@@ -258,11 +320,22 @@ obj/gui
 				var/obj/mobref/M=usr.client?.selectedmobref
 				if(H&&H.icon_state==src.icon_state)
 					if(istype(H,/obj/gui/charbench))
-						H:mobs-=M
-						usr.client?.battlegui.Refreshbench(H)
+						if(!usr.client.unlimitedreinforcements)
+							H:mobs-=M
+							usr.client?.battlegui.Refreshbench(H)
+						else
+							var/mob/m=new M.ref.type()
+							var/obj/mobref/N=new/obj/mobref(,m)
+							src.vis_contents+=N
+							src.mref=N
+							N.pixel_x=4
+							N.pixel_y=2
+							N.home=src
+							return
 					else if(istype(H,/obj/gui/charslot))
 						H:mref=null
 						H.vis_contents=null
+
 					if(src.mref && src.mref!=M)
 						usr.client?.Swapref(M,src.mref)
 					M.home?.vis_contents-=src
@@ -279,29 +352,42 @@ obj/gui
 			//18,98 +0:18,+3:6
 
 client/proc/Swapref(obj/mobref/stealer,obj/mobref/M)
-	var/obj/gui/OGhome=stealer.home
-	stealer.home=M.home
-	M.home=OGhome
-	stealer.home.vis_contents-=M
-	M.home.vis_contents-=stealer
-	if(istype(stealer.home,/obj/gui/charslot))
-		stealer.pixel_x=6
-		stealer.pixel_y=0
-		stealer.home.vis_contents+=stealer
-		stealer.home:mref=stealer
+	if(!usr.client.unlimitedreinforcements)
+		var/obj/gui/OGhome=stealer.home
+		stealer.home=M.home
+		M.home=OGhome
+		stealer.home.vis_contents-=M
+		M.home.vis_contents-=stealer
+		if(istype(stealer.home,/obj/gui/charslot))
+			stealer.pixel_x=6
+			stealer.pixel_y=0
+			stealer.home.vis_contents+=stealer
+			stealer.home:mref=stealer
+		else
+			stealer.home:mobs-=M
+			stealer.home:mobs|=stealer
+			src.battlegui.Refreshbench(stealer.home)
+		if(istype(M.home,/obj/gui/charslot))
+			M.pixel_x=4
+			M.pixel_y=2
+			M.home.vis_contents+=M
+			M.home:mref=M
+		else
+			M.home:mobs|=M
+			M.home:mobs-=stealer
+			src.battlegui.Refreshbench(M.home)
 	else
-		stealer.home:mobs-=M
-		stealer.home:mobs|=stealer
-		src.battlegui.Refreshbench(stealer.home)
-	if(istype(M.home,/obj/gui/charslot))
-		M.pixel_x=4
-		M.pixel_y=2
-		M.home.vis_contents+=M
-		M.home:mref=M
-	else
-		M.home:mobs|=M
-		M.home:mobs-=stealer
-		src.battlegui.Refreshbench(M.home)
+		if(istype(M.home,/obj/gui/charslot))
+			var/mob/m=new M.ref.type()
+			var/obj/mobref/N=new/obj/mobref(,m)
+			M.home.vis_contents+=N
+			M.home:mref=N
+			N.pixel_x=4
+			N.pixel_y=2
+			N.home=M.home
+			M.home.vis_contents-=M
+			M.home=null
+
 	usr.client?.selectedmobref?.filters=null
 	usr.client?.selectedmobref=null
 
@@ -313,6 +399,7 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 	for(var/client/C in Players)
 		C.inbattle=1
 		C.LeaveOverworld()
+		C.mob.loc=null
 		C.edge_limit = T.dimensions
 	var/list/mobs[8]
 	var/list/activeteam1=new/list()
@@ -323,8 +410,7 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 	var/list/computerenemies=new/list()
 	var/wave=1
 	var/wave2=1
-	for(var/obj/Refs in Mobrefs)
-		world.log<<"REF [Refs] which is [Refs:ref]"
+
 	for(var/i in 1 to 8)
 		mobs[i]=new/list()
 		for(var/i2 in 1 to 7)
@@ -342,7 +428,7 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 						Mobrefs[i][i2].ref.pnum=i2
 						Evil+=Mobrefs[i][i2].ref
 
-		var/mob/M
+		/*var/mob/M
 		if(mobs[i]&&mobs[i].len)M=mobs[i][1]
 		if(M)
 			if(Players[i])
@@ -358,16 +444,30 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 				else
 					computerenemies|=M
 					M.aggrotag=1
-			if(i<5)
-				activeteam1|=M
-				M.loc=locate(T.Start.x-i,T.Start.y,map.z)
+			//if(i<5)
+			//	activeteam1|=M
+			//	M.loc=locate(T.Start.x-i,T.Start.y,map.z)
+			*/
+
+	for(var/i in 1 to 4)
+		if(Mobrefs[i][wave]&&Mobrefs[i][wave].ref)
+			Mobrefs[i][wave].ref.loc=locate(T.Start.x-(i),T.Start.y,map.z)
+			Mobrefs[i][wave].ref.team="Good"
+			activeteam1|=Mobrefs[i][wave].ref
+
+			if(!Players[i])spawn(5)if(activeteam2.len)Awaken(Mobrefs[i][wave].ref,pick(activeteam2))
+			else
+				Players[i].mob=Mobrefs[i][wave].ref
+				Players[i].mob.team="Good"
 	for(var/i in 5 to 8)
 		if(Mobrefs[i][wave2]&&Mobrefs[i][wave2].ref)
 			Mobrefs[i][wave2].ref.loc=locate(T.Start.x+(i-4),T.Start.y,map.z)
+			Mobrefs[i][wave2].ref.team="Evil"
 			activeteam2|=Mobrefs[i][wave2].ref
-			if(!Players[i])Awaken(Mobrefs[i][wave2].ref,pick(activeteam1))
+			if(!Players[i])spawn(5)if(activeteam1.len)Awaken(Mobrefs[i][wave2].ref,pick(activeteam1))
 			else
 				Players[i].mob=Mobrefs[i][wave2].ref
+				Players[i].mob.team="Evil"
 	sleep(20)
 	for(var/mob/C in computerallies)
 		spawn()Awaken(C,pick(activeteam2))
@@ -417,20 +517,35 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 			for(var/i in 1 to 4)
 				if(Mobrefs[i][wave]&&Mobrefs[i][wave].ref)
 					Mobrefs[i][wave].ref.loc=locate(T.Start.x-i,T.Start.y,map.z)
+					Mobrefs[i][wave].ref.team="Good"
 					activeteam1|=Mobrefs[i][wave].ref
-					if(!Players[i])Awaken(Mobrefs[i][wave].ref,pick(activeteam2))
+					if(!Players[i] && !activeteam2.len)Awaken(Mobrefs[i][wave].ref,pick(activeteam2))
 					else
 						Players[i].mob=Mobrefs[i][wave].ref
+						Players[i].mob.team="Good"
+
 		if(!activeteam2.len)
 			wave2++
 			for(var/i in 5 to 8)
 				if(Mobrefs[i][wave2]&&Mobrefs[i][wave2].ref)
 					Mobrefs[i][wave2].ref.loc=locate(T.Start.x+(i-4),T.Start.y,map.z)
+					Mobrefs[i][wave2].ref.team="Evil"
 					activeteam2|=Mobrefs[i][wave2].ref
-					if(!Players[i])Awaken(Mobrefs[i][wave2].ref,pick(activeteam1))
+					if(!Players[i] && activeteam1.len)Awaken(Mobrefs[i][wave2].ref,pick(activeteam1))
 					else
 						Players[i].mob=Mobrefs[i][wave2].ref
-		world.log<<"Loop [activeteam1.len] / [activeteam2.len]"
+						Players[i].mob.team="Evil"
+
+		for(var/mob/A in computerenemies)
+			if(!A.targetmob || A.targetmob.dead)
+				if(activeteam1.len)
+					Awaken(A,pick(activeteam1))
+		for(var/mob/A in computerenemies)
+			if(!A.targetmob || A.targetmob.dead)
+				if(activeteam2.len)
+					Awaken(A,pick(activeteam2))
+
+	//	world.log<<"Loop [activeteam1.len] / [activeteam2.len]"
 
 	if(!activeteam1.len)
 		world.log<<"Team 2 won!"
@@ -445,6 +560,12 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 		C.edge_limit=null
 		C.inbattle=0
 		C.mob.Die()
+	for(var/mob/m in mobs)
+		m.loc=null
+	for(var/mob/m in Good)
+		m.loc=null
+	for(var/mob/m in Evil)
+		m.loc=null
 
 
 

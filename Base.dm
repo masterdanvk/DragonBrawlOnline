@@ -681,8 +681,10 @@ mob/proc/Create_Aura(color)
 	O.icon_state="none"
 	O.alpha=80
 	U.alpha=200
-	O.pixel_x=6
-	U.pixel_x=6
+	O.pixel_x=-36
+	U.pixel_x=-36
+	U.pixel_z=-4
+	O.pixel_z=-4
 	var/col
 	switch(color)
 		if("Blue")
@@ -811,8 +813,8 @@ mob
 		name="Goku"
 		icon='goku.dmi'
 		oicon_state="goku"
-		bound_x=20
-		bound_y=2
+		icon_w=20
+		icon_z=2
 		bound_width=24
 		bound_height=38
 		pl=9001
@@ -864,8 +866,8 @@ mob
 		icon='vegeta.dmi'
 		oicon_state="vegeta2"
 		portrait_yoffset=5
-		bound_x=20
-		bound_y=2
+		icon_w=20
+		icon_z=2
 		bound_width=24
 		bound_height=38
 
@@ -907,8 +909,8 @@ mob
 		name="Piccolo"
 		icon='piccolo.dmi'
 		oicon_state="piccolo"
-		bound_x=20
-		bound_y=2
+		icon_w=20
+		icon_z=2
 		bound_width=24
 		bound_height=38
 		pl=9000
@@ -929,8 +931,8 @@ mob
 				src.icon='piccolo_orange.dmi'
 				src.bound_width=32
 				src.bound_height=46
-				src.bound_x=15
-				src.pixel_z=-14
+				src.icon_w=15
+				src.icon_z=-14
 				src.form="Orange"
 				src.icon_state="transform"
 				sleep(9)
@@ -944,8 +946,8 @@ mob
 				src.icon_state="revert"
 				src.bound_width=24
 				src.bound_height=38
-				src.bound_x=20
-				src.pixel_z=0
+				src.icon_w=20
+				src.icon_z=0
 				sleep(4)
 				src.icon_state=""
 				src.Set_PL(src.basepl)
@@ -959,8 +961,8 @@ mob
 		name="Gohan"
 		icon='gohan.dmi'
 		oicon_state="gohan"
-		bound_x=20
-		bound_y=2
+		icon_w=20
+		icon_z=2
 		bound_width=24
 		bound_height=28
 		pl=6500
@@ -1010,8 +1012,8 @@ mob
 		name="Tienshinhan"
 		icon='tien.dmi'
 		oicon_state="tien"
-		bound_x=20
-		bound_y=2
+		icon_w=20
+		icon_z=2
 		bound_width=24
 		bound_height=38
 		pl=9000
@@ -1036,8 +1038,8 @@ mob
 		name="Chaiotzu"
 		icon='chaotzu.dmi'
 		oicon_state="chaiotzu"
-		bound_x=25
-		bound_y=10
+		icon_w=25
+		icon_z=10
 		bound_width=18
 		bound_height=20
 		pl=9000
@@ -1052,8 +1054,8 @@ mob
 		name="Krillin"
 		icon='krillin.dmi'
 		oicon_state="krillin"
-		bound_x=20
-		bound_y=2
+		icon_w=20
+		icon_z=2
 		bound_width=20
 		bound_height=28
 		pl=9000
@@ -1078,8 +1080,8 @@ mob
 		name="Yamcha"
 		icon='yamcha.dmi'
 		oicon_state="yamcha"
-		bound_x=20
-		bound_y=2
+		icon_w=20
+		icon_z=2
 		bound_width=24
 		bound_height=38
 		pl=9000
@@ -1106,8 +1108,8 @@ mob
 		name="Roshi"
 		icon='roshi.dmi'
 		oicon_state="roshi"
-		bound_x=20
-		bound_y=2
+		icon_w=20
+		icon_z=2
 		bound_width=24
 		bound_height=38
 		pl=9000
@@ -1123,8 +1125,8 @@ mob
 		name="Trunks"
 		icon='trunks.dmi'
 		oicon_state="trunks"
-		bound_x=12
-		bound_y=5
+		icon_w=32
+		icon_z=0
 		bound_width=24
 		bound_height=28
 		portrait_xoffset=-10
@@ -1164,8 +1166,8 @@ mob
 		name="Mr. Satan"
 		icon='mrsatan.dmi'
 		oicon_state="mrsatan"
-		bound_x=12
-		bound_y=5
+		icon_w=20
+		icon_z=2
 		bound_width=24
 		bound_height=28
 		portrait_xoffset=-10
@@ -1185,8 +1187,8 @@ mob
 		name="Raditz"
 		icon='raditz.dmi'
 		oicon_state="raditz"
-		bound_x=20
-		bound_y=2
+		icon_w=20
+		icon_z=2
 		bound_width=24
 		bound_height=38
 		pl=9000
@@ -1227,9 +1229,8 @@ mob
 		name="Nappa"
 		icon='nappa.dmi'
 		oicon_state="nappa"
-		pixel_w=-4
-		bound_x=18
-		bound_y=0
+		icon_w=22
+		icon_z=0
 		bound_width=30
 		bound_height=40
 		portrait_yoffset=-15
@@ -1286,8 +1287,8 @@ mob
 		name="Perfect Cell"
 		icon='cell.dmi'
 		oicon_state="cell"
-		bound_x=20
-		bound_y=2
+		icon_w=20
+		icon_z=2
 		bound_width=24
 		bound_height=38
 		pl=38000
@@ -1327,8 +1328,8 @@ mob
 		name="Cell Jr."
 		icon='celljr.dmi'
 		oicon_state="celljr"
-		bound_x=20
-		bound_y=2
+		icon_w=20
+		icon_z=2
 		portrait_yoffset=10
 		bound_width=24
 		bound_height=28
@@ -1404,8 +1405,8 @@ mob
 
 		icon='saibamen.dmi'
 
-		bound_x=25
-		bound_y=10
+		icon_w=25
+		icon_z=10
 		bound_width=18
 		bound_height=20
 		maxhp=50
@@ -1634,9 +1635,14 @@ turf
 		density=1
 		bouncy=10
 		icon_state="bump"
-	dense
-		density=1
+	boundary
+		density=0
 		indestructible=1
+		Cross(atom/A)
+			if(istype(A,/mob))
+				return 0
+			else
+				return 1
 
 	blank
 		indestructible=1
@@ -1672,7 +1678,7 @@ obj
 		budokai
 			icon='backgrounds/budokai.dmi'
 		city
-			icon='backgrounds/city.jpg'
+			icon='backgrounds/city.png'
 		desert
 			icon='backgrounds/desert.jpg'
 		plains
@@ -2262,8 +2268,8 @@ client/verb/keydownverb(button as text)
 		var/atom/Veye=src.virtual_eye
 		var/mob/Eye=src.eye
 		if(Eye!=Veye)
-			var/offx=(Eye.x-Veye.x)*32+round(Eye.step_x,1)+16
-			var/offy=(Eye.y-Veye.y)*32+round(Eye.step_y,1)-16
+			var/offx=(Eye.x-Veye.x)*32+round(Eye.step_x,1)-4
+			var/offy=(Eye.y-Veye.y)*32+round(Eye.step_y,1)-32
 			if(offx>0)offx="+[offx]"
 			else offx="[offx]"
 			if(offy>0)offy="+[offy]"
@@ -2411,8 +2417,9 @@ client/verb/keyupverb(button as text)
 				O.Activate(M)
 				return
 			for(var/mob/O in view(2,T))
-				if(O!=src.mob)
-					src.PVP(O)
+				if(O!=src.mob && O.client)
+					src.Talkto(O.client)
+
 					return
 	src.keydown?.Remove(button)
 
@@ -2426,6 +2433,28 @@ client/verb/keyupverb(button as text)
 				src.dashkey=null
 	if(length(src.keydown)==0 && (!M.movevector || M.movevector.size<=1)) activemobs-=M
 
+
+client/proc/Talkto(client/C)
+	var/choice=src.ShowDialogue("[C.name]","How do you want to interact with this Player?",list("PVP Challenge","Custom Fight (PVP)","Custom Fight (Coop)","Leave"))
+	switch(choice)
+		if("PVP Challenge")
+			var/response=C.ShowDialogue("[src.name]","[src.name] wants to duel you!",list("No thanks","Sure!"))
+			if(response=="Sure!")
+				src.PVP(C)
+		if("Custom Fight (PVP)")
+			var/response=C.ShowDialogue("[src.name]","[src.name] wants to fight you in a custom match",list("No thanks","Sure!"))
+			if(response=="Sure!")
+				var/list/players[8]
+				players[5]=C
+				Customfight(players)
+		if("Custom Fight (Coop)")
+			var/response=C.ShowDialogue("[src.name]","[src.name] wants to fight you in a custom match",list("No thanks","Sure!"))
+			if(response=="Sure!")
+				var/list/players[8]
+				players[2]=C
+				Customfight(players)
+
+
 mob/var/tmp
 	obj/dash
 	obj/dash2
@@ -2433,7 +2462,7 @@ mob/var/tmp
 
 mob/proc
 	Charge()
-		if(!src.dashing)
+		if(!src.dashing && !src.client?.overworld)
 			var/mob/target
 			var/X=0
 			var/Y=0
@@ -2543,7 +2572,7 @@ client/proc/ShowAim()
 	var/angle=vector2angle(src.mob.aim)
 	if(src.mob.aim&&src.mob.aim.size)m.Turn(angle)
 	src.aimimage.transform=m
-	src.aimimage.pixel_x=24
+	src.aimimage.pixel_x=4
 	src.aimimage.pixel_y=22
 	src.aimimage.pixel_x+=offset.x
 	src.aimimage.pixel_y+=offset.y
@@ -2645,7 +2674,7 @@ mob/proc/Standstraight()
 		src.transform=matrix().Scale(-1,1)
 		src.rotation=0
 
-
+mob/var/autoattack=0
 //bumping code
 mob
 	Bump(atom/o)
@@ -2662,7 +2691,7 @@ mob
 
 			if(src.client)
 				if(src.client.overworld)return
-				if(src.client.keydown["A"])
+				if(src.client.keydown["A"]&&src.autoattack)
 					spawn()
 						if(!src.attacking)
 							var/duration=world.time-src.client?.keydown["A"]

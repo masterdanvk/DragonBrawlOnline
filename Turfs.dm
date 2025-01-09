@@ -332,13 +332,13 @@ turf
 	Lgrass
 		icon = 'lgrass.dmi'
 		icon_state="255"
-		autotile = @{"["lgrass","world"]"}
+		autotile = @{"["lgrass","world","grasswater"]"}
 		tile_id = "lgrass"
 		autotile_type=AT_47
 	dgrass
 		icon = 'dgrass.dmi'
 		icon_state="255"
-		autotile = @{"["dgrass","world"]"}
+		autotile = @{"["dgrass","world","grasswater"]"}
 		tile_id = "dgrass"
 		autotile_type=AT_47
 	gravel
@@ -362,7 +362,7 @@ turf
 	water
 		icon = 'water.dmi'
 		icon_state="255"
-		autotile = @{"["water","beach","world"]"}
+		autotile = @{"["water","beach","grasswater","world"]"}
 		tile_id = "water"
 		autotile_type=AT_47
 		Entered(mob/A)
@@ -382,13 +382,20 @@ turf
 				return 1
 
 			..()
+		grasswater
+			icon = 'grasswater.dmi'
+			icon_state="0"
+			autotile = @{"["world","grasswater","grass","dgrass","sand","lgrass","beach"]"}
+			tile_id = "grasswater"
+			autotile_type=AT_47
 
-	beach
-		icon = 'sandwater.dmi'
-		icon_state="0"
-		autotile = @{"["sand","beach","world"]"}
-		tile_id = "beach"
-		autotile_type=AT_47
+		beach
+			icon = 'sandwater.dmi'
+			icon_state="0"
+			autotile = @{"["sand","beach","world","grasswater","grass"]"}
+			tile_id = "beach"
+			autotile_type=AT_47
+
 
 var/altered_turfs[0]
 var/altered_objects[0]

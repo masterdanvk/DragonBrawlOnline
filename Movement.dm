@@ -4,7 +4,7 @@ client/proc/UpdateMoveVector()
 	if(movemode=="loose")
 		src.oldUpdateMoveVector()
 		return
-	if(overworld)
+	if(src.overworld)
 		src.overworldmove()
 		return
 	if(!movekeydown && (!src.mob.movevector || !src.mob.movevector.size))return
@@ -141,7 +141,11 @@ client/proc/overworldmove()
 	if(vx==-1)d|=WEST
 	if(vy==1)d|=NORTH
 	if(vy==-1)d|=SOUTH
+	world.log<<"overworldmove [src.mob.step_size] and [d]"
+	var/ostepsize=src.mob.step_size
+	src.mob.step_size=4
 	step(src.mob,d,4)
+	src.mob.step_size=ostepsize
 
 client/proc/oldUpdateMoveVector()
 

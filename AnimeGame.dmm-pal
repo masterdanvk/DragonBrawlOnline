@@ -1,3 +1,4 @@
 [Palette]
 /mob/celljr{aggrorange=1}
 /mob/yamcha{team="Zfighter"}
+/turf/water{autotile_type=null}

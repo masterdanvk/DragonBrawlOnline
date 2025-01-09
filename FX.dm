@@ -57,7 +57,7 @@ obj
 			bound_width=96
 			bound_height=96
 			density=0
-			pixel_z=-48
+			pixel_z=-32
 		//	pixel_w=-48
 			alpha=200
 

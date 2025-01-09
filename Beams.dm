@@ -90,7 +90,7 @@ mob/proc/FireBeam(charge,maxdistance,Beam/B)
 		var/matrix/m=new/matrix()
 		m.TurnWithPivot(angle,O.bound_width/2,0)
 		O.transform=m
-	B.base.pixloc=src.pixloc+stepvector*3+vector(30,12)
+	B.base.pixloc=bound_pixloc(src,0)+stepvector*3+vector(0,-12)
 	B.beam.pixloc=B.base.pixloc+stepvector*2
 	B.head.pixloc=B.beam.pixloc+stepvector
 	B.stepv=stepvector

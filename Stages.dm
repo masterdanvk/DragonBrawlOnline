@@ -1,58 +1,58 @@
 obj
 	stagetag
 		var
-			vector/Start=vector(16,2)
+			vector/Start=vector(16,4)
 			dimensions = "1,1 to 65,24"
 			guistate
 
 		Budokai
 			name="Budokai"
-			dimensions = "1,1 to 33,22"
+			dimensions = "4,4 to 36,25"
 			guistate="budokai"
 		Raditz
 			name="Raditz"
-			dimensions = "1,1 to 39,22"
+			dimensions = "4,4 to 42,25"
 			guistate="raditz"
 		Plains
 			name="Plains"
-			dimensions = "1,1 to 29,22"
+			dimensions = "4,4 to 33,25"
 			guistate="plains"
 		Rockydesert
 			name="Rockydesert"
-			dimensions = "1,1 to 40,22"
+			dimensions = "4,4 to 43,25"
 			guistate="rockydesert"
 		Plateaus
 			name="Plateaus"
-			dimensions = "1,1 to 40,22"
+			dimensions = "4,4 to 43,25"
 			guistate="vegeta"
 		City
 			name="City"
-			dimensions = "1,1 to 60,22"
+			dimensions = "4,4 to 63,25"
 			guistate="city"
 		Roadside
 			name="Roadside"
-			dimensions = "1,1 to 40,22"
+			dimensions = "4,4 to 43,25"
 			guistate="roadside"
 		Mountain
 			name="Mountain"
-			dimensions = "1,1 to 37,21"
+			dimensions = "4,4 to 40,24"
 			guistate="mountains"
 		Kamehouse
 			name="Kamehouse"
-			dimensions = "1,1 to 25,22"
+			dimensions = "4,4 to 28,25"
 			guistate="kamehouse"
-			Start=vector(13,2)
+			Start=vector(13,4)
 		Lookout
 			name="Lookout"
-			dimensions = "1,1 to 24,22"
+			dimensions = "4,4 to 27,25"
 			guistate="lookout"
 		Namek
 			name="Namek"
-			dimensions = "1,1 to 24,22"
+			dimensions = "4,4 to 27,25"
 			guistate="namek"
 		Cellgames
 			name="Cellgames"
-			dimensions ="1,1 to 37,22"
+			dimensions ="4,4 to 40,25"
 			guistate="cellgames"
 
 client/var/tmp/levelpick

@@ -347,8 +347,7 @@ obj/Kiblast
 		layer=MOB_LAYER+1
 		bound_width=128
 		bound_height=128
-		bound_x=-64
-		bound_y=-64
+
 		density=1
 		spread=0
 		distance=500
@@ -379,7 +378,6 @@ obj/Kiblast
 		layer=MOB_LAYER
 		bound_width=63
 		bound_height=23
-		bound_x=0
 		density=1
 		spread=0
 		distance=500
@@ -402,7 +400,6 @@ obj/Kiblast
 		layer=MOB_LAYER
 		bound_width=32
 		bound_height=21
-		bound_x=0
 		density=1
 		spread=0
 		distance=500
@@ -437,7 +434,6 @@ obj/Kiblast
 		layer=MOB_LAYER
 		bound_width=64
 		bound_height=42
-		bound_x=0
 		density=1
 		spread=0
 		distance=1000
@@ -521,9 +517,7 @@ obj/Kiblast
 		layer=MOB_LAYER+1
 		bound_width=124
 		bound_height=135
-		bound_x=-62
-		bound_y=-67
-		pixel_z=-67
+		yoffset=-67
 		density=1
 		spread=0
 		distance=500
@@ -552,9 +546,11 @@ obj/Kiblast
 		layer=MOB_LAYER+1
 		bound_width=105
 		bound_height=106
-		bound_x=-52
-		bound_y=-53
-		pixel_z=-53
+//		xoffset=-52
+		yoffset=-53
+//		bound_x=-52
+//		bound_y=-53
+//		pixel_z=-53
 		density=1
 		spread=0
 		distance=500
@@ -583,9 +579,7 @@ obj/Kiblast
 		layer=MOB_LAYER+1
 		bound_width=74
 		bound_height=112
-		bound_x=-37
-		bound_y=-56
-		pixel_z=-56
+		yoffset=-56
 		density=1
 		spread=0
 		distance=500
@@ -645,7 +639,6 @@ obj/Kiblast
 		icon='sliceblast.dmi'
 		bound_width=32
 		bound_height=64
-		bound_y=0
 		density=1
 		spread=0
 		distance=250
@@ -674,11 +667,9 @@ obj/Kiblast
 		icon='fingerlaser.dmi'
 		bound_width=32
 		bound_height=17
-		bound_y=27
 		density=1
 		spread=0
 		distance=400
-		yoffset=-27
 		xoffset=-10
 		speed=12
 		power=4
@@ -701,7 +692,7 @@ obj/Kiblast
 		icon='bullet.dmi'
 		bound_width=32
 		bound_height=17
-		bound_y=27
+		yoffset=27
 		density=1
 		spread=0
 		distance=400
@@ -724,7 +715,7 @@ obj/Kiblast
 		icon='kiblast.dmi'
 		bound_width=19
 		bound_height=19
-		bound_x=8
+		icon_w=8
 		density=1
 		spread=20
 		distance=400
@@ -872,7 +863,6 @@ Skill
 
 		Charge(mob/user)
 			if(user.ki>=kicost)
-				user.icon_state="blast1"
 				var/obj/Kiblast/Destructodisc/D=new/obj/Kiblast/Destructodisc(bound_pixloc(user,0)+vector(-32,30))
 				user.holdskill=D
 	Spiritbomb
@@ -898,7 +888,7 @@ Skill
 		Charge(mob/user)
 			if(user.ki>=kicost)
 				user.icon_state="spiritbomb"
-				var/obj/Kiblast/Spiritbomb/S=new/obj/Kiblast/Spiritbomb(bound_pixloc(user,0)+vector(0,80))
+				var/obj/Kiblast/Spiritbomb/S=new/obj/Kiblast/Spiritbomb(bound_pixloc(user,0)+vector(0,100))
 				user.holdskill=S
 				src.channel=1
 				S.transform=(new/matrix).Scale(0.5)
@@ -1082,10 +1072,10 @@ Skill
 				M.stunned=world.time+50
 				spawn(50)
 					M.icon_state=""
-			user.canmove=1
+			user.canmove=0
 			var/obj/FX/Solarflare/S=new/obj/FX/Solarflare(bound_pixloc(user,0))
 			sleep(5)
-			user.canmove=0
+			user.canmove=1
 			del(S)
 			user.icon_state=""
 
@@ -1110,6 +1100,12 @@ Skill
 		kicost=60
 		icon_state="bigbangattack"
 		Use(mob/user,time)
+			var/obj/o=new/obj
+			o.bound_width=3
+			o.bound_height=3
+			o.icon='pixloc.dmi'
+			o.loc=bound_pixloc(user,0)
+			o.layer=MOB_LAYER+300
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
 			else

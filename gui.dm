@@ -76,7 +76,8 @@ mob
 			O.appearance_flags=RESET_TRANSFORM|RESET_COLOR
 			O.maptext="<span style=\"font-family:UberBit7; font-size:8px; color:#fff; -dm-text-outline:1px black; text-align:center;\">[src.client.name]</span>"
 			O.maptext_width=96
-			O.maptext_x=4
+		//	O.maptext_x=32
+			O.pixel_w=-38
 			O.maptext_y=-12
 			O.alpha=150
 			src.vis_contents+=O
@@ -182,7 +183,7 @@ obj/maskbar
 		orientation = EAST
 	charge
 		icon = 'charge.dmi'
-		screen_loc = "CENTER,CENTER:-16"
+		screen_loc = "CENTER:-16,CENTER:-8"
 		width = 32
 		height = 4
 		orientation = EAST
