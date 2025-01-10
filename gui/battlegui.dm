@@ -3,7 +3,7 @@
 
 //beam struggles can still move?!
 //spiritbomb is way too far topright
-
+//if you die in a multi-life combat, map edge goes back to null.
 
 
 
@@ -450,7 +450,7 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 
 	for(var/i in 1 to 4)
 		if(Mobrefs[i][wave]&&Mobrefs[i][wave].ref)
-			Mobrefs[i][wave].ref.loc=locate(T.Start.x-(i),T.Start.y,map.z)
+			Mobrefs[i][wave].ref.loc=locate(T.Start.x-(i)-3,T.Start.y,map.z)
 			Mobrefs[i][wave].ref.team="Good"
 			activeteam1|=Mobrefs[i][wave].ref
 
@@ -460,7 +460,7 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 				Players[i].mob.team="Good"
 	for(var/i in 5 to 8)
 		if(Mobrefs[i][wave2]&&Mobrefs[i][wave2].ref)
-			Mobrefs[i][wave2].ref.loc=locate(T.Start.x+(i-4),T.Start.y,map.z)
+			Mobrefs[i][wave2].ref.loc=locate(T.Start.x+(i-4)+3,T.Start.y,map.z)
 			Mobrefs[i][wave2].ref.team="Evil"
 			activeteam2|=Mobrefs[i][wave2].ref
 			if(!Players[i])spawn(5)if(activeteam1.len)Awaken(Mobrefs[i][wave2].ref,pick(activeteam1))

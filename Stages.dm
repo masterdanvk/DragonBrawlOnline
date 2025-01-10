@@ -41,7 +41,7 @@ obj
 			name="Kamehouse"
 			dimensions = "4,4 to 28,25"
 			guistate="kamehouse"
-			Start=vector(13,4)
+			Start=vector(17,5)
 		Lookout
 			name="Lookout"
 			dimensions = "4,4 to 27,25"
