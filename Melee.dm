@@ -90,6 +90,12 @@ mob/proc/Melee(duration)
 						mid.size=mid.size/2
 						Explosion(/obj/FX/Smack,bound_pixloc(t,0)+mid,vector2angle(mid),1.4,1.4)
 					else if(blocked)
+						t.blocks-=8
+						if(t.blocks<=0)
+							t.blocks=0
+							t.sendflying(aim,200,16) //blockbreak!
+							blocked=0
+						t.Update_Blocks()
 						var/vector/mid=bound_pixloc(src,0)-bound_pixloc(t,0)
 						mid.size=mid.size/2
 						Explosion(/obj/FX/Smack,bound_pixloc(t,0)+mid,vector2angle(mid),0.7,0.7)

@@ -120,7 +120,7 @@ obj/gui
 		blend_mode = BLEND_MULTIPLY
 	picture
 		screen_loc="TOP: -6,LEFT: +2"
-		pixel_w=-18
+		pixel_w=0//-18
 		pixel_z=-12
 	mask
 		icon='gui.dmi'
@@ -272,7 +272,11 @@ client/proc/removeskillbar()
 		src.skillgui-=O
 	src.skillgui=null
 
+client/var/lastupdateskill
+client/var/skillbarchanging=0
+
 client/proc/updateskillbar()
+	src.lastupdateskill=world.time+10
 	var/mob/M=src.mob
 	for(var/i =1 to M.skills.len)
 		if(M.equippedskill==M.skills[i])
@@ -280,6 +284,13 @@ client/proc/updateskillbar()
 		else
 			if(src.skillgui.len>=i)
 				src.skillgui[i].Deactivate()
+	if(src.skillbarchanging) return
+	src.skillbarchanging=1
+	src.ShowSkills()
+	while(world.time<src.lastupdateskill)
+		sleep(10)
+	src.HideSkills()
+	src.skillbarchanging=0
 
 
 client/var/tmp/list/skillgui
@@ -335,9 +346,25 @@ chatbox_gui
 			C.alpha=255
 	MouseExited()
 		for(var/chatbox_gui/G in usr.client.screen)
+			if(usr.client.overworld)G.alpha=70
+			else
+				G.alpha=0
+		for(var/chatbox/C in usr.client.screen)
+			if(usr.client.overworld)C.alpha=120
+			else
+				C.alpha=0
+		winset(usr,"input1","is-visible=false")
+	proc/Show()
+		for(var/chatbox_gui/G in usr.client.screen)
 			G.alpha=70
 		for(var/chatbox/C in usr.client.screen)
 			C.alpha=120
+		winset(usr,"input1","is-visible=false")
+	proc/Hide()
+		for(var/chatbox_gui/G in usr.client.screen)
+			G.alpha=0
+		for(var/chatbox/C in usr.client.screen)
+			C.alpha=0
 		winset(usr,"input1","is-visible=false")
 	chatbar
 		icon= 'gui/textinput.dmi'

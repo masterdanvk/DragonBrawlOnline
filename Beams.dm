@@ -413,6 +413,7 @@ obj/Beam
 	on_cross(atom/A)
 		if(istype(A,/mob)&&src.owner==A) return 1
 		if(istype(A,/obj))
+			if(!A.density)return 1
 			if(A:owner&&A:owner==src.owner)
 				return 1
 			if(istype(A,/obj/Kiblast)&&!istype(A,/obj/Kiblast/Spiritbomb))
@@ -430,7 +431,7 @@ obj/Beam
 			icon_state="0"
 			layer=OBJ_LAYER+0.1
 			bound_width=256
-			pixel_w=0
+			pixel_z=6
 
 		Head
 			icon_state="head"

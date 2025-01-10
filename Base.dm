@@ -434,7 +434,9 @@ var/alist/playerselection=new/alist(
 	Saibamen=/mob/saibamen,
 	Cell = /mob/cell,
 	CellJr = /mob/celljr,
-	MrSatan = /mob/mrsatan)
+	MrSatan = /mob/mrsatan//,
+	//Reid = /mob/reid
+	)
 
 mob/verb/ChangePlayer()
 	src.Die()
@@ -931,8 +933,8 @@ mob
 				src.icon='piccolo_orange.dmi'
 				src.bound_width=32
 				src.bound_height=46
-				src.icon_w=15
-				src.icon_z=-14
+				src.icon_w=30
+				src.icon_z=4
 				src.form="Orange"
 				src.icon_state="transform"
 				sleep(9)
@@ -1266,9 +1268,9 @@ mob
 					src.icon='nappa_lightning.dmi'
 					src.aura.icon_state=""
 					src.auraover.icon_state=""
-					sleep(10)
-					src.vis_contents-=src.aura
-					src.vis_contents-=src.auraover
+					spawn(10)
+						src.vis_contents-=src.aura
+						src.vis_contents-=src.auraover
 				else return
 			..()
 
@@ -1340,6 +1342,23 @@ mob
 			..()
 			src.Create_Aura("Yellow")
 			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon,new/Skill/Kiblast)
+			src.equippedskill=src.skills[1]
+	reid
+		name="Reid"
+		icon='reidy.dmi'
+		oicon_state="trunks"
+		icon_w=20
+		icon_z=2
+		bound_width=24
+		bound_height=38
+		pl=25000
+		flyinglevel=3
+		special=/Beam/Kamehameha
+		behaviors=list(10,10,20,10,50) //1 charge to, 2 defend, 3 melee, 4 ki blasting, 5 special
+		New()
+			..()
+			src.Create_Aura("SSJ2")
+			src.skills=list(new/Skill/Kamehameha,new/Skill/Specialbeamcannon,new/Skill/Dragonfist,new/Skill/HellzoneGrenade,new/Skill/ExplosiveDemonWave,new/Skill/Pushup,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 	saibamen
 		name="Saibamen"

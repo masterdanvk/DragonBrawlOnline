@@ -156,7 +156,8 @@ mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset,icon/customki)
 
 		K.Move(K.pixloc+stepvector-offsetchg)
 		if(K.carryowner)
-			K.owner.Move(K.pixloc+stepvector-offsetchg)
+			step(K.owner,stepvector)
+		//	K.owner.Move(K.pixloc+stepvector-offsetchg)
 		for(var/mob/Hit in K?.hitmobs)
 			if(Hit.invulnerable || Hit==src||(Hit in hitlist))
 				if(K.repeathit)
@@ -347,7 +348,6 @@ obj/Kiblast
 		layer=MOB_LAYER+1
 		bound_width=128
 		bound_height=128
-
 		density=1
 		spread=0
 		distance=500
@@ -368,9 +368,10 @@ obj/Kiblast
 			src.icon=null
 			Explosion(/obj/FX/Explosion,bound_pixloc(src,0),0,1+src.charge*0.05,1+src.charge*0.05)
 			destroy_turfs(bound_pixloc(src,0),max(40,16*(1+0.5*src.charge)))
-			for(var/mob/M in bounds(bound_pixloc(src,0),max(40,16*(1+0.5*src.charge))))
-				if(M!=src.owner)src.hitmobs|=M
-			//	sleep(1)
+			if(bounds(bound_pixloc(src,0)))
+				for(var/mob/M in bounds(bound_pixloc(src,0),max(40,16*(1+0.5*src.charge))))
+					if(M!=src.owner)src.hitmobs|=M
+				//	sleep(1)
 			src.loc=null
 			..()
 	Destructodisc
@@ -458,6 +459,7 @@ obj/Kiblast
 		layer=MOB_LAYER+1
 		bound_width=96
 		bound_height=64
+		icon_z=32
 		distance=400
 		speed=12
 		power=40
@@ -465,6 +467,7 @@ obj/Kiblast
 		pierce=1
 		axisflip=1
 		blockreduce=65
+		density=0
 
 	Dragonfist
 		icon='dragonfist.dmi'
@@ -671,6 +674,7 @@ obj/Kiblast
 		spread=0
 		distance=400
 		xoffset=-10
+		yoffset=-18
 		speed=12
 		power=4
 		impact=1
@@ -1100,12 +1104,6 @@ Skill
 		kicost=60
 		icon_state="bigbangattack"
 		Use(mob/user,time)
-			var/obj/o=new/obj
-			o.bound_width=3
-			o.bound_height=3
-			o.icon='pixloc.dmi'
-			o.loc=bound_pixloc(user,0)
-			o.layer=MOB_LAYER+300
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
 			else
@@ -1116,7 +1114,31 @@ Skill
 			sleep(5)
 			if(user.icon_state=="blast2")user.icon_state=""
 
+	Pushup
+		ctime=5
+		kicost=20
+		icon_state="spiritshot"
+		state1="block"
+		state2="blast2"
+		Use(mob/user,time)
+			spawn(4)
+				user.usingskill=0
+			if((state2 in icon_states(user.icon)))
+				user.icon_state=state2
+			else
+				user.icon_state=""
+			for(var/mob/Hit in bounds(bound_pixloc(user,0),400))
+				if(Hit==user)continue
+				if(Hit.block)
+					Hit.Damage(30*PLcompare(user,Hit)*(0.40),20,0,user)
+				else
+					Hit.Damage(30*PLcompare(user,Hit),80,0,user)
 
+				spawn()
+					Hit.sendflying(vector(0,300),(400),16)
+
+
+			user.CheckCanMove()
 	Spiritshot
 		ctime=10
 		kicost=30

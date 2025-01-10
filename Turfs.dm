@@ -428,6 +428,7 @@ proc/Restore()
 			altered_objects-=o
 
 proc/destroy_turfs(pixloc/P,radius)
+	if(!P||!radius)return
 	for(var/turf/T in bounds(P,radius))
 		if(T.indestructible)continue
 		var/vector/v=T.pixloc-P

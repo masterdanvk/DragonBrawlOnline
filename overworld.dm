@@ -32,6 +32,8 @@ client/verb/VisitOverworld()
 
 	for(var/obj/nameplate/N in src.mob.vis_contents)
 		N.pixel_w=-32
+	src.HideSkills()
+	for(var/chatbox_gui/G in src.screen) G.Show()
 
 mob/proc/resetactions()
 	if(src.charging)
@@ -58,6 +60,25 @@ client/proc/LeaveOverworld()
 	src.mob.icon_state=""
 	for(var/obj/nameplate/N in src.mob.vis_contents)
 		N.pixel_w=-36
+	src.HideSkills()
+	for(var/chatbox_gui/G in src.screen) G.Hide()
+
+
+client
+	proc
+		HideSkills()
+			for(var/obj/skillbar/S in src.screen)
+				var/matrix/M=matrix()
+				if(S.selected)M.Scale(0.75,0.75).Translate(0,-125)
+				else M.Scale(0.5,0.5).Translate(0,-125)
+				animate(S,alpha=0,transform=M,time=30)
+
+		ShowSkills()
+			for(var/obj/skillbar/S in src.screen)
+				var/matrix/M=matrix()
+				if(S.selected)M.Scale(0.75,0.75)
+				else M.Scale(0.5,0.5)
+				animate(S,alpha=255,transform=M,time=3)
 
 obj/overworldstart
 client/var/overworld=0

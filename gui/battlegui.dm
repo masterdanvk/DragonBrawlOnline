@@ -1,9 +1,8 @@
 // Issues
-//destructo disc is broken
-//solar flare self stuns
-//beams get snagged on nothing and on map boundaries
 //want beams used in defense to auto cast with no channel time
 
+//beam struggles can still move?!
+//spiritbomb is way too far topright
 
 
 
@@ -15,9 +14,9 @@ client
 		obj/gui/battlegui/battlegui
 
 
-mob/Click()
-	..()
-	world.log<<"src's team is [src.team] and max speed is [src.maxspeed]"
+//mob/Click()
+//	..()
+//	world.log<<"src's team is [src.team] and max speed is [src.maxspeed]"
 
 obj/mobref
 	layer = FLOAT_LAYER
@@ -519,10 +518,11 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 					Mobrefs[i][wave].ref.loc=locate(T.Start.x-i,T.Start.y,map.z)
 					Mobrefs[i][wave].ref.team="Good"
 					activeteam1|=Mobrefs[i][wave].ref
-					if(!Players[i] && !activeteam2.len)Awaken(Mobrefs[i][wave].ref,pick(activeteam2))
+					if((Players.len>=i||!Players[i]) && !activeteam2.len)Awaken(Mobrefs[i][wave].ref,pick(activeteam2))
 					else
-						Players[i].mob=Mobrefs[i][wave].ref
-						Players[i].mob.team="Good"
+						if(Players.len>=i)
+							Players[i].mob=Mobrefs[i][wave].ref
+							Players[i].mob.team="Good"
 
 		if(!activeteam2.len)
 			wave2++
@@ -531,10 +531,11 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 					Mobrefs[i][wave2].ref.loc=locate(T.Start.x+(i-4),T.Start.y,map.z)
 					Mobrefs[i][wave2].ref.team="Evil"
 					activeteam2|=Mobrefs[i][wave2].ref
-					if(!Players[i] && activeteam1.len)Awaken(Mobrefs[i][wave2].ref,pick(activeteam1))
+					if((Players.len>=i||!Players[i]) && activeteam1.len)Awaken(Mobrefs[i][wave2].ref,pick(activeteam1))
 					else
-						Players[i].mob=Mobrefs[i][wave2].ref
-						Players[i].mob.team="Evil"
+						if(Players.len>=i)
+							Players[i].mob=Mobrefs[i][wave2].ref
+							Players[i].mob.team="Evil"
 
 		for(var/mob/A in computerenemies)
 			if(!A.targetmob || A.targetmob.dead)

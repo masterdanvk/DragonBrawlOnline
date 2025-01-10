@@ -141,7 +141,6 @@ client/proc/overworldmove()
 	if(vx==-1)d|=WEST
 	if(vy==1)d|=NORTH
 	if(vy==-1)d|=SOUTH
-	world.log<<"overworldmove [src.mob.step_size] and [d]"
 	var/ostepsize=src.mob.step_size
 	src.mob.step_size=4
 	step(src.mob,d,4)

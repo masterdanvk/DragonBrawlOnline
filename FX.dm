@@ -13,14 +13,14 @@ obj
 		icon='elec2.dmi'
 		bound_width=64
 		bound_height=64
-		pixel_w=20
+		pixel_w=-16
 	lightningarmor
 		layer=MOB_LAYER+1
 		density=0
 		icon='elec3.dmi'
 		bound_width=64
 		bound_height=64
-		pixel_w=20
+		pixel_w=-16
 	FX
 		density=0
 		layer=MOB_LAYER+1
