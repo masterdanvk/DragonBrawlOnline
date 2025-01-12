@@ -49,8 +49,16 @@ mob/proc/Target()
 	if(target && target!=src)
 		src.target=target
 		return (target)
+mob/var/tmp/mob/counterbeam
+mob/proc/Refundskillcost()
+	set waitfor = 0
+	src.Get_Ki(src.equippedskill?.kicost)
 
 mob/proc/FireBeam(charge,maxdistance,Beam/B)
+	var/mob/T
+	if(src.client)T=src.Target()
+	else T=src.targetmob
+	if(T)T.counterbeam=src
 	src.mybeam=B
 	B.owner=src
 	src.usingskill=1
@@ -63,6 +71,7 @@ mob/proc/FireBeam(charge,maxdistance,Beam/B)
 				shortestdist=diff.size
 				src.aim=b.BeamParent.owner.pixloc-src.pixloc
 	if(!src.aim)
+		src.Refundskillcost()
 		src.icon_state=""
 		if(src.bdir==EAST)
 			src.transform=matrix()
@@ -78,6 +87,7 @@ mob/proc/FireBeam(charge,maxdistance,Beam/B)
 	var/vector/stepvector
 	if(aimvector)stepvector=vector(aimvector)
 	if(!aimvector||!aimvector.size||!stepvector)
+		src.Refundskillcost()
 		src.usingskill=0
 		src.canmove=1
 		return
@@ -123,10 +133,32 @@ mob/proc/FireBeam(charge,maxdistance,Beam/B)
 		if(B?.clash)
 			plcompare=PLcompare(src,B.clash.owner)
 		var/i=0
+		var/equalize=1
 		while(B&&B.clash&&B.clash.head?.loc)
+			if(equalize)
+				equalize=0
+				if(!B.equalizing)
+					var/equalizer=(B?.length.size-B.clash?.length.size)/2
+					while(B&&B.clash&&B.clash.head?.loc&&abs(equalizer)>8)
+						B.equalizing=1
+						B.clash.equalizing=1
+						if(equalizer>8)
+							B.clash?.MoveForward()
+							equalizer-=8
+						else if(equalizer<-8)
+							B?.MoveForward()
+							equalizer+=8
+						sleep(1)
+					sleep(5)
+
+			B?.equalizing=0
+			B?.clash?.equalizing=0
 			sleep(1)
 			i++
-			if(!B)break
+			if(!B || !B.clash)break
+			while(B&&B.clash&&(B.equalizing || B.clash.equalizing))
+				sleep(1)
+			if(!B || !B.clash)break
 			var/underdogadvantage=0
 			if(B.length.size<B.clash.length.size&&i<20)underdogadvantage=10
 			if(src.beamtime>=B.clash.owner.beamtime)
@@ -171,6 +203,7 @@ mob/proc/FireBeam(charge,maxdistance,Beam/B)
 		src.transform=matrix().Scale(-1,1)
 		src.rotation=0
 	src.usingskill=0
+	if(T&&T.counterbeam)T.counterbeam=null
 	src.CheckCanMove()
 
 Beam/proc/MoveForward()
@@ -222,7 +255,7 @@ Beam/proc/MoveBackward()
 		O.usingskill=0
 		spawn(10)O.CheckCanMove()
 		del(src)
-
+Beam/var/equalizing=0
 
 matrix
 	proc/TurnWithPivot(clockwise_degrees, pivot_x, pivot_y,flipaxis=0)

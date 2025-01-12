@@ -1,5 +1,7 @@
 macro "macro"
 	elem 
+		name = "CTRL+B"
+	elem 
 		name = "CTRL+F"
 		command = "FullScreen"
 	elem 

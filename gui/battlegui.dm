@@ -1,9 +1,20 @@
 // Issues
-//want beams used in defense to auto cast with no channel time
 
-//beam struggles can still move?!
 //spiritbomb is way too far topright
-//if you die in a multi-life combat, map edge goes back to null.
+//Manage when ESC is available
+//when fights are over, winners dont die but leave gracefully
+//some sort of WIN or LOSE maptext
+//Game logo and banner on start
+// Character select, maptext on which character and border for selected character
+//control handling on battles, PVP - team 1 P1 team 2 P2, Coop - P1 and P2 can make changes
+//scenario control handling, player cant change P2 settings
+//scenarios and standardizing procs
+	//24th budokai
+	//Raditz Fight
+	//Nappa Fight
+	//Vegeta Fight
+	//Ginyu Force Fight
+	//Frieza Fight
 
 
 
@@ -13,10 +24,6 @@ client
 		obj/mobref/selectedmobref
 		obj/gui/battlegui/battlegui
 
-
-//mob/Click()
-//	..()
-//	world.log<<"src's team is [src.team] and max speed is [src.maxspeed]"
 
 obj/mobref
 	layer = FLOAT_LAYER
@@ -80,13 +87,13 @@ client/proc/Customfight(list/P)
 client/var/unlimitedreinforcements=0
 client/verb/Battlegui()
 	src.characters=list(
-		new/mob/yamcha(,alist(pl=1480,hp=200)),
-		new/mob/krillin(,alist(pl=1770,hp=200)),
-		new/mob/tien(,alist(pl=1830,hp=200)),
-		new/mob/gohan(,alist(pl=981,hp=200)),
-		new/mob/chaotzu(,alist(pl=610,hp=200)),
-		new/mob/piccolo(,alist(pl=3500,hp=200)),
-		new/mob/goku(,alist(pl=9001,hp=200)))
+		new/mob/yamcha(,alist(pl=1480,hp=200,unlocked=alist("none"=1))),
+		new/mob/krillin(,alist(pl=1770,hp=200,unlocked=alist("none"=1))),
+		new/mob/tien(,alist(pl=1830,hp=200,unlocked=alist("none"=1))),
+		new/mob/gohan(,alist(pl=981,hp=200,unlocked=alist("none"=1))),
+		new/mob/chaotzu(,alist(pl=610,hp=200,unlocked=alist("none"=1))),
+		new/mob/piccolo(,alist(pl=3500,hp=200,unlocked=alist("none"=1))),
+		new/mob/goku(,alist(pl=9001,hp=200,unlocked=alist("kaiokenx2"=1))))
 	src.unlimitedreinforcements=0
 	src.Loadbattlegui(new/Instance/Nappa())
 client/proc/Loadbattlegui(Instance/I)
@@ -181,11 +188,11 @@ obj/gui
 				else if(i==1)
 					spawn(1)
 						playerslots[1].player=Player[1]
-						world.log<<"got to 1"
+
 						if(src.instance.players)
-							world.log<<"got to 2"
+
 							for(var/p in 2 to 8)
-								world.log<<"3 is [src.instance.players[p]]"
+
 								if(src.instance.players[p])
 									Player[p]=src.instance.players[p]
 									playerslots[p]?.Setplayer(src.instance.players[p])
@@ -228,7 +235,6 @@ obj/gui
 			var/list/mobrefs[8][7]
 			for(var/i in 1 to 8)
 				for(var/obj/gui/charslot/C in src.battlegui.charslots[i])
-					if(C.mref)world.log<<"charslots [C] has a mref [C.mref] ([C.mref.ref]) and pslot/cslot of [C.pslot]/[C.cslot]"
 					if(C.mref)mobrefs[C.pslot][C.cslot]=C.mref
 
 			for(var/client/c in src.battlegui.Player)
@@ -539,9 +545,10 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 
 		for(var/mob/A in computerenemies)
 			if(!A.targetmob || A.targetmob.dead)
+				world.log<<"no targetmob! gonna pick from [activeteam1[1]]"
 				if(activeteam1.len)
 					Awaken(A,pick(activeteam1))
-		for(var/mob/A in computerenemies)
+		for(var/mob/A in computerallies)
 			if(!A.targetmob || A.targetmob.dead)
 				if(activeteam2.len)
 					Awaken(A,pick(activeteam2))

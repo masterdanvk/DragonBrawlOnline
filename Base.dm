@@ -598,25 +598,22 @@ mob/verb/spawnmob()
 	M-=/mob/picking
 	var/pick=input(usr,"Select a mob to spawn","Spawn") in M
 	new pick (usr.pixloc)
-/*
-mob/verb/firebeams()
-	sleep(10)
-	world<<"ready"
-	sleep(10)
-	world<<"set"
+
+/*mob/verb/firebeams()
+
 	sleep(10)
 
 	world<<"fire!"
 
-	for(var/mob/M in world)
+	for(var/mob/M in oview(20,usr))
 		if(!M.client)
 			M.aim=Dir2Vector(M.dir)
 			for(var/mob/m in oview(14,M))
 				if(m.client)
 					M.aim=m.pixloc-M.pixloc
 
-			spawn()M.FireBeam(50,500,new M.special)
-*/
+			spawn()M.FireBeam(50,500,new M.special)*/
+
 var/punchin=0
 
 
@@ -761,11 +758,11 @@ mob/var/alist/unlocked[]
 mob/var/tmp/spawnings[0]
 
 mob/proc
-	Kaioken()
+	Kaioken(mult=4.2)
 		src.icon_state="transform"
 		src.form="kaioken"
 		src.icon_state=""
-		src.Set_PL(round(src.basepl*4.2,1))
+		src.Set_PL(round(src.basepl*mult,1))
 		src.Create_Aura("Red")
 		src.vis_contents|=src.aura
 		src.vis_contents|=src.auraover
@@ -842,6 +839,9 @@ mob
 					src.Set_PL(round(src.basepl*4.2,1))
 					src.Create_Aura("Yellow")
 				else return
+			else if(src.unlocked["kaiokenx2"])
+				src.form="kaiokenx2"
+				Kaioken(1.95)
 			..()
 
 		Revert()
@@ -1773,7 +1773,7 @@ mob/proc
 		src.vis_contents=null
 		src.dead=1
 		src.density=0
-		src.client?.edge_limit=null
+
 		src.canmove=0
 		src.Clear_target()
 		var/state
@@ -1834,6 +1834,7 @@ mob/proc
 			else
 				src.client.overworld=0
 				src.client.oworldpixloc=null
+				src.client?.edge_limit=null
 				src.client.Character_Select()
 
 
@@ -2210,7 +2211,7 @@ client/verb/keydownverb(button as text)
 	if(M.dead||M.icon_state=="transform")return
 	if(!src.keydown)src.keydown=new/alist()
 
-	if((src.keydown["D"]&&button=="S")||button=="="&&!src.overworld)
+	if((src.keydown["D"]&&button=="S")||button=="="&&!src.overworld&&!src.mob.usingskill)
 		M.Transform()
 		return
 	var/tapbetween
@@ -2228,9 +2229,9 @@ client/verb/keydownverb(button as text)
 
 	src.lasttapped[1]=button
 	src.lasttapped[2]=world.time
-	if((src.keydown["D"]&&src.keydown["South"]&&M.form&&!src.movekeydown)||button=="-"&&!src.overworld)
+	if((src.keydown["D"]&&src.keydown["South"]&&M.form&&!src.movekeydown)||button=="-"&&!src.overworld&&!src.mob.usingskill)
 		M.Revert()
-	if((src.keydown["F"]||(src.keydown["D"]&&src.keydown["North"]))&&world.time>M.chargecd&&!src.overworld) //charge
+	if((src.keydown["F"]||(src.keydown["D"]&&src.keydown["North"]))&&world.time>M.chargecd&&!src.overworld&&!src.mob.usingskill) //charge
 		if(!M.charging&&!M.aiming)
 			if(M.block)
 				M.block=0
@@ -2266,7 +2267,7 @@ client/verb/keydownverb(button as text)
 
 
 	else
-		if(button=="D"&&!M.dead&&!src.overworld)
+		if(button=="D"&&!M.dead&&!src.overworld&&!src.mob.usingskill)
 			M.icon_state="block"
 			M.block=1
 			M.canmove=0
@@ -2279,33 +2280,46 @@ client/verb/keydownverb(button as text)
 		else M.icon_state="blast1"
 		M.canmove=0
 		M.movevector=vector(0,0)
-		M.aiming=1
-		if(M.facing&&M.facing.size)M.aim=vector(M.facing)
-		else
-			M.aim=vector(0,0)
+
 		M.gui_charge.setValue(0)
 		var/atom/Veye=src.virtual_eye
 		var/mob/Eye=src.eye
-		if(Eye!=Veye)
-			var/offx=(Eye.x-Veye.x)*32+round(Eye.step_x,1)-4
-			var/offy=(Eye.y-Veye.y)*32+round(Eye.step_y,1)-32
-			if(offx>0)offx="+[offx]"
-			else offx="[offx]"
-			if(offy>0)offy="+[offy]"
-			else offy="[offy]"
-			M.gui_charge.screen_loc="CENTER:[offx] ,CENTER:[offy]"
+		if(M.counterbeam&&M.counterbeam==M)
+			M.counterbeam=null
 
+		if(M.counterbeam&&M.equippedskill && M.equippedskill.counters)
+			M.aim=M.counterbeam.pixloc-M.pixloc
+			M.ChargeSkill()
+			M.UseSkill(0)
+			M.aiming=0
+
+		//	src.HideAim()
+			return
 		else
-			M.gui_charge.screen_loc="CENTER ,CENTER:-16"
+			M.aiming=1
+			if(M.facing&&M.facing.size)M.aim=vector(M.facing)
+			else
+				M.aim=vector(0,0)
+			if(Eye!=Veye)
+				var/offx=(Eye.x-Veye.x)*32+round(Eye.step_x,1)-4
+				var/offy=(Eye.y-Veye.y)*32+round(Eye.step_y,1)-32
+				if(offx>0)offx="+[offx]"
+				else offx="[offx]"
+				if(offy>0)offy="+[offy]"
+				else offy="[offy]"
+				M.gui_charge.screen_loc="CENTER:[offx] ,CENTER:[offy]"
 
-		if(M.equippedskill)
-			src.screen|=M.gui_charge
-			M.gui_charge.setValue(1,M.equippedskill.ctime)
+			else
+				M.gui_charge.screen_loc="CENTER ,CENTER:-16"
 
-		src.ShowAim()
-		spawn(M.equippedskill.ctime)
-			if(src.keydown["S"]&&src.keydown["S"]==starttime)
-				M.ChargeSkill()
+			if(M.equippedskill)
+				src.screen|=M.gui_charge
+				M.gui_charge.setValue(1,M.equippedskill.ctime)
+
+			src.ShowAim()
+			spawn(M.equippedskill.ctime)
+				if(src.keydown["S"]&&src.keydown["S"]==starttime)
+					M.ChargeSkill()
 	else
 		if(button=="S"&&M.usingskill&&M.mybeam.clash)
 			M.beamtime=world.time
@@ -2374,10 +2388,11 @@ client/verb/keyupverb(button as text)
 
 	if(button=="W"&&!src.keydown["S"])M.Next_Skill()
 	else if(button=="Q"&&!src.keydown["S"])M.Prev_Skill()
-	if(!src.overworld)
+	if(!src.overworld &&!src.mob.usingskill)
 		if(button=="A")
+
 			var/duration=world.time-src.keydown[button]
-			M.Melee(duration)
+			if(!M.usingskill)M.Melee(duration)
 		//	if(duration>5)M.Kick()
 		//	else M.Punch()
 		if((button=="D"&& M.charging)||(button=="North"&& M.charging)||(button=="F" && M.charging))
@@ -2525,9 +2540,7 @@ mob/proc
 			A.bound_width=80
 			A.bound_height=106
 			A.pixel_y=-26
-			A.pixel_w=-16
-			A.bound_x=20
-			A.bound_y=5
+			A.pixel_w=-24
 			B.layer=OBJ_LAYER
 			B.density=0
 			B.icon=aura.icon
@@ -2536,9 +2549,7 @@ mob/proc
 			B.bound_width=80
 			B.bound_height=106
 			B.pixel_y=-26
-			B.pixel_w=-16
-			B.bound_x=20
-			B.bound_y=5
+			B.pixel_w=-24
 			src.dash=A
 			src.dash2=B
 			src.dashing=1
@@ -2741,7 +2752,7 @@ mob
 
 
 mob/proc/knockback(vector/V,distance,rate)
-	if(tossed)return
+	if(tossed || src.usingskill)return
 	var/vector/v=vector(V)
 	v.size=distance
 	var/vector/S=vector(v)
@@ -2765,7 +2776,7 @@ mob/proc/knockback(vector/V,distance,rate)
 
 
 mob/proc/sendflying(vector/V,distance,rate)
-	if(tossed)return
+	if(tossed || src.usingskill)return
 	src.tossed=1
 	var/vector/v=vector(V)
 	v.size=distance

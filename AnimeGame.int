@@ -2,21 +2,21 @@
 /*
 MAP_PLANE_MASTERS: 
 MAP_ZOOM: 0.750
-LAST_COMPILE_TIME: 1736492425
-DIR: backgrounds Chatbox Chatbox\code Chatbox\demo gui Libraries rpg tileset Lib 
+LAST_COMPILE_TIME: 1736651030
 PACKAGE_RSC_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\AnimeGame_rsc.zip
+DIR: backgrounds Chatbox Chatbox\code Chatbox\demo gui Libraries rpg tileset Lib 
 AUTO_FILE_DIR: ON
 PACKAGE_DMB_INFO: 
 MAP_ICON_TYPE: 0
 PACKAGE_DME_NAME: C:\Users\Danva\OneDrive\Desktop\AnimeGame_src.zip
 LAST_COMPILE_VERSION: 516.1650
-PACKAGE_DME_START: 
 PACKAGE_TYPE: 0
+PACKAGE_DME_START: 
+WINDOW: Procs.dm;Beams.dm;Movement.dm;Melee.dm;AI.dm;gui\gui_menu.dm;Chatbox\code\chatbox_msg.dm;Chatbox\code\chatbox_gui.dm;map.dmm;Stages.dm;Libraries\mapinstancing.dm;darkgrass_autjoin.dmi;stages.dmi;gui\battlegui2.dmi;gui\battlegui3.dmi;gui\battlegui.dm;Base.dm;interface.dmf;kaio_lib_mapresize.dm;gui\gui_name_entry.dm;Skills.dm;chunks.dm;gui.dm;gui\DialogueGUI.dm
 PACKAGE_DME_INFO: 
-WINDOW: Procs.dm;Beams.dm;Movement.dm;Melee.dm;AI.dm;gui\gui_menu.dm;Chatbox\code\chatbox_msg.dm;Chatbox\code\chatbox_gui.dm;map.dmm;Stages.dm;Libraries\mapinstancing.dm;darkgrass_autjoin.dmi;stages.dmi;gui\battlegui2.dmi;gui\battlegui3.dmi;gui\battlegui.dm;FX.dm;reidy.dmi;Base.dm;Skills.dm;gui\DialogueGUI.dm;overworld.dm;gui.dm;Chatbox\code\client.dm
 FILE: gui\battlegui.dm
 MAP_INSTANCE_MODE: copy
-PACKAGE_DME_DEMO: 
 PACKAGE_DMB_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\DragonBrawlOnlineJan82025.zip
+PACKAGE_DME_DEMO: 
 */
 // END_INTERNALS

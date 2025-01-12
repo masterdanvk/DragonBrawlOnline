@@ -744,6 +744,7 @@ mob/var/tmp/holdskill
 
 Skill
 	var/icon
+	var/counters=0
 	var/icon_state
 	icon='skills.dmi'
 	var/kicost=0
@@ -758,6 +759,7 @@ Skill
 		icon_state="kamehameha"
 		ctime=4
 		kicost=60
+		counters=1
 		state1="kame1"
 		state2="kame2"
 		Use(mob/user,time)
@@ -770,6 +772,7 @@ Skill
 		icon_state="galekgun"
 		ctime=4
 		kicost=60
+		counters=1
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))
 				user.icon_state=state2
@@ -779,6 +782,7 @@ Skill
 	Doublesunday
 		ctime=4
 		kicost=60
+		counters=1
 		icon_state="doublesunday"
 		state1="kame1"
 		state2="kame2"
@@ -791,6 +795,7 @@ Skill
 	Mouthblast
 		ctime=7
 		kicost=80
+		counters=1
 		state1="mouth1"
 		state2="mouth2"
 		icon_state="mouthblast"
@@ -803,6 +808,7 @@ Skill
 	Masenko
 		ctime=4
 		kicost=50
+		counters=1
 		icon_state="masenko"
 		state1="masenko1"
 		state2="masenko2"
@@ -815,6 +821,7 @@ Skill
 	Dondonpa
 		ctime=3
 		kicost=40
+		counters=1
 		icon_state="dondonpa"
 		state1="don1"
 		state2="don2"
@@ -827,6 +834,7 @@ Skill
 	Tribeam
 		ctime=3
 		kicost=60
+		counters=1
 		icon_state="tribeam"
 		Use(mob/user,time)
 			if((state2 in icon_states(user.icon)))

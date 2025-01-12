@@ -26,6 +26,7 @@ proc/AI_Loop()
 			if(M.dead)
 				AI_Active-=M
 				continue
+			if(M.usingskill)continue
 			if(M.lastloc!=M.loc)
 				M.storeddamage=0
 				M.lastloc=M.loc
@@ -56,7 +57,11 @@ proc/AI_Loop()
 			M.Face(M.targetmob)
 			if(M.block && M.icon_state!="block")M.block=0
 			if(!M.targetmob || !M || !M.pixloc)continue
-
+		/*	if(M.counterbeam)
+				if(prob(50))
+					M.FireBeam(50,500,new M.special)
+				else
+					M.counterbeam=null*/
 			switch(M.posture)
 				if(1)
 					if((world.time-M.posturetime)>=100 &&M.posture==1)
@@ -198,7 +203,7 @@ proc/AI_Loop()
 							M.posture=2
 						M.activeai=0
 				if(5)
-					if(!M.targetmob || !M || !M.pixloc)continue
+					if(!M.targetmob || !M || !M.pixloc ||!M.targetmob.pixloc)continue
 					var/vector/dist=M.targetmob.pixloc-M.pixloc
 					if((world.time-M.posturetime)>=100 &&M.posture==5)
 						M.posture=0
@@ -234,7 +239,10 @@ proc/AI_Loop()
 
 									M.equippedskill=pick(M.skills)
 									M.posture=0
-									M.icon_state=""
+									spawn()
+										while(M.usingskill)
+											sleep(2)
+										M.icon_state=""
 									M.usingskill=0
 								AI_Active|=M
 								M.activeai=0
@@ -309,8 +317,8 @@ mob/proc/shiny()
 		 	)
 
 
-mob/Click()
-	src.Check_Vars()
+//mob/Click()
+//	src.Check_Vars()
 
 
 mob/admin/verb/MakeShiny(mob/M in view(10))
