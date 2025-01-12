@@ -4,7 +4,7 @@
 //Manage when ESC is available
 //when fights are over, winners dont die but leave gracefully
 //some sort of WIN or LOSE maptext
-//Game logo and banner on start
+//charge bump results in a high damage knockback IF you dont block. if you do block do a microstun on the charger.
 // Character select, maptext on which character and border for selected character
 //control handling on battles, PVP - team 1 P1 team 2 P2, Coop - P1 and P2 can make changes
 //scenario control handling, player cant change P2 settings

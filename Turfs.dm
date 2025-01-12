@@ -42,6 +42,10 @@
 var/levels[0]
 world/New()
 	..()
+	banner=new/obj
+	banner.icon='DBO Logo.png'
+	banner.screen_loc="CENTER:-192,TOP:-16"
+//	banner.filters+=filter(type="outline",color="white")
 	stagezs=new/alist()
 	stageobjs=new/list
 	stageobjs.len=world.maxz
@@ -51,7 +55,6 @@ world/New()
 
 	spawn(30)
 		for(var/obj/stagetag/O in world)
-			world.log<<"stage [O] with name [O.name] at [O.z]"
 			stagezs[O.name]=O.z
 			stageobjs[O.z]=O
 	spawn()

@@ -1,8 +1,4 @@
-/*
-- Charge bar is in middle of screen not on the mob
-- Dense objects are being left on the map - not sure what they are
 
- */
 world
 	hub = "Masterdan.DragonBrawlOnline"
 	visibility = 1
@@ -398,6 +394,7 @@ client/verb/SayGamepad()
 	src.mob.chat_say(_ftext(n,"lightgrey"))
 
 
+var/obj/banner
 
 mob/picking
 	icon=null
@@ -409,11 +406,13 @@ mob/picking
 		if(!src.client.name)
 			//create a new name entry menu, and call Input()
 			//Input() will wait until the client finishes picking a name.
+			src.client.screen+=banner
 			var/obj/gui/menu/name_entry/picker = new()
 			var/n = picker.Input(src.client,"What is your name?")
 			if(!src.client)return
 			if(!n) n = src.client.key
 			src.client.name = n
+			src.client.screen-=banner
 
 		src.client.Character_Select()
 
