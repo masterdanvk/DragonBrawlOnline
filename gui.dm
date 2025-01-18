@@ -21,14 +21,13 @@ mob
 	New(turf/L,alist/P)
 		..()
 		if(P)
-			var/test=P["pl"]
-			world.log<<"P! [P] and [test]!"
-			if(P["hp"])src.hp=src.maxhp=P["hp"]
-			if(P["ki"])src.ki=src.ki=P["ki"]
-			if(P["pl"])src.basepl=src.pl=P["pl"]
-			if(P["flyinglevel"])src.flyinglevel=P["flyinglevel"]
-			if(P["skills"])src.skills=P["skills"]
-			if(P["unlocked"])src.unlocked=P["unlocked"]
+			spawn(1)
+				if(P["hp"])src.hp=src.maxhp=P["hp"]
+				if(P["ki"])src.ki=src.ki=P["ki"]
+				if(P["pl"])src.basepl=src.pl=P["pl"]
+				if(P["flyinglevel"])src.flyinglevel=P["flyinglevel"]
+				if(P["skills"])src.skills=P["skills"]
+				if(P["unlocked"])src.unlocked=P["unlocked"]
 		if(src.npcrespawn)src.initloc=src.loc
 		if(src.hue)
 			src.filters += filter(

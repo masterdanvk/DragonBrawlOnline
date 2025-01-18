@@ -213,8 +213,13 @@ obj
 			density=1
 			Activate(mob/M)
 				if(M.client)
-					var/choice=M.client.ShowDialogue("Vegeta","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					var/choice=M.client.ShowDialogue("Vegeta","Hello, are you looking for a training partner?.",list("Historic Battle","Train with me","Leave"))
 					switch(choice)
+						if("Historic Battle")
+							var/client/C=M.client
+							if(C)
+								C.unlimitedreinforcements=0
+								C.Loadbattlegui(new/Instance/Vegeta())
 						if("Train with me")
 							M.client?.LeaveOverworld()
 							Fight(M,new/mob/vegeta,stagezs["Plateaus"],1)
@@ -227,7 +232,10 @@ obj
 					var/choice=M.client.ShowDialogue("Nappa","Hello, are you looking for a training partner?.",list("Historic Battle","Train with me","Leave"))
 					switch(choice)
 						if("Historic Battle")
-							M.client?.Battlegui()
+							var/client/C=M.client
+							if(C)
+								C.unlimitedreinforcements=0
+								C.Loadbattlegui(new/Instance/Nappa())
 
 						if("Train with me")
 							M.client?.LeaveOverworld()
@@ -238,8 +246,13 @@ obj
 			density=1
 			Activate(mob/M)
 				if(M.client)
-					var/choice=M.client.ShowDialogue("Raditz","Hello, are you looking for a training partner?.",list("Train with me","Leave"))
+					var/choice=M.client.ShowDialogue("Raditz","Hello, are you looking for a training partner?.",list("Historic Battle","Train with me","Leave"))
 					switch(choice)
+						if("Historic Battle")
+							var/client/C=M.client
+							if(C)
+								C.unlimitedreinforcements=0
+								C.Loadbattlegui(new/Instance/Raditz())
 						if("Train with me")
 							M.client?.LeaveOverworld()
 							Fight(M,new/mob/raditz,stagezs["Raditz"],1)
@@ -300,10 +313,18 @@ obj
 			bound_height=32
 			bound_x=0
 			Activate(mob/M)
-				M.client?.LeaveOverworld()
-				var/obj/stagetag/stage=stageobjs[stagezs["Budokai"]]
-				M.loc=locate(stage.Start.x,stage.Start.y,stagezs["Budokai"])
-				M.client?.edge_limit = stage.dimensions
+				var/choice=M.client.ShowDialogue("Budokai","What do you wish to do at the tournament grounds?.",list("Historic Battle","Visit","Leave"))
+				switch(choice)
+					if("Historic Battle")
+						var/client/C=M.client
+						if(C)
+							C.unlimitedreinforcements=0
+							C.Loadbattlegui(new/Instance/Budokai23())
+					if("Visit")
+						M.client?.LeaveOverworld()
+						var/obj/stagetag/stage=stageobjs[stagezs["Budokai"]]
+						M.loc=locate(stage.Start.x,stage.Start.y,stagezs["Budokai"])
+						M.client?.edge_limit = stage.dimensions
 		city
 			icon='rpg/overworldlocs.dmi'
 			icon_state="city"
