@@ -82,8 +82,14 @@ mob
 			O.alpha=150
 			src.vis_contents+=O
 			client.screen.Add(gui_frame,gui_hpbar,gui_kibar,gui_blockbar,gui_counterbar,gui_picture,gui_target,gui_target2,gui_targetpl,gui_pl)
+			src.oldclient=src.client
+		..()
+	Logout()
+		if(oldclient)
+			oldclient.screen.Remove(gui_frame,gui_hpbar,gui_kibar,gui_blockbar,gui_counterbar,gui_picture,gui_target,gui_target2,gui_targetpl,gui_pl)
 		..()
 
+mob/var/tmp/client/oldclient
 obj/nameplate
 
 obj/gui

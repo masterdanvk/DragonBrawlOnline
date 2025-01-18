@@ -2,9 +2,6 @@
 
 //spiritbomb is way too far topright
 //Manage when ESC is available
-//when fights are over, winners dont die but leave gracefully
-//some sort of WIN or LOSE maptext
-//charge bump results in a high damage knockback IF you dont block. if you do block do a microstun on the charger.
 // Character select, maptext on which character and border for selected character
 //control handling on battles, PVP - team 1 P1 team 2 P2, Coop - P1 and P2 can make changes
 //scenario control handling, player cant change P2 settings
@@ -75,25 +72,17 @@ client/proc/Customfight(list/P)
 	while(!src.levelpick)
 		sleep(20)
 	var/Instance/C=new()
-	C.bench=enemies
+	C.bench2=enemies
 	C.stage=src.levelpick
 	C.players=P
 	src.levelpick=null
-	src.characters=choices
+	C.bench1=choices
 	src.unlimitedreinforcements=1
 	src.Loadbattlegui(C)
 
 
 client/var/unlimitedreinforcements=0
 client/verb/Battlegui()
-	src.characters=list(
-		new/mob/yamcha(,alist(pl=1480,hp=200,unlocked=alist("none"=1))),
-		new/mob/krillin(,alist(pl=1770,hp=200,unlocked=alist("none"=1))),
-		new/mob/tien(,alist(pl=1830,hp=200,unlocked=alist("none"=1))),
-		new/mob/gohan(,alist(pl=981,hp=200,unlocked=alist("none"=1))),
-		new/mob/chaotzu(,alist(pl=610,hp=200,unlocked=alist("none"=1))),
-		new/mob/piccolo(,alist(pl=3500,hp=200,unlocked=alist("none"=1))),
-		new/mob/goku(,alist(pl=9001,hp=200,unlocked=alist("kaiokenx2"=1))))
 	src.unlimitedreinforcements=0
 	src.Loadbattlegui(new/Instance/Nappa())
 client/proc/Loadbattlegui(Instance/I)
@@ -101,15 +90,25 @@ client/proc/Loadbattlegui(Instance/I)
 	var/obj/gui/battlegui/B=new()
 	src.battlegui=B
 	src.screen+=B
-	for(var/mob/M in src.characters)
+	for(var/mob/M in I.bench1)
 		var/obj/mobref/m=new/obj/mobref(,M)
 		B.bench1.mobs+=m
 		m.home=B.bench1
 
-	for(var/mob/M in I.bench)
+	for(var/mob/M in I.bench2)
 		var/obj/mobref/m=new/obj/mobref(,M)
 		B.bench2.mobs+=m
 		m.home=B.bench2
+	for(var/i in 1 to 8)
+		for(var/i2 in 1 to 7)
+			if(I.charslots[i][i2])
+				var/obj/mobref/m=new/obj/mobref(,I.charslots[i][i2])
+				var/obj/gui/charslot/C=B.charslots[i][i2]
+				m.home=C
+				C.vis_contents+=m
+				C.mref=m
+
+
 	B.Player[1]=src
 	B.instance=I
 	B.Refreshbench(B.bench1)
@@ -118,25 +117,36 @@ client/proc/Loadbattlegui(Instance/I)
 
 
 Instance
-	var/list/bench[]
+	var/list/bench1[]
+	var/list/bench2[]
 	var/stage
 	var/list/players[8]
+	var/charslots[8][7]
+	var/inflexibleteam2=0
 	Custom
 
 
 	Nappa
+		inflexibleteam2=1
 		New()
 			..()
 			stage=stagezs["Plains"]
-			bench=list(
-				new/mob/saibamen(,alist("pl"=1100,"hp"=100)),
-				new/mob/saibamen(,alist("pl"=1100,"hp"=100)),
-				new/mob/saibamen(,alist("pl"=1100,"hp"=100)),
-				new/mob/saibamen(,alist("pl"=1100,"hp"=100)),
-				new/mob/saibamen(,alist("pl"=1100,"hp"=100)),
-				new/mob/saibamen(,alist("pl"=1100,"hp"=100)),
-				new/mob/nappa(,alist("pl"=4000,"hp"=800)),
-				new/mob/vegeta(,alist("pl"=18000,"hp"=200)))
+			bench1=list(
+				new/mob/yamcha(,alist(pl=1480,hp=200,unlocked=alist("none"=1))),
+				new/mob/krillin(,alist(pl=1770,hp=200,unlocked=alist("none"=1))),
+				new/mob/tien(,alist(pl=1830,hp=200,unlocked=alist("none"=1))),
+				new/mob/gohan(,alist(pl=981,hp=200,unlocked=alist("none"=1))),
+				new/mob/chaotzu(,alist(pl=610,hp=200,unlocked=alist("none"=1))),
+				new/mob/piccolo(,alist(pl=3500,hp=200,unlocked=alist("none"=1))),
+				new/mob/goku(,alist(pl=9001,hp=200,unlocked=alist("kaiokenx2"=1))))
+			charslots[5][1]=new/mob/saibamen(,alist("pl"=1100,"hp"=100))
+			charslots[5][2]=new/mob/saibamen(,alist("pl"=1100,"hp"=100))
+			charslots[5][3]=new/mob/saibamen(,alist("pl"=1100,"hp"=100))
+			charslots[6][3]=new/mob/saibamen(,alist("pl"=1100,"hp"=100))
+			charslots[7][3]=new/mob/saibamen(,alist("pl"=1100,"hp"=100))
+			charslots[8][3]=new/mob/saibamen(,alist("pl"=1100,"hp"=100))
+			charslots[5][4]=new/mob/nappa(,alist("pl"=4000,"hp"=500))
+
 
 
 obj/gui
@@ -169,10 +179,13 @@ obj/gui
 			Player[8]
 			playerslots[8]
 			buttons[1]
+			team1owners[0]
+			team2owners[0]
 			Instance/instance
 		New()
 			..()
 			sleep(3)
+
 			buttons[1]=new/obj/gui/start
 			buttons[1].battlegui=src
 			src.vis_contents+=buttons[1]
@@ -220,6 +233,11 @@ obj/gui
 			bench2.pixel_x=255
 			src.vis_contents+=bench1
 			src.vis_contents+=bench2
+			spawn(5)
+				if(Player[1])team1owners|=Player[1]
+				if(Player[5])team2owners|=Player[5]
+				else
+					if(Player[1] && !instance.inflexibleteam2)team2owners|=Player[1]
 	start
 		icon='gui/start.dmi'
 		icon_state="0"
@@ -256,7 +274,10 @@ obj/gui
 			player
 			obj/gui/battlegui/battlegui
 		Click()
-			if(usr.client&&usr.client!=src.battlegui:Player[1])return
+			if(src.Playernumber<=4)
+				if(usr.client&&!(usr.client in src.battlegui.team1owners))return
+			else
+				if(usr.client&&!(usr.client in src.battlegui.team2owners))return
 			var/list/options=list("Nevermind")
 			options+=clients
 			options-=usr.client
@@ -268,13 +289,12 @@ obj/gui
 			if(answer=="Yes")
 				for(var/client/c in usr.client?.battlegui:Player)
 					if(c==C)
-						usr.client?.battlegui:Player-=c
+						src.battlegui.Player-=c
 						c.screen-=usr.client?.battlegui
-				C.screen|=usr.client?.battlegui
-				usr.client?.battlegui:Player[src.Playernumber]=C
-				usr.client?.battlegui:Refreshplayerslots()
+				C.screen|=src.battlegui
+				src.battlegui:Player[src.Playernumber]=C
+				src.battlegui:Refreshplayerslots()
 		proc/Setplayer(client/C)
-			world.log<<"Successfully Setplayer [C]"
 			C.screen|=usr.client?.battlegui
 			src.battlegui:Player[src.Playernumber]=C
 			src.battlegui:Refreshplayerslots()
@@ -288,7 +308,10 @@ obj/gui
 			mobs[0]
 			obj/gui/battlegui/battlegui
 		Click()
-			if(usr.client!=src.battlegui.Player[1])return
+			if(src.icon_state=="1")
+				if(usr.client&&!(usr.client in src.battlegui.team1owners))return
+			else
+				if(usr.client&&!(usr.client in src.battlegui.team2owners))return
 			if(usr.client?.selectedmobref&&usr.client?.selectedmobref.home.icon_state!=src.icon_state)return
 			var/obj/H=usr.client?.selectedmobref?.home
 			var/obj/mobref/M=usr.client?.selectedmobref
@@ -319,7 +342,10 @@ obj/gui
 			pslot=player
 			cslot=slot
 		Click()
-			if(usr.client!=src.battlegui.Player[1])return
+			if(src.icon_state=="1")
+				if(usr.client&&!(usr.client in src.battlegui.team1owners))return
+			else
+				if(usr.client&&!(usr.client in src.battlegui.team2owners))return
 			if(usr.client?.selectedmobref && usr.client?.selectedmobref.home!=src)
 				var/obj/H=usr.client?.selectedmobref.home
 				var/obj/mobref/M=usr.client?.selectedmobref
@@ -404,6 +430,8 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 	for(var/client/C in Players)
 		C.inbattle=1
 		C.LeaveOverworld()
+		C.oldmob=C.mob
+		C.oldloc=C.mob.loc
 		C.mob.loc=null
 		C.edge_limit = T.dimensions
 	var/list/mobs[8]
@@ -524,7 +552,9 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 					Mobrefs[i][wave].ref.loc=locate(T.Start.x-i,T.Start.y,map.z)
 					Mobrefs[i][wave].ref.team="Good"
 					activeteam1|=Mobrefs[i][wave].ref
-					if((Players.len>=i||!Players[i]) && !activeteam2.len)Awaken(Mobrefs[i][wave].ref,pick(activeteam2))
+					if((Players.len>=i||!Players[i]) && !activeteam2.len)
+						computerallies|=Mobrefs[i][wave].ref
+						Awaken(Mobrefs[i][wave].ref,pick(activeteam2))
 					else
 						if(Players.len>=i)
 							Players[i].mob=Mobrefs[i][wave].ref
@@ -537,7 +567,9 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 					Mobrefs[i][wave2].ref.loc=locate(T.Start.x+(i-4),T.Start.y,map.z)
 					Mobrefs[i][wave2].ref.team="Evil"
 					activeteam2|=Mobrefs[i][wave2].ref
-					if((Players.len>=i||!Players[i]) && activeteam1.len)Awaken(Mobrefs[i][wave2].ref,pick(activeteam1))
+					if((Players.len>=i||!Players[i]) && activeteam1.len)
+						computerenemies|=Mobrefs[i][wave2].ref
+						Awaken(Mobrefs[i][wave2].ref,pick(activeteam1))
 					else
 						if(Players.len>=i)
 							Players[i].mob=Mobrefs[i][wave2].ref
@@ -545,29 +577,46 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 
 		for(var/mob/A in computerenemies)
 			if(!A.targetmob || A.targetmob.dead)
-				world.log<<"no targetmob! gonna pick from [activeteam1[1]]"
-				if(activeteam1.len)
+				if(activeteam1?.len)
 					Awaken(A,pick(activeteam1))
 		for(var/mob/A in computerallies)
 			if(!A.targetmob || A.targetmob.dead)
-				if(activeteam2.len)
+				if(activeteam2?.len)
 					Awaken(A,pick(activeteam2))
 
 	//	world.log<<"Loop [activeteam1.len] / [activeteam2.len]"
 
 	if(!activeteam1.len)
+		for(var/i in 1 to 4)
+			if(Players[i])
+				Players[i].screen|=Defeat
+		for(var/i in 5 to 8)
+			if(Players[i])
+				Players[i].screen|=Victory
 		world.log<<"Team 2 won!"
 	else
 		world.log<<"Team 1 won!"
+		for(var/i in 5 to 8)
+			if(Players[i])
+				Players[i].screen|=Defeat
+		for(var/i in 1 to 4)
+			if(Players[i])
+				Players[i].screen|=Victory
 
-
-
+	sleep(50)
 	map.free()
 
 	for(var/client/C in Players)
+		C.screen-=Defeat
+		C.screen-=Victory
+		if(C.oldmob)
+			C.mob=C.oldmob
+			C.mob.loc=C.oldloc
+			spawn()C.VisitOverworld()
+		else
+			C.mob.Die()
 		C.edge_limit=null
 		C.inbattle=0
-		C.mob.Die()
 	for(var/mob/m in mobs)
 		m.loc=null
 	for(var/mob/m in Good)
@@ -575,8 +624,14 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 	for(var/mob/m in Evil)
 		m.loc=null
 
+client/var
+	mob/oldmob
+	turf/oldloc
 
 
+var
+	obj/Victory
+	obj/Defeat
 client/var/inbattle=0
 
 

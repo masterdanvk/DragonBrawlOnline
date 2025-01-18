@@ -2708,7 +2708,15 @@ mob/var/autoattack=0
 mob
 	Bump(atom/o)
 		..()
-		if(src.dashing)src.Chargestop()
+		if(src.dashing)
+			src.Chargestop()
+			if(istype(o,/mob))
+				if(o:block)
+					var/vector/V = bound_pixloc(o,0)-bound_pixloc(src,0)
+					V.Turn(180)
+					sendflying(V,V.size*3,8)
+				else
+					src.Melee(100)
 		if(istype(o,/mob))
 			var/mob/M=o
 			if(M.dashing)M.Chargestop()
