@@ -1,22 +1,22 @@
 // BEGIN_INTERNALS
 /*
-MAP_PLANE_MASTERS: (null)
+MAP_PLANE_MASTERS: 
 MAP_ZOOM: 0.750
-LAST_COMPILE_TIME: 1737234496
+LAST_COMPILE_TIME: 1737259824
+DIR: Code\5.AI Code\6.Battlesystem Code\1.Core Code\4.GUI Code\3.Skills Code\2.World Icons\Mobs Libraries\Chatbox 
 PACKAGE_RSC_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\AnimeGame_rsc.zip
-DIR: backgrounds Chatbox Chatbox\code Chatbox\demo gui Libraries rpg tileset Lib 
 AUTO_FILE_DIR: ON
 PACKAGE_DMB_INFO: 
 MAP_ICON_TYPE: 0
 PACKAGE_DME_NAME: C:\Users\Danva\OneDrive\Desktop\AnimeGame_src.zip
 LAST_COMPILE_VERSION: 516.1650
-PACKAGE_TYPE: 0
 PACKAGE_DME_START: 
-WINDOW: Procs.dm;Beams.dm;Movement.dm;Melee.dm;AI.dm;gui\gui_menu.dm;Chatbox\code\chatbox_msg.dm;Chatbox\code\chatbox_gui.dm;map.dmm;Stages.dm;Libraries\mapinstancing.dm;darkgrass_autjoin.dmi;stages.dmi;gui\battlegui2.dmi;gui\battlegui3.dmi;gui\battlegui.dm;Base.dm;overworld.dm;gui.dm
+PACKAGE_TYPE: 0
 PACKAGE_DME_INFO: 
-FILE: gui\battlegui.dm
+WINDOW: AnimeGame.dme
+FILE: AnimeGame.dme
 MAP_INSTANCE_MODE: copy
-PACKAGE_DMB_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\DragonBrawlOnlineJan122025.zip
 PACKAGE_DME_DEMO: 
+PACKAGE_DMB_NAME: C:\Users\Danva\OneDrive\Documents\AnimeGame\AnimeGame\DragonBrawlOnlineJan122025.zip
 */
 // END_INTERNALS
