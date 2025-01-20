@@ -1,10 +1,11 @@
+/*
+FX is where all purely visual objects and procs are defined.
+This handles auras, electricity, explosions, certain skill effects, etc.
+*/
+
 var
 	alist/FX
 
-//World
-//	New()
-//		..()
-//		FX=new/alist
 
 obj
 	personalelectricity

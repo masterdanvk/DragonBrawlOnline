@@ -1,3 +1,9 @@
+/*
+This handles onscreen text input, used primarily for text input using a controller, keyboard or mouse for entering the players name.
+This is also recycled for gamepad text input, using R3, which brings the same onscreen text input for chatting in game when using a gamepad.
+
+*/
+
 var
 	name_entry_pages = list("upper" = list(list("0","1","2","3","4","5","6","7","8","9"),
 										   list("A","B","C","D","E","F","G","H","I","J"),

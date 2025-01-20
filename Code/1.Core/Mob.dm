@@ -1,3 +1,85 @@
+/*
+All mob variables and mob types are kept here. As most transformations are heavily dependent on mobs, most transformation procs are also kept here.
+*/
+
+mob/var/tmp
+	mob/target
+	mob/counterbeam
+	obj/dash
+	obj/dash2
+	dashing=0
+	spawnings[0]
+	flyinglevel=3
+	falling=0
+	storeddamage=0
+	obj/hitbox
+	chargecd
+	autoattack=0
+	mob/lastattacked
+	mob/lastattackedby
+	lasthostile
+	dead=0
+	special
+	ap
+	maxspeed=16
+	minspeed=6
+	rotation=0
+	bdir=EAST
+	autoblocks=0
+	block=0
+	attacking=0
+	tossed=0
+	hp=100
+	pl=9000
+	invulnerable=0
+	vector/facing=vector(1,0)
+	aiming=0
+	vector/aim
+	obj/aura
+	obj/auraover
+	charging=0
+	obj/fade
+	obj/fade2
+	blocktime
+	Beam/mybeam
+	beamtime
+	form
+	counters=5
+	maxcounters=5
+	blocks=21
+	maxblocks=21
+	hpregen=5
+	maxautoblocks=0
+	npcrespawn=0
+	chunkslistening[0]
+	chunk/chunk
+	chunksdetecting[0]
+	chunksaggroing[0]
+	mob/threat
+	next_move = 0
+	stunned
+	Skill/equippedskill
+	kiblast=/obj/Kiblast/Basic
+
+mob/var
+	step_delay = 0.25
+	skills[]
+	alist/unlocked[]
+	maxhp=100
+	maxki=100
+	ki=100
+	team
+	basepl=9000
+	flying=0
+	ostate=""
+	bicon
+	omaxspeed
+	oicon='rpg/rpg.dmi'
+	oicon_state
+	oicon_w
+	oicon_z
+	obound_width
+	obound_height
 
 mob
 
@@ -630,49 +712,7 @@ mob
 			src.skills=list(new/Skill/Masenko,new/Skill/Kiblast)
 			src.equippedskill=src.skills[1]
 
-	var
-		maxhp=100
-		maxki=100
-		ki=100
-		team
-		basepl=9000
-	var/tmp
-		mob/lastattacked
-		mob/lastattackedby
-		lasthostile
-		dead=0
-		special
-		ap
-		maxspeed=16
-		minspeed=6
-		rotation=0
-		bdir=EAST
-		autoblocks=0
-		block=0
-		attacking=0
-		tossed=0
-		hp=100
-		pl=9000
-		invulnerable=0
-		vector/facing=vector(1,0)
-		aiming=0
-		vector/aim
-		obj/aura
-		obj/auraover
-		charging=0
-		obj/fade
-		obj/fade2
-		blocktime
-		Beam/mybeam
-		beamtime
-		form
-		counters=5
-		maxcounters=5
-		blocks=21
-		maxblocks=21
-		hpregen=5
-		maxautoblocks=0
-		npcrespawn=0
+
 
 	step_size = 8
 

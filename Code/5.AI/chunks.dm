@@ -1,4 +1,13 @@
+/*
+All maps included on compile are "chunked", this is a concept where each 5x5 square of turfs are stored in a global list. This is helpful for AI aggro detection.
+When an AI moves, it will mark itself within the chunks that it can "see" with its detection range. New maps will not automatically be chunked, and therefor
+AI with a roaming detection range or an aggro detection range will not function on those runtime generated maps. You can easily "chunk" new maps into the chunk list, but this isnt
+done by default.
+Chunks are far more cpu effective for AI detection than the AI constantly looking at all surrounding turfs on some interval. It allows AI behavior to be triggered by moving into their
+detection radius, which takes far less effort for the server.
+Chunks can also be helpful for detection and movement on a minimap system, which this demo does not include.
 
+*/
 
 var
 	chunksize=5
@@ -154,9 +163,6 @@ world/proc/InitiateChunks()
 //	world<<"maxX[maxX] maxY[maxY]"
 
 
-mob
-	var
-		chunkslistening[0]
 
 chunk
 	var
@@ -179,11 +185,8 @@ turf
 	var
 		chunk/chunk
 
-mob
-	var/tmp
-		chunk/chunk
-		chunksdetecting[0]
-		chunksaggroing[0]
+
+
 
 
 

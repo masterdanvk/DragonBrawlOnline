@@ -1,3 +1,10 @@
+/*
+This handles important commonly used procs in addition to reciprocal procs on common interactions.
+For instance, when an atom/movable crosses another atom, it also calls on_cross for that atom so that its easier to write code
+for interactions such as being hit by a projectile for instance.
+
+*/
+
 atom
 	movable
 		var
@@ -62,6 +69,22 @@ mob/proc/Backstab(mob/M)
 		return 1
 	return 0
 
+matrix
+	proc/TurnWithPivot(clockwise_degrees, pivot_x, pivot_y,flipaxis=0)
+		if(flipaxis)
+			if(clockwise_degrees>=90)
+				return Translate(pivot_x, pivot_y).Turn(-(clockwise_degrees-180)).Scale(-1,1).Translate(-pivot_x, -pivot_y)
+			else if(clockwise_degrees<=-90)
+				return Translate(pivot_x, pivot_y).Turn(-(clockwise_degrees+180)).Scale(-1,1).Translate(-pivot_x, -pivot_y)
+		return Translate(pivot_x, pivot_y).Turn(clockwise_degrees).Translate(-pivot_x, -pivot_y)
+
+	proc/TurnandScaleWithPivot(clockwise_degrees,scale_x,scale_y,pivot_x, pivot_y,flipaxis=0)
+		if(flipaxis)
+			if(clockwise_degrees>=90)
+				return Translate(pivot_x, pivot_y).Scale(scale_x,scale_y).Turn(clockwise_degrees-180).Scale(-1,1).Translate(-pivot_x, -pivot_y)
+			else if(clockwise_degrees<=-90)
+				return Translate(pivot_x, pivot_y).Scale(scale_x,scale_y).Turn(clockwise_degrees+180).Scale(-1,1).Translate(-pivot_x, -pivot_y)
+		return Translate(pivot_x, pivot_y).Scale(scale_x,scale_y).Turn(clockwise_degrees).Translate(-pivot_x, -pivot_y)
 
 mob/proc/Face(mob/M)
 	if(!M||!src||!M.pixloc||!src.pixloc)return
@@ -260,6 +283,87 @@ mob/proc/RotateMob(vector/V,weight=100)
 	var/matrix/M=new/matrix()
 	src.rotation=(clamp(src.rotation,-30,30)*(100-weight)+angle*weight)/100
 	M.Scale(flip,1)
-//	world<<"[src.rotation]"
 	M.Turn(-src.rotation)
 	src.transform=M
+
+
+mob/proc/AngleRotateMob(angle)
+	if(src.bdir==WEST && angle==90)angle=90.1
+	var/flip=1
+	if(bdir==EAST)
+		if(angle>90)
+			angle-=180
+			bdir=WEST
+			flip=-1
+		if(angle<-90)
+			angle+=180
+			bdir=WEST
+			flip=-1
+	else
+
+		if(angle<90 && angle>-90)
+			bdir=EAST
+		else
+			if(angle>=90)
+				angle-=180
+				flip=-1
+			if(angle<=-90)
+				angle+=180
+				flip=-1
+
+	if(flip==1)bdir=EAST
+
+	var/matrix/M=new/matrix()
+	src.rotation=angle
+	M.Scale(flip,1)
+	M.Turn(src.rotation)
+	src.transform=M
+	sleep(2)
+
+mob/proc/Target()
+	var/list/targets=new/list
+	var/mob/target
+
+	for(var/mob/M in obounds(src,500))
+		if(!M.dead)targets+=M
+	if(src.target && !src.target.dead && src.target in targets)
+		target=src.target
+	if(src.lastattacked in targets)
+		target=src.lastattacked
+
+	else if(src.lastattackedby in targets)
+		target=src.lastattackedby
+	else
+		if(targets.len)
+		//	vector2angle(vector/v)
+		//	angle2vector(angle,dist)
+			var/fitscore
+			for(var/mob/m in targets)
+				if(m.team!=src.team && m!=src)
+					var/vector/diff=m.pixloc-src.pixloc
+					var/dist=diff.size
+					var/angle=vector2angle(diff)
+					if(angle<0)angle+=360
+					var/uaim=Dir2Angle(src.dir)
+					var/distscore=(500-dist)/5
+					var/aimscore=(360-abs(angle-uaim))/3.6
+					var/score=(aimscore)*0.70+(distscore)*0.30
+					if(score>fitscore)
+						target=m
+						fitscore=score
+
+	if(target && target!=src)
+		src.target=target
+		return (target)
+
+mob/proc/AutoAim(vector/aim)
+	var/mob/target
+	target=src.Target()
+
+
+	if(target && target!=src)
+		return (target.pixloc-src.pixloc)
+
+	aim=Dir2Vector(src.dir)
+
+	return aim

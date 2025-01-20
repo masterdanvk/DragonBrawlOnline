@@ -1,3 +1,12 @@
+/*
+Handles the majority of onscreen GUI objects for the players name (attached to their mob), hp, ki, block, counters, powerlevel and player's
+mob preview (portrait). This also handles the skillbar which can have up to 7 skills, Q/W alternate between these skills.
+The target, set based on attacking or being attacked, will show a flipped GUI in the top right corner so you can track their hp, powerlevel, etc.
+It is possible to restrict and limit this sort of information being available to the player based on things like sensory proficiency, having a scouter equipped, etc.
+By default these quality of life features are all on.
+
+*/
+
 client/var/name
 
 client/var/fullscreen=0
@@ -9,20 +18,7 @@ client/verb/FullScreen()
 client/verb/changeview(var/i as text)
 	src.view=i
 
-client/verb/Togglechat()
-	if(!usr)usr=src
-	if(chatactive)
-		chatactive=0
-		for(var/chatbox_gui/G in usr.client?.screen)
-			G.alpha=0
-		for(var/chatbox/C in usr.client?.screen)
-			C.alpha=0
-	else
-		chatactive=1
-		for(var/chatbox_gui/G in usr.client?.screen)
-			G.alpha=70
-		for(var/chatbox/C in usr.client?.screen)
-			C.alpha=120
+
 
 mob
 	var/tmp
@@ -93,25 +89,7 @@ mob
 
 
 
-	Login()
-		if(!src.selecting)
-			var/obj/O=new/obj/nameplate
-			O.layer=MOB_LAYER-0.5
-			O.appearance_flags=RESET_TRANSFORM|RESET_COLOR
-			O.maptext="<span style=\"font-family:UberBit7; font-size:8px; color:#fff; -dm-text-outline:1px black; text-align:center;\">[src.client.name]</span>"
-			O.maptext_width=96
-		//	O.maptext_x=32
-			O.pixel_w=-38
-			O.maptext_y=-12
-			O.alpha=150
-			src.vis_contents+=O
-			client.screen.Add(gui_frame,gui_hpbar,gui_kibar,gui_blockbar,gui_counterbar,gui_picture,gui_target,gui_target2,gui_targetpl,gui_pl)
-			src.oldclient=src.client
-		..()
-	Logout()
-		if(oldclient)
-			oldclient.screen.Remove(gui_frame,gui_hpbar,gui_kibar,gui_blockbar,gui_counterbar,gui_picture,gui_target,gui_target2,gui_targetpl,gui_pl)
-		..()
+
 
 mob/var/tmp/client/oldclient
 obj/nameplate

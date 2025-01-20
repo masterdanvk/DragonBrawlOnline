@@ -1,3 +1,9 @@
+/*
+This handles the multiple choice choice GUI object. It is a nice graphical representation of an input from a list of text options.
+This can take inputs from controllers in addition to keys on a keyboard, does not require use of a mouse.
+However a mouse click will also trigger the option. When ShowDialogue is called, it will hold up whatever proc it is called in until a selection is made or the timelimit parameter expires.
+If timelimit is not specified, it will default to 1 minute.
+*/
 
 client/var/list/gdialogue[0]
 client/var/obj/gui/dialogue/main/parentdialogue
@@ -27,7 +33,7 @@ client/proc/BuildDialogue()
 			if(/obj/gui/dialogue/)
 				M.title=O
 
-client/proc/ShowDialogue(title,body,list/options)
+client/proc/ShowDialogue(title,body,list/options,timelimit=600)
 	var/obj/gui/dialogue/main/M=src.parentdialogue
 	src.indialogue=1
 	src.screen|=M.title
@@ -51,11 +57,13 @@ client/proc/ShowDialogue(title,body,list/options)
 
 		src.choice=null
 		src.screen|=M
-		while(!src.choice)
+		while(!src.choice &&timelimit>0)
 			sleep(10)
+			timelimit-=10
+
 		for(var/obj/O in gdialogue)
 			src.screen-=O
-
+		if(timelimit<=0)return
 		return options[src.choice]
 	else
 		src.screen|=M

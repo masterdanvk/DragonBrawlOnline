@@ -1,8 +1,21 @@
+/*
+The Skill datum exists to capture what skills a mob has, and to contain the behavior of that skill (Skill/proc/Use())
+When a player presses the skill key (S) it will typically call ChargeSkill() which then calls the equipped skill's Charge() proc - if it is used.
+When the skill key is released the UseSkill proc is used where, if the player has adequately charged the skill's cast time and has sufficient ki, it will
+call the Skill's Use() proc, and also pass the time it has charged - allowing for an overcharge effect.
+The Skill datum has an icon_state even though it has no physical representation in the game or on the players screen.
+Instead this determines what icon_state is put on the players screen from this skill using the skills.dmi gui file.
+
+
+*/
 
 
 
-mob/var/tmp/Skill/equippedskill
-mob/var/tmp/kiblast=/obj/Kiblast/Basic
+mob/proc/Refundskillcost()
+	set waitfor = 0
+	src.Get_Ki(src.equippedskill?.kicost)
+
+
 obj/var
 	mob/owner
 mob/proc/UseSkill(time)
@@ -41,21 +54,46 @@ mob/proc/UseKiBlast()
 		return
 
 
-mob/verb/ChangeSkill()
-	var/S=input(usr,"Change your skill","Skill",src.equippedskill) in typesof(/Skill)
-	if(usr.skills.len<7)
-		usr.skills+=new S
-	else
-		usr.skills[7]=new S
-	usr.client?.initskillbar()
-
-
 mob/proc/ChargeSkill()
 	set waitfor = 0
 	if(!src.equippedskill)return
 	src.equippedskill.Charge(src)
 
 mob/var/tmp/holdskill
+
+mob/proc
+	Kaioken(mult=4.2)
+		src.icon_state="transform"
+		src.form="kaioken"
+		src.icon_state=""
+		src.Set_PL(round(src.basepl*mult,1))
+		src.Create_Aura("Red")
+		src.vis_contents|=src.aura
+		src.vis_contents|=src.auraover
+		src.aura.icon_state="start"
+		src.auraover.icon_state="start"
+
+		sleep(2)
+		src.aura.icon_state="aura"
+		src.auraover.icon_state="aura"
+		sleep(4)
+		src.filters += filter(
+			type = "color",,
+		 	color = list(255,220,220)
+		 	)
+
+		src.aura.icon_state=""
+		src.auraover.icon_state=""
+		sleep(10)
+		src.vis_contents-=src.aura
+		src.vis_contents-=src.auraover
+
+	Kaioken_end()
+		src.icon_state=""
+		src.Set_PL(round(src.basepl,1))
+		src.form=null
+		src.filters=null
+		src.Create_Aura("White")
 
 Skill
 	var/icon

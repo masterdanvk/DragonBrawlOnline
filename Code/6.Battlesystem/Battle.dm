@@ -1,4 +1,12 @@
+/*
+The battle system is a simple proc which takes in an instance and list of players (clients) and mobrefs (objects which visually represent and reference to mobs)
+This system takes in these parameters from battlegui, which itself pulls Instances from Instances.dm.
+Effectively what this does is start a match by spawning a copy of a stage map and pull in waves of mobs from team 1 and team 2.
+When a team's mobs are depleted (they Die()), the other team will be called a victor and the battle will end.
+AI mobs will be awakened and pick a random opponent.
 
+
+*/
 proc/Battle(list/Players,list/Mobrefs,Instance/I)
 
 	var/Map/map = maps.copy(I.stage)
@@ -37,26 +45,6 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 						Mobrefs[i][i2].ref.pnum=i2
 						Evil+=Mobrefs[i][i2].ref
 
-		/*var/mob/M
-		if(mobs[i]&&mobs[i].len)M=mobs[i][1]
-		if(M)
-			if(Players[i])
-				var/mob/old=Players[i].mob
-				Players[i].mob=M
-				old.loc=null
-
-
-			else
-				if(i<=4)
-					computerallies|=M
-					M.aggrotag=1
-				else
-					computerenemies|=M
-					M.aggrotag=1
-			//if(i<5)
-			//	activeteam1|=M
-			//	M.loc=locate(T.Start.x-i,T.Start.y,map.z)
-			*/
 
 	for(var/i in 1 to 4)
 		if(Mobrefs[i][wave]&&Mobrefs[i][wave].ref)
@@ -93,16 +81,10 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 				if(m in computerallies)
 					computerallies-=m
 					mobs[num]-=m
-				//	if(mobs[num].len && mobs[num][1])
-				//		computerallies|=mobs[num][1]
-				//		if(activeteam2.len)spawn()Awaken(mobs[num][1],pick(activeteam2))
+
 				else if(m.client)
 					mobs[num]-=m
-				//	if(mobs[num].len && mobs[num][1])
-				//		m.client.mob=mobs[num][1]
-				//if(mobs[num]?.len&&mobs[num][1])
-				//	mobs[num][1].loc=locate(T.Start.x-(num),T.Start.y,map.z)
-				//	activeteam1|=mobs[num][1]
+
 		for(var/mob/m in activeteam2)
 			if(m.dead)
 				Evil-=m
@@ -111,16 +93,10 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 				if(m in computerenemies)
 					computerenemies-=m
 					mobs[num]-=m
-				//	if(mobs[num].len && mobs[num][1])
-				//		computerenemies|=mobs[num][1]
-				//		if(activeteam1.len)spawn()Awaken(mobs[num][1],pick(activeteam1))
+
 				else if(m.client)
 					mobs[num]-=m
-				//	if(mobs[num].len && mobs[num][1])
-				//		m.client.mob=mobs[num][1]
-				//if(mobs[num]?.len&&mobs[num][1])
-				//	mobs[num][1].loc=locate(T.Start.x+(num-4),T.Start.y,map.z)
-				//	activeteam2|=mobs[num][1]
+
 		if(!activeteam1.len)
 			wave++
 			for(var/i in 1 to 4)
@@ -159,9 +135,6 @@ proc/Battle(list/Players,list/Mobrefs,Instance/I)
 			if(!A.targetmob || A.targetmob.dead)
 				if(activeteam2?.len)
 					Awaken(A,pick(activeteam2))
-
-	//	world.log<<"Loop [activeteam1.len] / [activeteam2.len]"
-
 	if(!activeteam1.len)
 		for(var/i in 1 to 4)
 			if(Players[i])

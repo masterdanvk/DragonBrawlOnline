@@ -1,3 +1,8 @@
+/*
+the New() server initiating proc is kept here, largely used to create common shared objects and initiate stages and global lists.
+Autotiling is also initiated here, which is the important autotiling proc for turfs that are autotiling enabled handled by the Libary - TerAutojoin.dm
+*/
+
 world/New()
 	..()
 	banner=new/obj

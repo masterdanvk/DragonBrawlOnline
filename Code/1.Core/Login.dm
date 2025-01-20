@@ -1,3 +1,7 @@
+/*
+All code related to a client logging in/out, logging in to the default mob (mob/picking) and the character selection process and regular mob login/logout procs.
+*/
+
 var/obj/banner
 
 client/New()
@@ -39,6 +43,39 @@ client/Del()
 	M.client=null
 	..()
 
+mob
+	Login()
+		if(!src.selecting)
+			var/obj/O=new/obj/nameplate
+			O.layer=MOB_LAYER-0.5
+			O.appearance_flags=RESET_TRANSFORM|RESET_COLOR
+			O.maptext="<span style=\"font-family:UberBit7; font-size:8px; color:#fff; -dm-text-outline:1px black; text-align:center;\">[src.client.name]</span>"
+			O.maptext_width=96
+		//	O.maptext_x=32
+			O.pixel_w=-38
+			O.maptext_y=-12
+			O.alpha=150
+			src.vis_contents+=O
+			client.screen.Add(gui_frame,gui_hpbar,gui_kibar,gui_blockbar,gui_counterbar,gui_picture,gui_target,gui_target2,gui_targetpl,gui_pl)
+			src.oldclient=src.client
+		..()
+		src.client?.removeskillbar()
+		src.name=src.client.name
+		src.team=src.ckey
+		if(!istype(src,/mob/picking))
+			src.client?.initskillbar()
+			if(src.client && !src.client.chatinit)
+				spawn(2)
+					src.client.chatinit=1
+					client.chatbox_build() // build the chatbox
+					client.chatlog = "outputwindow.output" // set chatlog
+					_message(world, "[name] has logged in.", "yellow") // notify world
+
+
+	Logout()
+		if(oldclient)
+			oldclient.screen.Remove(gui_frame,gui_hpbar,gui_kibar,gui_blockbar,gui_counterbar,gui_picture,gui_target,gui_target2,gui_targetpl,gui_pl)
+		..()
 mob/picking
 	icon=null
 	selecting=1

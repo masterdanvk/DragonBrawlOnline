@@ -1,3 +1,4 @@
+//the host by default has admin verbs, these verbs can be granted to any player and are juseful for debugging, and in some cases, just changing the colors of mobs because my 5 year old liked that.
 
 mob/admin/verb/MakeShiny(mob/M in view(10))
 
@@ -54,3 +55,11 @@ mob/admin/verb/Levelupflying()
 	M.flyinglevel++
 	if(M.flyinglevel>3)M.flyinglevel=0
 	world.log<<"flying level is now [M.flyinglevel]"
+
+mob/admin/verb/ChangeSkill()
+	var/S=input(usr,"Change your skill","Skill",src.equippedskill) in typesof(/Skill)
+	if(usr.skills.len<7)
+		usr.skills+=new S
+	else
+		usr.skills[7]=new S
+	usr.client?.initskillbar()

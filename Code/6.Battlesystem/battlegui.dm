@@ -1,17 +1,21 @@
-// Issues
+/*
+This handles the GUI system for a fight. It handles an onscreen match which has the following components:
+- 2 window panes, one for each team.
+- 2 mobref benches, these are just large multiple slot (up to 21) containers for available mobs (mobrefs)
+- 8 playerslots, these default to "Computer", but are little rectangles that can be clicked on to then invite a real player to take over a position. 4 playerslots per team.
+- 7 charslots for each player, 7 x 8 = 56 total. These can take 1 mobref. the wave for each team will pull from 1 to 7.
 
-//spiritbomb is way too far topright
-//Manage when ESC is available
-// Character select, maptext on which character and border for selected character
-//spiritshot isnt working
+Basically, the Instance will preload mobs into a mobref object. A mobref is simply a small, overworld icon representation of a mob.
+The Instance will decide the powerlevels and mobs and their location. Often for scenarios, team 2 will be locked and not flexible.
+The Instance will often also override available skills or transformations.
+Custom battles will allow for all mobs for each team in a bench that never depletes.
 
-//scenarios and standardizing procs
-	//23th budokai [Done]
-	//Raditz Fight [Done]
-	//Nappa Fight [Done]
-	//Vegeta Fight [Partially Done]
-	//Ginyu Force Fight
-	//Frieza Fight
+Once the mobrefs are placed in each charslot, and the start button is pressed, the 56 charslots are translated to a list and sent to the Battle.dm proc.
+
+
+*/
+
+
 
 
 

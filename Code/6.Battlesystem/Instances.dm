@@ -1,4 +1,13 @@
+/*
+Instances are missions or prefilled battles where mobs and levels are associated to the Instance datum. inflexibleteam2 is set to 1 when you dont want
+it to be possible to change the enemy team's composition.
+Instances are called into the battlegui.dm process to load a scenario to the battlegui, and then when that has been set up with playesr and customizations,
+once the start button on the gui is pressed the players, mobs and instances are passed to Battle.dm where an instanced fight takes place.
 
+It is possible for an Instance, in its New() routine, to spawn() behavior that listens for the death status of specific mobs, or uses timers to have additional
+events take place. Just be wary that Instances will be called to New() when the battlegui is pulled on screen, NOT when the fight begins. It would be better then to set up
+a new proc for Instances when the fight starts, and call that in Battle.dm instead for weird custom behaviors on fights.
+*/
 
 Instance
 	var/list/bench1[]

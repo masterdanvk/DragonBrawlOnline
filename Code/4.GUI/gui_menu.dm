@@ -1,3 +1,10 @@
+/*
+The backend GUI behavior for Ter's GUILib - used for the gui_name_entry components.
+
+
+*/
+
+
 obj/gui
 	var
 		id

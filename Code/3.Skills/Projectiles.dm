@@ -1,4 +1,11 @@
+/*
+Most non-beam ki attacks are handled in this file and are called projectiles.
+Energy_Blast() handles most things between the obj/Kiblast that is included in its parameters, that object can have
+many variables set that impact how it moves and whether it explodes, bypasses or pushes opponents.
+offset is a vector (has an x and a y) and it impacts the starting position of the projectile in addition to its curvature - it will move back to the non-offset position.
+Projectiles themselves can have offsets purely for changing the x and y pixloc of its starting position - to handle larger or weird sized projectiles.
 
+*/
 
 mob/proc/Energy_Blast(time,obj/Kiblast/K,vector/offset,icon/customki)
 	if(!offset)offset=new/vector(0,0)

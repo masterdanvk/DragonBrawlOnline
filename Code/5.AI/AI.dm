@@ -1,4 +1,15 @@
+/*
+A rudimentary AI system which is done through AI_Loop(), a global proc which is called once every 5 world/Tick().
+Basically each mob without a client which has been activated as an AI will be cycled through (global list AI_Active).
+Each of these mobs if they have a target will then decide its "posture" which is one of 6 modes that impact whether the AI will choose to
+(1) charge towards their opponent
+(2) be defensive, blocking and moving in a circle around the opponent keeping their distance.
+(3) try to melee attack their opponent by getting close and attacking.
+(4) fire a large volley of kiblasts
+(5) use one of their available skills.
+(6) if they havent been able to move for a while, they will use an escape counter attack. This is for when AI is being cheesed by being pushed into a corner or simply is stuck.
 
+*/
 
 var/list/AI_Active=new/list()
 mob/var/tmp
@@ -256,6 +267,16 @@ proc/AI_Loop()
 
 mob/var/tmp/turf/lastloc
 
+proc/Awaken(mob/m,mob/opponent)
+	m.targetmob=opponent
+	m.CheckCanMove()
+	AI_Active|=m
+	m.Move(0)
+	m.movevector=vector(0,0)
+	m.rotation=0
+	m.RotateMob(vector(0,0),100)
+	m.tossed=0
+	m.icon_state=""
 
 mob/proc/Detect(mob/A)
 	set waitfor = 0

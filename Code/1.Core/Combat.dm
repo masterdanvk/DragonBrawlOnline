@@ -1,3 +1,132 @@
+/*
+Includes combat procs for things like the counter (hitting D before being hit) where you teleport behind
+Blocking
+Charging through a double tap of a direction key
+Repulse (holding block and absorbing a certain number of melee attacks then results in a pushing effect)
+Melee - punches and kicks, depending on how long the key is held for.
+*/
+
+mob/proc/Counter(mob/M)
+
+	var/obj/fade=new/obj(src.pixloc)
+	fade.icon='fade.dmi'
+	var/obj/olay=new/obj
+	olay.appearance=src
+	olay.blend_mode=BLEND_INSET_OVERLAY
+	fade.blend_mode=BLEND_MULTIPLY
+	fade.appearance_flags=KEEP_TOGETHER
+	fade.vis_contents+=olay
+
+	if(M)
+		if(!M.client)M.stunned=world.time+20
+		else M.stunned=world.time+5
+		var/vector/V=M.pixloc-src.pixloc
+		V.size=V.size*2
+		var/pixloc/destination=src.pixloc+V
+		var/turf/T=destination.loc
+		if(T&&!T.density)
+			src.pixloc=destination
+		src.Face(M)
+
+
+	spawn(5)
+		fade.loc=null
+		fade.vis_contents-=olay
+
+mob/proc/Block()
+	set waitfor = 0
+	animate(src,icon_state="block",time=4)
+	src.movevector=vector(0,0)
+	sleep(4)
+	if(src.dead)return
+	if(src.client?.movekeydown) src.icon_state="dash2"
+	else src.icon_state=""
+
+
+mob/proc
+	Charge()
+		if(!src.dashing && !src.client?.overworld)
+			var/mob/target
+			var/X=0
+			var/Y=0
+			if(src.dir==NORTH||src.dir==NORTHEAST||src.dir==NORTHWEST)Y=0.5
+			else if(src.dir==SOUTH||src.dir==SOUTHEAST||src.dir==SOUTHWEST)Y=-0.5
+			if(src.dir==WEST||src.dir==NORTHWEST||src.dir==SOUTHWEST)X=-1
+			else if(src.dir==EAST||src.dir==NORTHEAST||src.dir==SOUTHEAST)X=1
+
+			var/list/mobs=new/list
+			for(var/turf/T in block(src.x-8+X*7,src.y-8+Y*7,src.z,src.x+8+X*7,src.y+Y*7+8))
+				for(var/mob/M in T)
+					if(M!=src)mobs+=M
+			if(src.targetmob in mobs)
+				target=src.targetmob
+			else if(src.lastattacked in mobs)
+				target=src.lastattacked
+			else if(src.lastattackedby in mobs)
+				target=src.lastattackedby
+			else if(mobs.len)
+				target=pick(mobs)
+
+			if(!target)return
+
+
+			var/obj/A
+			var/obj/B
+
+			if(src.dash)
+				A=src.dash
+			else
+				A=new/obj
+			if(src.dash2)
+				B=src.dash2
+			else
+				B=new/obj
+			A.layer=MOB_LAYER+0.1
+			A.density=0
+			A.icon=aura.icon
+			A.icon_state="dash"
+			A.alpha=100
+			A.bound_width=80
+			A.bound_height=106
+			A.pixel_y=-26
+			A.pixel_w=-24
+			B.layer=OBJ_LAYER
+			B.density=0
+			B.icon=aura.icon
+			B.icon_state="dash"
+			B.alpha=180
+			B.bound_width=80
+			B.bound_height=106
+			B.pixel_y=-26
+			B.pixel_w=-24
+			src.dash=A
+			src.dash2=B
+			src.dashing=1
+			src.vis_contents+=src.dash
+			src.vis_contents+=src.dash2
+			src.icon_state="dash2"
+			var/oldstep=src.step_size
+			var/i=0
+			while(src.dashing && src.ki>1)
+				i++
+				if(i>=5)
+					src.Take_Ki(1)
+					i=0
+				var/vector/stepvector=target.pixloc-src.pixloc
+				src.step_size=src.maxspeed
+				stepvector.size=src.step_size
+				Move(src.pixloc+stepvector)
+				sleep(world.tick_lag)
+			src.step_size=oldstep
+			if(src.icon_state=="dash2")src.icon_state=""
+
+
+
+	Chargestop()
+		src.vis_contents-=src.dash
+		src.vis_contents-=src.dash2
+		src.dashing=0
+
 mob/proc/Melee(duration)
 	set waitfor = 0
 	if(!src.attacking)

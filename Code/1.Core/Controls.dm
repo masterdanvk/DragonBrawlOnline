@@ -1,3 +1,9 @@
+/*
+Controls are based on the interface having one major verb called for ANY key pressed (keydownverb) and for ANY key released (keyupverb).
+If a key is detected to be a gamepad key, its run through GamePad2Key and will swap that key with the corresponding keyboard equivalent.
+
+*/
+
 
 mob/proc/Next_Skill()
 
@@ -278,8 +284,7 @@ client/verb/keyupverb(button as text)
 
 			var/duration=world.time-src.keydown[button]
 			if(!M.usingskill)M.Melee(duration)
-		//	if(duration>5)M.Kick()
-		//	else M.Punch()
+
 		if((button=="D"&& M.charging)||(button=="North"&& M.charging)||(button=="F" && M.charging))
 			M.charging=0
 			M.aura.icon_state="end"

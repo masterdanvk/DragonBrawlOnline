@@ -1,3 +1,5 @@
+//This chat system uses a library called Chatbox (in Libraries folder) it implements the on screen GUI chatbox object.
+
 client/verb/SayGamepad()
 	var/obj/gui/menu/name_entry/picker = new()
 	var/n = picker.Input(src,"What do you want to say?")
@@ -11,6 +13,20 @@ mob/verb/say(i as text)
 	chat_say(_ftext(i,"lightgrey"))
 
 // chatbox settings
+client/verb/Togglechat()
+	if(!usr)usr=src
+	if(chatactive)
+		chatactive=0
+		for(var/chatbox_gui/G in usr.client?.screen)
+			G.alpha=0
+		for(var/chatbox/C in usr.client?.screen)
+			C.alpha=0
+	else
+		chatactive=1
+		for(var/chatbox_gui/G in usr.client?.screen)
+			G.alpha=70
+		for(var/chatbox/C in usr.client?.screen)
+			C.alpha=120
 
 chatbox
 	layer = FLOAT_LAYER+0.1

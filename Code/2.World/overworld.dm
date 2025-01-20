@@ -1,10 +1,10 @@
-mob/var
-	oicon='rpg/rpg.dmi'
-	oicon_state
-	oicon_w
-	oicon_z
-	obound_width
-	obound_height
+/*
+The overworld is an optional layer to the game where the player becomes smaller and can interact with other players and missions/npcs to then launch into
+the regular mode where combat happens. You cant fight while in the overworld. This file also has all of the overworld interactable objects/npcs which are actually objects.
+
+*/
+
+
 client/verb/VisitOverworld()
 	if(src.overworld)return
 	for(var/obj/lightningarmor/O in src.mob.vis_contents)src.mob.vis_contents-=O
@@ -71,11 +71,7 @@ client/proc/LeaveOverworld()
 obj/overworldstart
 client/var/overworld=0
 client/var/pixloc/oworldpixloc
-mob/var
-	flying=0
-	ostate=""
-	bicon
-	omaxspeed
+
 
 obj
 	overworld

@@ -1,4 +1,10 @@
+/*
+stages are backgrounds for a more sidescroller perspective of combat. This is more appropriate for the type of mob sprites and perspectives.
+Stagetags are placed on the map to clarify which z layer and spawning location the stage is placed on the map.
+The PVP and other procs for creating an instance of fighting on a stage creates a new level by copy/pasting the original location.
+GUI elements for the stage select and related interactions are also coded here.
 
+*/
 obj
 	stages
 		density=0
